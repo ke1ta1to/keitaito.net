@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.17",
@@ -19,15 +21,26 @@
     "tailwindcss": "^4.0.17"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^3.2.6",
     "@eslint/eslintrc": "^3.3.1",
+    "@storybook/addon-essentials": "^8.6.10",
+    "@storybook/addon-interactions": "^8.6.10",
+    "@storybook/addon-onboarding": "^8.6.10",
+    "@storybook/blocks": "^8.6.10",
+    "@storybook/nextjs": "^8.6.10",
+    "@storybook/react": "^8.6.10",
+    "@storybook/test": "^8.6.10",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20.17.28",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.4",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-storybook": "^0.12.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "storybook": "^8.6.10",
     "typescript": "^5.8.2"
   }
 }
