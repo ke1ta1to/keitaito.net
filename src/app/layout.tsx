@@ -1,10 +1,15 @@
 import type { PropsWithChildren } from "react";
+
+import { AppLayout } from "@/components/app-layout";
+
 import "./globals.css";
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body className="text-gray-700">
+        <AppLayout>{children}</AppLayout>
+      </body>
     </html>
   );
 }
