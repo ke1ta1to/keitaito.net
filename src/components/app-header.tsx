@@ -8,10 +8,10 @@ const links = [
   { label: "Contact", href: "/contact" },
 ];
 
-export async function AppHeader() {
+export function AppHeader() {
   return (
     <header className="sticky top-0 border-t-4 border-t-teal-300 bg-white pt-3 pb-4 text-gray-900">
-      <div className="mx-auto flex max-w-7xl items-center px-2">
+      <div className="mx-auto flex max-w-7xl items-center px-4">
         <NextLink href="/">
           <Image
             alt="keitaito.net"

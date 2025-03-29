@@ -6,7 +6,7 @@ export async function AppLayout({ children }: PropsWithChildren) {
   return (
     <>
       <AppHeader />
-      <div className="mx-auto max-w-7xl px-2">{children}</div>
+      <div className="mx-auto max-w-7xl px-4 pb-4">{children}</div>
     </>
   );
 }
