@@ -1,18 +1,28 @@
-import type { PropsWithChildren } from "react";
+import type { ComponentProps, PropsWithChildren } from "react";
 
-interface OverviewCardProps {
+import { cn } from "@/utils";
+
+interface OverviewCardProps extends ComponentProps<"div"> {
   title: string;
 }
 
 export function OverviewCard({
   title,
   children,
+  className,
+  ...props
 }: PropsWithChildren<OverviewCardProps>) {
   return (
-    <div className="rounded border-t-4 border-t-teal-300 px-4 py-2 shadow">
+    <div
+      className={cn(
+        "rounded border-t-4 border-t-teal-300 px-4 pt-2 pb-4 shadow",
+        className,
+      )}
+      {...props}
+    >
       <div className="">{title}</div>
-      <div className="my-2 h-0.5 bg-gray-100">{/* Divider */}</div>
-      <div className="">{children}</div>
+      <div className="my-4 mt-2 h-0.5 bg-gray-100"></div>
+      {children}
     </div>
   );
 }
