@@ -1,6 +1,6 @@
 import type { ComponentProps, PropsWithChildren } from "react";
 
-import { cn } from "@/utils";
+import { cn } from "@/utils/cn";
 
 interface OverviewCardProps extends ComponentProps<"div"> {
   title: string;
@@ -13,13 +13,7 @@ export function OverviewCard({
   ...props
 }: PropsWithChildren<OverviewCardProps>) {
   return (
-    <div
-      className={cn(
-        "rounded px-4 pt-2 pb-4 shadow",
-        className,
-      )}
-      {...props}
-    >
+    <div className={cn("rounded px-4 pt-2 pb-4 shadow", className)} {...props}>
       <div className="">{title}</div>
       <div className="my-4 mt-2 h-0.5 bg-gray-100"></div>
       {children}
