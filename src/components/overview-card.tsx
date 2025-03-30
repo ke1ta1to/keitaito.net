@@ -15,7 +15,7 @@ export function OverviewCard({
   return (
     <div
       className={cn(
-        "rounded border-t-4 border-t-teal-300 px-4 pt-2 pb-4 shadow",
+        "rounded px-4 pt-2 pb-4 shadow",
         className,
       )}
       {...props}

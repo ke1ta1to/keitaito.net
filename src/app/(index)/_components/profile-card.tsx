@@ -10,7 +10,7 @@ import { OverviewCard } from "@/components/overview-card";
 import { calcAge } from "@/utils/calc-age";
 
 const { title, name, name_en, birthday, location, school } = {
-  title: "Overview",
+  title: "Profile",
   name: "伊藤啓太",
   name_en: "Keita Ito",
   birthday: new Date("2004-07-09"),
