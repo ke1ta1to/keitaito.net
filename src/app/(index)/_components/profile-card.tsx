@@ -7,10 +7,23 @@ import {
 import Image from "next/image";
 
 import { OverviewCard } from "@/components/overview-card";
+import { calcAge } from "@/utils/calc-age";
+
+const { title, name, name_en, birthday, location, school } = {
+  title: "Overview",
+  name: "伊藤啓太",
+  name_en: "Keita Ito",
+  birthday: new Date("2004-07-09"),
+  location: "Tokyo, Japan",
+  school: "電気通信大学\n情報理工学域 I類\nメディア情報学プログラム",
+};
 
 export function ProfileCard() {
+  const age = calcAge(birthday, new Date());
+  const birthdayStr = `'${birthday.getFullYear().toString().slice(2)} (${age})`;
+
   return (
-    <OverviewCard title="Overview">
+    <OverviewCard title={title}>
       <div className="flex flex-col items-center justify-evenly gap-4 sm:flex-row">
         <Image
           alt=""
@@ -22,25 +35,21 @@ export function ProfileCard() {
         <ul className="flex flex-col gap-1 self-start sm:self-center">
           <li className="flex items-start gap-2">
             <IconSignature className="shrink-0" />
-            伊藤啓太
+            {name}
             <br />
-            Keita ito
+            {name_en}
           </li>
           <li className="flex items-start gap-2">
             <IconCake className="shrink-0" />
-            &apos;04 (20)
+            {birthdayStr}
           </li>
           <li className="flex items-start gap-2">
             <IconMapPin2 className="shrink-0" />
-            Tokyo, Japan
+            {location}
           </li>
-          <li className="flex items-start gap-2">
+          <li className="flex items-start gap-2 whitespace-pre-wrap">
             <IconSchool className="shrink-0" />
-            電気通信大学
-            <br />
-            情報理工学域 I類
-            <br />
-            メディア情報学プログラム
+            {school}
           </li>
         </ul>
       </div>
