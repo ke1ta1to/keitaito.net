@@ -1,3 +1,4 @@
+import { IconTriangleFilled } from "@tabler/icons-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -17,10 +18,10 @@ interface WorksCardProps {
 export function WorksCard({ works }: WorksCardProps) {
   return (
     <OverviewCard title="Works">
-      <div className="space-y-4">
+      <div>
         {works.map((work) => (
           <a
-            className="group flex items-center gap-4"
+            className="group flex items-center gap-4 p-2"
             key={work.title}
             target="_blank"
             rel="noopener noreferrer"
@@ -34,11 +35,10 @@ export function WorksCard({ works }: WorksCardProps) {
               className="aspect-4/3 w-16 shrink-0 rounded object-cover"
             />
             <div className="flex-1">
-              <h3 className="group-hover:underline">
-                {work.title}
-              </h3>
+              <h3 className="group-hover:underline">{work.title}</h3>
               <div className="prose prose-sm">{work.description}</div>
             </div>
+            <IconTriangleFilled className="h-auto w-4 rotate-90" />
           </a>
         ))}
       </div>

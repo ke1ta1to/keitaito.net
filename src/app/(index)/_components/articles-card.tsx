@@ -1,4 +1,4 @@
-import { IconHeart } from "@tabler/icons-react";
+import { IconExternalLink, IconHeart } from "@tabler/icons-react";
 import Image from "next/image";
 
 import { OverviewCard } from "@/components/overview-card";
@@ -52,6 +52,7 @@ export async function ArticlesCard() {
                   </span>
                 </div>
               </div>
+              <IconExternalLink className="ml-auto h-auto w-5" />
             </a>
           </li>
         ))}
