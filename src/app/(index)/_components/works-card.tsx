@@ -1,14 +1,46 @@
+import Image from "next/image";
+import type { ReactNode } from "react";
+
 import { OverviewCard } from "@/components/overview-card";
 
-export function WorksCard() {
+export interface Work {
+  thumbnail: string;
+  title: string;
+  description?: ReactNode;
+  url: string;
+}
+
+interface WorksCardProps {
+  works: Work[];
+}
+
+export function WorksCard({ works }: WorksCardProps) {
   return (
     <OverviewCard title="Works">
-      <div className="prose max-w-none">
-        <h2>My Works</h2>
-        <p>
-          Here are some of the projects I have worked on. You can find the
-          source code and more details on my GitHub profile.
-        </p>
+      <div className="space-y-4">
+        {works.map((work) => (
+          <a
+            className="group flex items-center gap-4"
+            key={work.title}
+            target="_blank"
+            rel="noopener noreferrer"
+            href={work.url}
+          >
+            <Image
+              alt=""
+              src={work.thumbnail}
+              width={400}
+              height={300}
+              className="aspect-4/3 w-16 shrink-0 rounded object-cover"
+            />
+            <div className="flex-1">
+              <h3 className="group-hover:underline">
+                {work.title}
+              </h3>
+              <div className="prose prose-sm">{work.description}</div>
+            </div>
+          </a>
+        ))}
       </div>
     </OverviewCard>
   );
