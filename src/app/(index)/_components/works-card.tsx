@@ -1,4 +1,3 @@
-import { IconTriangleFilled } from "@tabler/icons-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -38,7 +37,6 @@ export function WorksCard({ works }: WorksCardProps) {
               <h3 className="group-hover:underline">{work.title}</h3>
               <div className="prose prose-sm">{work.description}</div>
             </div>
-            <IconTriangleFilled className="h-auto w-4 rotate-90" />
           </a>
         ))}
       </div>

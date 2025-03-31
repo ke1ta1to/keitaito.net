@@ -64,10 +64,14 @@ export async function ArticlesCard() {
 async function getZennArticles(): Promise<Article[]> {
   const url =
     "https://zenn.dev/api/articles?page=1&username=kk79it&count=96&order=latest";
-  const res = await fetch(url).then((res) => res.json());
+  const res = await fetch(url);
+  if (!res.ok) {
+    return [];
+  }
+  const data = await res.json();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (res.articles as any[]).map<Article>((article) => ({
+  return (data.articles as any[]).map<Article>((article) => ({
     title: article.title,
     url: `https://zenn.dev${article.path}`,
     liked_count: article.liked_count,
@@ -79,10 +83,14 @@ async function getZennArticles(): Promise<Article[]> {
 async function getQiitaArticles(): Promise<Article[]> {
   const url =
     "https://qiita.com/api/v2/items?page=1&per_page=100&query=user:ke1ta1to";
-  const res = await fetch(url).then((res) => res.json());
+  const res = await fetch(url);
+  if (!res.ok) {
+    return [];
+  }
+  const data = await res.json();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (res as any[]).map<Article>((article) => ({
+  return (data as any[]).map<Article>((article) => ({
     title: article.title,
     url: article.url,
     liked_count: article.likes_count,

@@ -115,7 +115,7 @@ const works = [
 
 export default async function IndexPage() {
   // 順番を逆にする
-  const sortedActivities = activities.reverse();
+  const sortedActivities = activities.slice().reverse();
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
