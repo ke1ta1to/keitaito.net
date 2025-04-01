@@ -7,6 +7,7 @@ import { WorksCard } from "./_components/works-card";
 
 import { activities } from "@/data/activities";
 import { profile } from "@/data/profile";
+import { skills } from "@/data/skills";
 import { works } from "@/data/works";
 import { fetchArticles } from "@/lib/articles-fetcher";
 
@@ -35,7 +36,7 @@ export default async function IndexPage() {
           <WorksCard works={works} />
         </div>
         <div className="order-5 md:order-none">
-          <SkillsCard />
+          <SkillsCard skills={skills} />
         </div>
       </div>
     </div>

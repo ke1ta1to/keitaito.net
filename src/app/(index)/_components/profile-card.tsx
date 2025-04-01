@@ -26,7 +26,7 @@ export function ProfileCard({ profile }: ProfileProps) {
           src="/icon.webp"
           width={500}
           height={500}
-          className="h-28 w-28 rounded-full"
+          className="h-32 w-32 rounded-full"
         />
         <div className="self-start sm:self-center">
           <ul className="space-y-1">
