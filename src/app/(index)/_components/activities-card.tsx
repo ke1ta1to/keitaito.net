@@ -1,27 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import type { ReactNode } from "react";
 
 import { OverviewCard } from "@/components/overview-card";
-
-export interface Activity {
-  date: string;
-  title: string;
-  description?: ReactNode;
-}
+import type { Activity } from "@/data/activities";
 
 interface ActivitiesCardProps {
   activities: Activity[];
+  maxActivities: number;
 }
 
-export function ActivitiesCard({ activities }: ActivitiesCardProps) {
+export function ActivitiesCard({
+  activities,
+  maxActivities,
+}: ActivitiesCardProps) {
   const [open, setOpen] = useState(false);
   const toggleOpen = () => {
     setOpen((prev) => !prev);
   };
 
-  const maxActivities = 4;
   const displayedActivities = open
     ? activities
     : activities.slice(0, maxActivities + 1);

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { OverviewCard } from "./overview-card";
 
 const meta = {
-  title: "UI/OverviewCard",
+  title: "Component/OverviewCard",
   component: OverviewCard,
 } satisfies Meta<typeof OverviewCard>;
 

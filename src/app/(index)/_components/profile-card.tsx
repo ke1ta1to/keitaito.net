@@ -7,23 +7,19 @@ import {
 import Image from "next/image";
 
 import { OverviewCard } from "@/components/overview-card";
+import type { Profile } from "@/data/profile";
 import { calcAge } from "@/utils/calc-age";
 
-const { title, name, name_en, birthday, location, school } = {
-  title: "Profile",
-  name: "伊藤啓太",
-  name_en: "Keita Ito",
-  birthday: new Date("2004-07-09"),
-  location: "Tokyo, Japan",
-  school: "電気通信大学\n情報理工学域 I類\nメディア情報学プログラム",
-};
+interface ProfileProps {
+  profile: Profile;
+}
 
-export function ProfileCard() {
-  const age = calcAge(birthday, new Date());
-  const birthdayStr = `'${birthday.getFullYear().toString().slice(2)} (${age})`;
+export function ProfileCard({ profile }: ProfileProps) {
+  const age = calcAge(profile.birthday, new Date());
+  const birthdayStr = `'${profile.birthday.getFullYear().toString().slice(2)} (${age})`;
 
   return (
-    <OverviewCard title={title}>
+    <OverviewCard title="Profile">
       <div className="flex flex-col items-center justify-evenly gap-4 sm:flex-row">
         <Image
           alt=""
@@ -36,9 +32,9 @@ export function ProfileCard() {
           <ul className="space-y-1">
             <li className="flex items-start gap-2">
               <IconSignature className="shrink-0" />
-              {name}
+              {profile.name}
               <br />
-              {name_en}
+              {profile.name_en}
             </li>
             <li className="flex items-start gap-2">
               <IconCake className="shrink-0" />
@@ -46,19 +42,19 @@ export function ProfileCard() {
             </li>
             <li className="flex items-start gap-2">
               <IconMapPin2 className="shrink-0" />
-              {location}
+              {profile.location}
             </li>
             <li className="flex items-start gap-2 whitespace-pre-wrap">
               <IconSchool className="shrink-0" />
-              {school}
+              {profile.school}
             </li>
           </ul>
         </div>
       </div>
-      <ul className="mt-1 flex flex-wrap justify-center gap-2">
+      <ul className="mt-2 flex flex-wrap justify-center gap-2">
         <li>
           <a
-            href="https://x.com/ke1ta1to"
+            href={profile.x}
             target="_blank"
             rel="noopener noreferrer"
             className="block p-1"
@@ -74,7 +70,23 @@ export function ProfileCard() {
         </li>
         <li>
           <a
-            href="https://zenn.dev/kk79it"
+            href={profile.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block p-1"
+          >
+            <Image
+              alt=""
+              src="/github.svg"
+              width={150}
+              height={150}
+              className="h-auto w-6"
+            />
+          </a>
+        </li>
+        <li>
+          <a
+            href={profile.zenn}
             target="_blank"
             rel="noopener noreferrer"
             className="block p-1"
@@ -90,7 +102,7 @@ export function ProfileCard() {
         </li>
         <li>
           <a
-            href="https://qiita.com/ke1ta1to"
+            href={profile.qiita}
             target="_blank"
             rel="noopener noreferrer"
             className="block p-1"

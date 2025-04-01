@@ -1,26 +1,15 @@
-import { IconExternalLink, IconHeart } from "@tabler/icons-react";
+import { IconArticle, IconExternalLink, IconHeart } from "@tabler/icons-react";
 import Image from "next/image";
 
 import { OverviewCard } from "@/components/overview-card";
+import type { Article } from "@/lib/articles-fetcher";
 
-export interface Article {
-  title: string;
-  url: string;
-  liked_count: number;
-  published_at: string;
-  source: "zenn" | "qiita";
+interface ArticlesCardProps {
+  articles: Article[];
+  maxArticles: number;
 }
 
-export async function ArticlesCard() {
-  const [zennArticles, qiitaArticles] = await Promise.all([
-    getZennArticles(),
-    getQiitaArticles(),
-  ]);
-  const articles = [...zennArticles, ...qiitaArticles].sort(
-    (a, b) =>
-      new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
-  );
-  const maxArticles = 4;
+export function ArticlesCard({ articles, maxArticles }: ArticlesCardProps) {
   const displayedArticles = articles.slice(0, maxArticles + 1);
 
   return (
@@ -34,13 +23,15 @@ export async function ArticlesCard() {
               rel="noopener noreferrer"
               className="group flex items-center p-2"
             >
-              {
+              {article.source ? (
                 {
                   zenn: <ZennIcon />,
                   qiita: <QiitaIcon />,
                 }[article.source]
-              }
-              <div className="ml-2">
+              ) : (
+                <ArticleIcon />
+              )}
+              <div className="ml-4">
                 <div className="group-hover:underline">{article.title}</div>
                 <div className="text-default-600 flex text-sm">
                   <span className="w-20">
@@ -59,44 +50,6 @@ export async function ArticlesCard() {
       </ul>
     </OverviewCard>
   );
-}
-
-async function getZennArticles(): Promise<Article[]> {
-  const url =
-    "https://zenn.dev/api/articles?page=1&username=kk79it&count=96&order=latest";
-  const res = await fetch(url);
-  if (!res.ok) {
-    return [];
-  }
-  const data = await res.json();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data.articles as any[]).map<Article>((article) => ({
-    title: article.title,
-    url: `https://zenn.dev${article.path}`,
-    liked_count: article.liked_count,
-    published_at: article.published_at,
-    source: "zenn",
-  }));
-}
-
-async function getQiitaArticles(): Promise<Article[]> {
-  const url =
-    "https://qiita.com/api/v2/items?page=1&per_page=100&query=user:ke1ta1to";
-  const res = await fetch(url);
-  if (!res.ok) {
-    return [];
-  }
-  const data = await res.json();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map<Article>((article) => ({
-    title: article.title,
-    url: article.url,
-    liked_count: article.likes_count,
-    published_at: article.created_at,
-    source: "qiita",
-  }));
 }
 
 function ZennIcon() {
@@ -121,4 +74,8 @@ function QiitaIcon() {
       className="h-auto w-6 flex-shrink-0"
     />
   );
+}
+
+function ArticleIcon() {
+  return <IconArticle className="h-auto w-6 flex-shrink-0" />;
 }

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ActivitiesCard } from "./activities-card";
 
 const meta = {
-  title: "UI/ActivitiesCard",
+  title: "Component/ActivitiesCard",
   component: ActivitiesCard,
 } satisfies Meta<typeof ActivitiesCard>;
 
@@ -12,6 +12,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
+    maxActivities: 4,
     activities: [
       {
         date: "Aug. 2000",
