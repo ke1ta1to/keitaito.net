@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { OverviewCard } from "@/components/overview-card";
@@ -19,11 +20,9 @@ export function WorksCard({ works }: WorksCardProps) {
     <OverviewCard title="Works">
       <div>
         {works.map((work) => (
-          <a
+          <Link
             className="group flex items-center gap-4 p-2"
             key={work.title}
-            target="_blank"
-            rel="noopener noreferrer"
             href={work.url}
           >
             <Image
@@ -37,7 +36,7 @@ export function WorksCard({ works }: WorksCardProps) {
               <h3 className="group-hover:underline">{work.title}</h3>
               <div className="prose prose-sm">{work.description}</div>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </OverviewCard>
