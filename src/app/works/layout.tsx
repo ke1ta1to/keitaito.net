@@ -3,5 +3,5 @@ export default function WorksLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="prose">{children}</div>;
+  return <div className="prose prose-img:mx-auto">{children}</div>;
 }
