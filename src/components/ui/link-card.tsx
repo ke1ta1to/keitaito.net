@@ -11,16 +11,16 @@ export async function LinkCard({ href }: LinkCardProps) {
   const description =
     doc.querySelector("meta[name='description']")?.getAttribute("content") ||
     "No description found";
-  const image =
-    doc.querySelector("meta[property='og:image']")?.getAttribute("content") ||
-    "No image found";
+  const image = doc
+    .querySelector("meta[property='og:image']")
+    ?.getAttribute("content");
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="not-prose my-8 flex overflow-hidden rounded bg-gray-50"
+      className="not-prose my-8 flex h-32 overflow-hidden rounded bg-gray-50"
     >
       <div className="flex flex-1 flex-col overflow-hidden p-4 whitespace-nowrap">
         <div className="overflow-hidden font-bold text-ellipsis">{title}</div>
@@ -33,7 +33,7 @@ export async function LinkCard({ href }: LinkCardProps) {
       </div>
       {image && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={image} alt={title} className="h-32 w-auto shrink-0" />
+        <img src={image} alt={title} className="h-full w-auto shrink-0" />
       )}
     </a>
   );
