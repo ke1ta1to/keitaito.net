@@ -31,7 +31,7 @@ export async function LinkCard({ href }: LinkCardProps) {
           {href}
         </div>
       </div>
-      {image && (
+      {image?.startsWith("http") && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={image} alt={title} className="h-full w-auto shrink-0" />
       )}
