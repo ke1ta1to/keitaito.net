@@ -29,7 +29,7 @@ const eslintConfig = [
         { prefer: "type-imports" },
       ],
     },
-    ignorePatterns: [".next/"],
+    ignorePatterns: [".next/", "infra/"],
   }),
 ];
 
