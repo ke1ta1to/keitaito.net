@@ -1,8 +1,8 @@
 import { metadata as chofusaiMetadata } from "../works/chofusai/_metadata";
 import { metadata as moMetadata } from "../works/mo/_metadata";
-import { metadata as portfolioMetadata } from "../works/portfolio/_metadata";
+// import { metadata as portfolioMetadata } from "../works/portfolio/_metadata";
 import { metadata as risaProMetadata } from "../works/risa-pro/_metadata";
-import { metadata as shokujinWikiMetadata } from "../works/shokujin-wiki/_metadata";
+// import { metadata as shokujinWikiMetadata } from "../works/shokujin-wiki/_metadata";
 import { metadata as uec3dMapMetadata } from "../works/uec-3d-map/_metadata";
 
 import { ActivitiesCard } from "./_components/activities-card";
@@ -22,11 +22,11 @@ export default async function IndexPage() {
   const articles = await fetchArticles();
 
   const works = [
-    portfolioMetadata,
+    // portfolioMetadata,
     chofusaiMetadata,
     moMetadata,
     risaProMetadata,
-    shokujinWikiMetadata,
+    // shokujinWikiMetadata,
     uec3dMapMetadata,
   ];
 
