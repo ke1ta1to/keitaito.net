@@ -4,6 +4,8 @@ import { AppLayout } from "@/components/app-layout";
 
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="ja" className="scroll-smooth">
