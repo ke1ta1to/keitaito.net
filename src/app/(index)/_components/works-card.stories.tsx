@@ -15,21 +15,30 @@ export const Primary: Story = {
     works: [
       {
         title: "My First Work",
-        thumbnail: "https://picsum.photos/800/600",
+        thumbnail: {
+          alt: "My First Work",
+          src: "https://picsum.photos/800/600",
+        },
         description:
           "This is my first work. It is a simple project that does nothing.",
         url: "https://example.com",
       },
       {
         title: "My Second Work",
-        thumbnail: "https://picsum.photos/800/600",
+        thumbnail: {
+          alt: "My Second Work",
+          src: "https://picsum.photos/800/600",
+        },
         description:
           "This is my second work. It is a simple project that does nothing.",
         url: "https://example.com",
       },
       {
         title: "My Third Work",
-        thumbnail: "https://picsum.photos/800/600",
+        thumbnail: {
+          alt: "My Third Work",
+          src: "https://picsum.photos/800/600",
+        },
         description:
           "This is my third work. It is a simple project that does nothing.",
         url: "https://example.com",
