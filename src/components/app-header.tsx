@@ -10,7 +10,7 @@ const links = [
 
 export function AppHeader() {
   return (
-    <header className="sticky top-0 border-t-4 border-t-teal-300 bg-white pt-3 pb-4 text-gray-900">
+    <header className="sticky top-0 z-10 border-t-4 border-t-teal-300 bg-white pt-3 pb-4 text-gray-900">
       <div className="mx-auto flex max-w-7xl items-center px-4">
         <NextLink href="/" className="shrink-0">
           <Image

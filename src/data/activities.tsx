@@ -77,8 +77,20 @@ export const activities = [
     ),
   },
   {
-    date: "",
-    title: "",
-    description: <p></p>,
+    date: "Mar. 2025",
+    title: "UEC Bug Bountyにて特別賞を受賞",
+    description: (
+      <p>
+        学内情報セキュリティ検査コンテスト「
+        <a
+          href="https://www.uec.ac.jp/news/announcement/2025/20250407_6895.html"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          UEC Bug Bounty 2024-2025
+        </a>
+        」において、バグバウンティ・プラットフォーム「IssueHunt」特別賞を受賞
+      </p>
+    ),
   },
 ] satisfies Activity[];

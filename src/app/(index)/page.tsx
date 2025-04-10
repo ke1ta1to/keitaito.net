@@ -1,3 +1,10 @@
+import { metadata as chofusaiMetadata } from "../works/chofusai/_metadata";
+import { metadata as moMetadata } from "../works/mo/_metadata";
+// import { metadata as portfolioMetadata } from "../works/portfolio/_metadata";
+import { metadata as risaProMetadata } from "../works/risa-pro/_metadata";
+// import { metadata as shokujinWikiMetadata } from "../works/shokujin-wiki/_metadata";
+import { metadata as uec3dMapMetadata } from "../works/uec-3d-map/_metadata";
+
 import { ActivitiesCard } from "./_components/activities-card";
 import { ArticlesCard } from "./_components/articles-card";
 import { ContactCard } from "./_components/contact-card";
@@ -8,12 +15,20 @@ import { WorksCard } from "./_components/works-card";
 import { activities } from "@/data/activities";
 import { profile } from "@/data/profile";
 import { skills } from "@/data/skills";
-import { works } from "@/data/works";
 import { fetchArticles } from "@/lib/articles-fetcher";
 
 export default async function IndexPage() {
   const sortedActivities = activities.slice().reverse(); // 順番を逆にする
   const articles = await fetchArticles();
+
+  const works = [
+    // portfolioMetadata,
+    chofusaiMetadata,
+    moMetadata,
+    risaProMetadata,
+    // shokujinWikiMetadata,
+    uec3dMapMetadata,
+  ];
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
