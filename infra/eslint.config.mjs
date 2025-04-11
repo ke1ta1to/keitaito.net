@@ -1,17 +1,13 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import eslint from "@eslint/js";
+import importPlugin from "eslint-plugin-import";
+import tseslint from "typescript-eslint";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-const eslintConfig = [
-  ...compat.config({
-    extends: [
-      "next/core-web-vitals",
-      "next/typescript",
-      "plugin:storybook/recommended",
-      "prettier",
-    ],
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
+  importPlugin.flatConfigs.recommended,
+  {
     rules: {
       "import/order": [
         "error",
@@ -29,8 +25,10 @@ const eslintConfig = [
         { prefer: "type-imports" },
       ],
     },
-    ignorePatterns: [".next/", "infra/"],
-  }),
-];
-
-export default eslintConfig;
+    settings: {
+      "import/resolver": {
+        typescript: [],
+      },
+    },
+  },
+);
