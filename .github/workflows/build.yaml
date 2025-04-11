@@ -9,7 +9,7 @@ on:
       - main
 
 permissions:
-  packages: write
+  id-token: write
 
 jobs:
   build:

@@ -8,7 +8,7 @@ export class PortfolioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const githubRepositoryName = "keitaito.net";
+    const githubRepositoryName = "ke1ta1to/keitaito.net";
     const roleName = "PortfolioNextjsRole";
 
     const repository = new ecr.Repository(this, "PortfolioRepository", {
@@ -59,6 +59,10 @@ export class PortfolioStack extends cdk.Stack {
     new cdk.CfnOutput(this, "BucketArn", {
       exportName: "BucketArn",
       value: bucket.bucketArn,
+    });
+
+    new cdk.CfnOutput(this, "RoleArn", {
+      value: role.roleArn,
     });
   }
 }
