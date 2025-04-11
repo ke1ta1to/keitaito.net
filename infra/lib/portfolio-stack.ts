@@ -1,17 +1,32 @@
 import * as cdk from "aws-cdk-lib";
+import * as ecr from "aws-cdk-lib/aws-ecr";
+import * as s3 from "aws-cdk-lib/aws-s3";
 import type { Construct } from "constructs";
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class PortfolioStack extends cdk.Stack {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const repository = new ecr.Repository(this, "PortfolioRepository", {
+      repositoryName: "portfolio-nextjs",
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      emptyOnDelete: true,
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'PortfolioQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const bucket = new s3.Bucket(this, "PortfolioBucket", {
+      bucketName: `portfolio-nextjs-static-${this.account}`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    new cdk.CfnOutput(this, "RepositoryArn", {
+      exportName: "RepositoryArn",
+      value: repository.repositoryArn,
+    });
+
+    new cdk.CfnOutput(this, "BucketArn", {
+      exportName: "BucketArn",
+      value: bucket.bucketArn,
+    });
   }
 }
