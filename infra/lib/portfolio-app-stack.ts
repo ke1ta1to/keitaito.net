@@ -51,9 +51,9 @@ export class PortfolioAppStack extends cdk.Stack {
       "PortfolioBucket",
       cdk.Fn.importValue("BucketArn"),
     );
-    distribution.addBehavior(
-      "/_next/static/*",
-      cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
-    );
+    // distribution.addBehavior(
+    //   "/_next/static/*",
+    //   cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
+    // );
   }
 }
