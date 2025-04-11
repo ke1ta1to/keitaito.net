@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-slim AS deps
+FROM node:23-slim AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:22-slim AS builder
+FROM node:23-slim AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -14,10 +14,11 @@ COPY . .
 
 RUN npm run build
 
-FROM node:lts AS runner
+FROM node:23-slim AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.0 /lambda-adapter /opt/extensions/lambda-adapter
+ENV PORT=3000 NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -26,6 +27,8 @@ COPY --from=builder /app/public ./public
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+RUN ln -s /tmp/cache ./.next/cache
 
 USER nextjs
 
