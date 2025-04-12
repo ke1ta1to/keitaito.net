@@ -96,7 +96,7 @@ export class PortfolioAppStack extends cdk.Stack {
       value: `aws lambda update-function-code --function-name ${lambdaFunction.functionName} --image-uri ${this.account}.dkr.ecr.${this.region}.amazonaws.com/portfolio-nextjs:latest`,
     });
 
-    // Remove CloudFront distribution cache
+    // Invalidate CloudFront distribution cache
     new cdk.CfnOutput(this, "InvalidateCacheCommand", {
       value: `aws cloudfront create-invalidation --distribution-id ${distribution.distributionId} --paths "/*"`,
     });
