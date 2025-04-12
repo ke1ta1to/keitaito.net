@@ -17,6 +17,12 @@ export class PortfolioStack extends cdk.Stack {
       emptyOnDelete: true,
     });
 
+    const bucket = new s3.Bucket(this, "PortfolioBucket", {
+      bucketName: `portfolio-nextjs-static-${this.account}`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
     const role = new iam.Role(this, "PortfolioNextjsRole", {
       assumedBy: new iam.FederatedPrincipal(
         `arn:aws:iam::${this.account}:oidc-provider/token.actions.githubusercontent.com`,
@@ -33,23 +39,27 @@ export class PortfolioStack extends cdk.Stack {
       roleName: roleName,
     });
     role.addToPolicy(
-      new cdk.aws_iam.PolicyStatement({
+      new iam.PolicyStatement({
         actions: ["ecr:GetAuthorizationToken"],
         resources: ["*"],
       }),
     );
+
+    // ecrにpushするため
     role.addToPolicy(
-      new cdk.aws_iam.PolicyStatement({
+      new iam.PolicyStatement({
         actions: ["ecr:*"],
         resources: [repository.repositoryArn],
       }),
     );
 
-    const bucket = new s3.Bucket(this, "PortfolioBucket", {
-      bucketName: `portfolio-nextjs-static-${this.account}`,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
+    // s3にアップロードするため
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ["s3:*"],
+        resources: [bucket.bucketArn, `${bucket.bucketArn}/*`],
+      }),
+    );
 
     new cdk.CfnOutput(this, "RepositoryArn", {
       exportName: "RepositoryArn",

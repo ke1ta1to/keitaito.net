@@ -28,27 +28,36 @@ export class PortfolioAppStack extends cdk.Stack {
 
     const functionUrl = lambdaFunction.addFunctionUrl({});
 
-    new cloudfront.Distribution(this, "PortfolioDistribution", {
-      defaultBehavior: {
-        origin:
-          cloudfrontOrigins.FunctionUrlOrigin.withOriginAccessControl(
-            functionUrl,
-          ),
-        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-        originRequestPolicy:
-          cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+    const distribution = new cloudfront.Distribution(
+      this,
+      "PortfolioDistribution",
+      {
+        defaultBehavior: {
+          origin:
+            cloudfrontOrigins.FunctionUrlOrigin.withOriginAccessControl(
+              functionUrl,
+            ),
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+          originRequestPolicy:
+            cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        },
       },
-    });
+    );
 
     const bucket = s3.Bucket.fromBucketArn(
       this,
       "PortfolioBucket",
       cdk.Fn.importValue("BucketArn"),
     );
-    // distribution.addBehavior(
-    //   "/_next/static/*",
-    //   cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
-    // );
+    distribution.addBehavior(
+      "/_next/static/*",
+      cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
+      {
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+      },
+    );
   }
 }
