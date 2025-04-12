@@ -87,16 +87,18 @@ export class PortfolioAppStack extends cdk.Stack {
       cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
       {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
       },
     );
 
-    new cdk.CfnOutput(this, "FunctionName", {
-      value: lambdaFunction.functionName,
+    // Update the function code
+    new cdk.CfnOutput(this, "UpdateFunctionCodeCommand", {
+      value: `aws lambda update-function-code --function-name ${lambdaFunction.functionName} --image-uri ${this.account}.dkr.ecr.${this.region}.amazonaws.com/portfolio-nextjs:latest`,
     });
 
-    new cdk.CfnOutput(this, "FunctionImageUri", {
-      value: `${this.account}.dkr.ecr.${this.region}.amazonaws.com/portfolio-nextjs:latest`,
+    // Remove CloudFront distribution cache
+    new cdk.CfnOutput(this, "InvalidateCacheCommand", {
+      value: `aws cloudfront create-invalidation --distribution-id ${distribution.distributionId} --paths "/*"`,
     });
   }
 }
