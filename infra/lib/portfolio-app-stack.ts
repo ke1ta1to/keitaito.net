@@ -59,5 +59,13 @@ export class PortfolioAppStack extends cdk.Stack {
         cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
       },
     );
+
+    new cdk.CfnOutput(this, "FunctionName", {
+      value: lambdaFunction.functionName,
+    });
+
+    new cdk.CfnOutput(this, "FunctionImageUri", {
+      value: `${this.account}.dkr.ecr.${this.region}.amazonaws.com/portfolio-nextjs:latest`,
+    });
   }
 }
