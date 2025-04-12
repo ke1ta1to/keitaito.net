@@ -23,6 +23,8 @@ export class PortfolioAppStack extends cdk.Stack {
             tagOrDigest: "latest",
           },
         ),
+        memorySize: 1024,
+        timeout: cdk.Duration.seconds(30),
       },
     );
 
