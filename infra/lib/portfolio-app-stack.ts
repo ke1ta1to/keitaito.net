@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfrontOrigins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as ecr from "aws-cdk-lib/aws-ecr";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import type { Construct } from "constructs";
@@ -25,6 +26,21 @@ export class PortfolioAppStack extends cdk.Stack {
         ),
       },
     );
+
+    const role = iam.Role.fromRoleArn(
+      this,
+      "PortfolioNextjsRole",
+      cdk.Fn.importValue("RoleArn"),
+    );
+
+    if (iam.Role.isRole(role)) {
+      role.addToPolicy(
+        new iam.PolicyStatement({
+          actions: ["lambda:UpdateFunctionCode"],
+          resources: [lambdaFunction.functionArn],
+        }),
+      );
+    }
 
     const functionUrl = lambdaFunction.addFunctionUrl({});
 

@@ -73,6 +73,7 @@ export class PortfolioStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "RoleArn", {
       value: role.roleArn,
+      exportName: "RoleArn",
     });
   }
 }
