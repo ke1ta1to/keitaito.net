@@ -23,6 +23,14 @@ export class PortfolioStack extends cdk.Stack {
       autoDeleteObjects: true,
     });
 
+    bucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        principals: [new iam.ServicePrincipal("cloudfront.amazonaws.com")],
+        actions: ["s3:GetObject"],
+        resources: [bucket.arnForObjects("*")],
+      }),
+    );
+
     const role = new iam.Role(this, "PortfolioNextjsRole", {
       assumedBy: new iam.FederatedPrincipal(
         `arn:aws:iam::${this.account}:oidc-provider/token.actions.githubusercontent.com`,
