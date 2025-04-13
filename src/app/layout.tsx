@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
   description: "伊藤啓太のポートフォリオサイト",
   alternates: {
-    canonical: new URL("/", getEnv().customUrl).toString(),
+    canonical: new URL("/", getEnv().customUrl),
   },
 };
 
