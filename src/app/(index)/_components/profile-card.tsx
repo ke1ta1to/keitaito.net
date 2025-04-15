@@ -23,7 +23,7 @@ export function ProfileCard({ profile }: ProfileProps) {
       <div className="flex flex-col items-center justify-evenly gap-4 sm:flex-row">
         <Image
           alt=""
-          src="/icon.webp"
+          src="/icon_sm.webp"
           width={500}
           height={500}
           className="h-32 w-32 rounded-full"
