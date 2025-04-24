@@ -1,0 +1,50 @@
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+      - uses: docker/metadata-action@v5
+        id: metadata
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}
+          tags: |
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,latest
+      - uses: docker/build-push-action@v6
+        with:
+          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          #   provenance: false
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          file: packages/www/Dockerfile
+          context: .
+      # # Next.jsのstatic部分を抽出する
+      # - run: docker create --name extract-static $(echo "${{ steps.metadata.outputs.tags }}" | head -n 1)
+      # - run: |
+      #     docker cp extract-static:/app/.next/static ./next-artifact-static
+      # - run: |
+      #     docker rm extract-static
+      # - if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      #   run: |
+      #     aws s3 sync ./next-artifact-static s3://${{ secrets.S3_BUCKET_NAME }}/_next/static --delete
