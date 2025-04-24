@@ -1,3 +1,3 @@
 export default async function IndexPage() {
-  return "Hello World";
+  return <p className="text-center">Welcome to the Index Page!</p>;
 }

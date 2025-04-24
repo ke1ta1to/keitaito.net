@@ -2,7 +2,10 @@
   "name": "keitaito.net",
   "version": "1.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ke1ta1to/keitaito.net.git"
@@ -18,6 +21,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@types/node": "^22.14.1",
     "eslint": "^9.25.1",
+    "prettier": "^3.5.3",
     "typescript": "^5.8.3"
   }
 }
