@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/ke1ta1to/keitaito.net#readme",
   "workspaces": [
-    "package/*"
+    "packages/*"
   ],
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
