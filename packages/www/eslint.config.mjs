@@ -6,7 +6,12 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.config({
-    extends: ["next/core-web-vitals", "next/typescript", "plugin:storybook/recommended","prettier"],
+    extends: [
+      "next/core-web-vitals",
+      "next/typescript",
+      "plugin:storybook/recommended",
+      "prettier",
+    ],
     rules: {
       "import/order": [
         "error",
