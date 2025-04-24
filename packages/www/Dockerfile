@@ -1,18 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM node:23-slim AS deps
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
 FROM node:23-slim AS builder
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-RUN npm run build
+RUN npm ci
+RUN cd packages/www && npm run build
 
 FROM node:23-slim AS runner
 WORKDIR /app
@@ -23,18 +16,17 @@ ENV PORT=3000 NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/packages/www/public ./public
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/packages/www/.next/standalone/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/packages/www/.next/standalone/packages/www ./
+COPY --from=builder --chown=nextjs:nodejs /app/packages/www/.next/static ./.next/static
 
 RUN ln -s /tmp/cache ./.next/cache
 
 USER nextjs
 
 EXPOSE 3000
-
-ENV PORT=3000
 
 ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]

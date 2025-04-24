@@ -37,12 +37,14 @@ jobs:
           #   provenance: false
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
-      # Next.jsのstatic部分を抽出する
-      - run: docker create --name extract-static $(echo "${{ steps.metadata.outputs.tags }}" | head -n 1)
-      - run: |
-          docker cp extract-static:/app/.next/static ./next-artifact-static
-      - run: |
-          docker rm extract-static
-      - if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-          aws s3 sync ./next-artifact-static s3://${{ secrets.S3_BUCKET_NAME }}/_next/static --delete
+          file: packages/www/Dockerfile
+          context: .
+      # # Next.jsのstatic部分を抽出する
+      # - run: docker create --name extract-static $(echo "${{ steps.metadata.outputs.tags }}" | head -n 1)
+      # - run: |
+      #     docker cp extract-static:/app/.next/static ./next-artifact-static
+      # - run: |
+      #     docker rm extract-static
+      # - if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      #   run: |
+      #     aws s3 sync ./next-artifact-static s3://${{ secrets.S3_BUCKET_NAME }}/_next/static --delete

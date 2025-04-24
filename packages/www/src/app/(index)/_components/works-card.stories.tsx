@@ -18,6 +18,8 @@ export const Primary: Story = {
         thumbnail: {
           alt: "My First Work",
           src: "https://picsum.photos/800/600",
+          width: 800,
+          height: 600,
         },
         description:
           "This is my first work. It is a simple project that does nothing.",
@@ -28,6 +30,8 @@ export const Primary: Story = {
         thumbnail: {
           alt: "My Second Work",
           src: "https://picsum.photos/800/600",
+          width: 800,
+          height: 600,
         },
         description:
           "This is my second work. It is a simple project that does nothing.",
@@ -38,6 +42,8 @@ export const Primary: Story = {
         thumbnail: {
           alt: "My Third Work",
           src: "https://picsum.photos/800/600",
+          width: 800,
+          height: 600,
         },
         description:
           "This is my third work. It is a simple project that does nothing.",

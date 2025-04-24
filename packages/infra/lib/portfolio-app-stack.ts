@@ -77,19 +77,20 @@ export class PortfolioAppStack extends cdk.Stack {
       ),
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const bucket = s3.Bucket.fromBucketArn(
       this,
       "PortfolioBucket",
       cdk.Fn.importValue("BucketArn"),
     );
-    distribution.addBehavior(
-      "/_next/static/*",
-      cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
-      {
-        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-      },
-    );
+    // distribution.addBehavior(
+    //   "/_next/static/*",
+    //   cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
+    //   {
+    //     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    //     cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+    //   },
+    // );
 
     // Update the function code
     new cdk.CfnOutput(this, "UpdateFunctionCodeCommand", {
