@@ -6,7 +6,6 @@ import * as ecr from "aws-cdk-lib/aws-ecr";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import * as route53targets from "aws-cdk-lib/aws-route53-targets";
-import * as s3 from "aws-cdk-lib/aws-s3";
 import type { Construct } from "constructs";
 
 interface PortfolioAppStackProps extends cdk.StackProps {
@@ -43,7 +42,7 @@ export class PortfolioAppStack extends cdk.Stack {
       },
     );
 
-    const functionUrl = lambdaFunction.addFunctionUrl({});
+    const functionUrl = lambdaFunction.addFunctionUrl();
 
     const distribution = new cloudfront.Distribution(
       this,
@@ -76,21 +75,6 @@ export class PortfolioAppStack extends cdk.Stack {
         new route53targets.CloudFrontTarget(distribution),
       ),
     });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const bucket = s3.Bucket.fromBucketArn(
-      this,
-      "PortfolioBucket",
-      cdk.Fn.importValue("BucketArn"),
-    );
-    // distribution.addBehavior(
-    //   "/_next/static/*",
-    //   cloudfrontOrigins.S3BucketOrigin.withOriginAccessControl(bucket),
-    //   {
-    //     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    //     cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-    //   },
-    // );
 
     // Update the function code
     new cdk.CfnOutput(this, "UpdateFunctionCodeCommand", {
