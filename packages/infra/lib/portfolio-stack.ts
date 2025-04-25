@@ -1,7 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import * as ecr from "aws-cdk-lib/aws-ecr";
 import * as iam from "aws-cdk-lib/aws-iam";
-import * as s3 from "aws-cdk-lib/aws-s3";
 import type { Construct } from "constructs";
 
 export class PortfolioStack extends cdk.Stack {
@@ -16,20 +15,6 @@ export class PortfolioStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       emptyOnDelete: true,
     });
-
-    const bucket = new s3.Bucket(this, "PortfolioBucket", {
-      bucketName: `portfolio-nextjs-static-${this.account}`,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-
-    bucket.addToResourcePolicy(
-      new iam.PolicyStatement({
-        principals: [new iam.ServicePrincipal("cloudfront.amazonaws.com")],
-        actions: ["s3:GetObject"],
-        resources: [bucket.arnForObjects("*")],
-      }),
-    );
 
     const role = new iam.Role(this, "PortfolioNextjsRole", {
       assumedBy: new iam.FederatedPrincipal(
@@ -61,22 +46,9 @@ export class PortfolioStack extends cdk.Stack {
       }),
     );
 
-    // s3にアップロードするため
-    role.addToPolicy(
-      new iam.PolicyStatement({
-        actions: ["s3:*"],
-        resources: [bucket.bucketArn, `${bucket.bucketArn}/*`],
-      }),
-    );
-
     new cdk.CfnOutput(this, "RepositoryArn", {
       exportName: "RepositoryArn",
       value: repository.repositoryArn,
-    });
-
-    new cdk.CfnOutput(this, "BucketArn", {
-      exportName: "BucketArn",
-      value: bucket.bucketArn,
     });
 
     new cdk.CfnOutput(this, "RoleArn", {
