@@ -11,8 +11,14 @@ export const metadata: Metadata = {
     template: "%s | Keita Ito",
   },
   description: "伊藤啓太のポートフォリオサイト",
+  keywords: ["ポートフォリオ", "エンジニア", "伊藤啓太", "Keita Ito"],
+  creator: "Keita Ito",
   alternates: {
-    canonical: new URL("/", getEnv().customUrl),
+    canonical: "/",
+  },
+  metadataBase: new URL("/", getEnv().customUrl),
+  twitter: {
+    card: "summary",
   },
 };
 

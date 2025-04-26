@@ -10,7 +10,7 @@ export function JsonLd() {
       "@type": "Person",
       name: "伊藤啓太",
       alternateName: "Keita Ito",
-      image: [new URL("/icon_full.webp", getEnv().customUrl).toString()],
+      image: [new URL("/icon_full.jpg", getEnv().customUrl).toString()],
     },
     dateCreated: new Date("2024-01-01").toISOString(),
     dateModified: new Date().toISOString(),
