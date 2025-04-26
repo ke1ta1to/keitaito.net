@@ -17,9 +17,6 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   metadataBase: new URL("/", getEnv().customUrl),
-  twitter: {
-    card: "summary",
-  },
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
