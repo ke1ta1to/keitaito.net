@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="ja" className="scroll-smooth">
-      <body className="text-gray-700">
+      <body className="bg-white text-gray-700">
         <AppLayout>{children}</AppLayout>
       </body>
     </html>
