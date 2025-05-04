@@ -12,10 +12,14 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.3.1",
+    "@prisma/client": "^6.7.0",
     "@tabler/icons-react": "^3.31.0",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/mdx": "^2.0.13",
@@ -53,7 +57,9 @@
     "eslint-plugin-storybook": "^0.12.0",
     "jest-environment-jsdom": "^29.7.0",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "prisma": "^6.7.0",
     "schema-dts": "^1.1.5",
-    "storybook": "^8.6.12"
+    "storybook": "^8.6.12",
+    "tsx": "^4.19.4"
   }
 }
