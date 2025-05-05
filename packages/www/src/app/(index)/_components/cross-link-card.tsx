@@ -1,4 +1,4 @@
-import { IconExternalLink } from "@tabler/icons-react";
+import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 
 import prisma from "../../../../lib/prisma";
 
@@ -43,6 +43,21 @@ export async function CrossLinkCard() {
           </li>
         ))}
       </ul>
+
+      <div className="mt-3 border-t border-gray-100 pt-3">
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1 text-gray-500">
+            <IconInfoCircle className="h-4 w-4 text-gray-400" />
+            <span>相互リンクの申請について</span>
+          </div>
+          <button
+            className="cursor-pointer rounded bg-gray-100 px-2 py-1 text-gray-600 hover:bg-gray-200"
+            type="button"
+          >
+            掲載申請
+          </button>
+        </div>
+      </div>
     </OverviewCard>
   );
 }
