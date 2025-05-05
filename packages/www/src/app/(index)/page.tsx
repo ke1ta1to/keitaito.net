@@ -1,6 +1,7 @@
 import { ActivitiesCard } from "./_components/activities-card";
 import { ArticlesCard } from "./_components/articles-card";
 import { ContactCard } from "./_components/contact-card";
+import { CrossLinkCard } from "./_components/cross-link-card";
 import { JsonLd } from "./_components/json-lg";
 import { ProfileCard } from "./_components/profile-card";
 import { SkillsCard } from "./_components/skills-card";
@@ -29,6 +30,9 @@ export default async function IndexPage() {
             <ActivitiesCard activities={sortedActivities} maxActivities={4} />
           </div>
           <div className="order-6 md:order-none">
+            <CrossLinkCard />
+          </div>
+          <div className="order-7 md:order-none">
             <ContactCard />
           </div>
         </div>
