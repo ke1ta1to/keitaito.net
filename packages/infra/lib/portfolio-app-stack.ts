@@ -42,6 +42,10 @@ export class PortfolioAppStack extends cdk.Stack {
       },
     );
 
+    lambdaFunction.addAlias("live", {
+      provisionedConcurrentExecutions: 1,
+    });
+
     const functionUrl = lambdaFunction.addFunctionUrl();
 
     const distribution = new cloudfront.Distribution(
