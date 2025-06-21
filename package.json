@@ -1,0 +1,15 @@
+{
+  "name": "keitaito.net",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ke1ta1to/keitaito.net.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ke1ta1to/keitaito.net/issues"
+  },
+  "homepage": "https://github.com/ke1ta1to/keitaito.net#readme",
+  "packageManager": "pnpm@10.12.1"
+}
