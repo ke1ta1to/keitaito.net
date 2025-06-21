@@ -1,7 +1,3 @@
 export default async function IndexPage() {
-  return (
-    <div>
-      <h1>Welcome to the Index Page</h1>
-    </div>
-  );
+  return <h1 className="text-3xl font-bold underline">Hello world!</h1>;
 }
