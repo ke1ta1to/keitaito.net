@@ -2,7 +2,9 @@
   "name": "keitaito.net",
   "version": "1.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "web": "pnpm -F 'web'"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ke1ta1to/keitaito.net.git"
