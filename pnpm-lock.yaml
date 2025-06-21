@@ -6,40 +6,53 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
 
   apps/web:
     dependencies:
       next:
-        specifier: 15.3.4
+        specifier: ^15.3.4
         version: 15.3.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       react-dom:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
     devDependencies:
       '@eslint/eslintrc':
-        specifier: ^3
+        specifier: ^3.3.1
         version: 3.3.1
+      '@next/eslint-plugin-next':
+        specifier: ^15.3.4
+        version: 15.3.4
       '@types/node':
-        specifier: ^20
-        version: 20.19.1
+        specifier: ^24.0.3
+        version: 24.0.3
       '@types/react':
-        specifier: ^19
+        specifier: ^19.1.8
         version: 19.1.8
       '@types/react-dom':
-        specifier: ^19
+        specifier: ^19.1.6
         version: 19.1.6(@types/react@19.1.8)
       eslint:
-        specifier: ^9
+        specifier: ^9.29.0
         version: 9.29.0
       eslint-config-next:
-        specifier: 15.3.4
+        specifier: ^15.3.4
         version: 15.3.4(eslint@9.29.0)(typescript@5.8.3)
+      eslint-config-prettier:
+        specifier: ^10.1.5
+        version: 10.1.5(eslint@9.29.0)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.29.0)
       typescript:
-        specifier: ^5
+        specifier: ^5.8.3
         version: 5.8.3
 
 packages:
@@ -328,8 +341,8 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/node@20.19.1':
-    resolution: {integrity: sha512-jJD50LtlD2dodAEO653i3YF04NWak6jN3ky+Ri3Em3mGR39/glWiboM/IePaRbgwSfqM1TpGXfAg8ohn/4dTgA==}
+  '@types/node@24.0.3':
+    resolution: {integrity: sha512-R4I/kzCYAdRLzfiCabn9hxWfbuHS573x+r0dJMkkzThEa7pbrcDWK+9zu3e7aBOouf+rQAciqPFMnxwr0aWgKg==}
 
   '@types/react-dom@19.1.6':
     resolution: {integrity: sha512-4hOiT/dwO8Ko0gV1m/TJZYk3y0KBnY9vzDh7W+DH17b2HFSOGgdj33dhihPeuy3l0q23+4e+hoXHV6hCC4dCXw==}
@@ -737,6 +750,12 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  eslint-config-prettier@10.1.5:
+    resolution: {integrity: sha512-zc1UmCpNltmVY34vuLRV61r1K27sWuX39E+uyUnY8xS2Bex88VV9cugG+UZbRSRGtGyFboj+D8JODyme1plMpw==}
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
 
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
@@ -1301,6 +1320,11 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
+  prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
@@ -1537,8 +1561,8 @@ packages:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+  undici-types@7.8.0:
+    resolution: {integrity: sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==}
 
   unrs-resolver@1.9.1:
     resolution: {integrity: sha512-4AZVxP05JGN6DwqIkSP4VKLOcwQa5l37SWHF/ahcuqBMbfxbpN1L1QKafEhWCziHhzKex9H/AR09H0OuVyU+9g==}
@@ -1807,9 +1831,9 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/node@20.19.1':
+  '@types/node@24.0.3':
     dependencies:
-      undici-types: 6.21.0
+      undici-types: 7.8.0
 
   '@types/react-dom@19.1.6(@types/react@19.1.8)':
     dependencies:
@@ -2324,6 +2348,10 @@ snapshots:
       - eslint-import-resolver-webpack
       - eslint-plugin-import-x
       - supports-color
+
+  eslint-config-prettier@10.1.5(eslint@9.29.0):
+    dependencies:
+      eslint: 9.29.0
 
   eslint-import-resolver-node@0.3.9:
     dependencies:
@@ -2971,6 +2999,8 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
+  prettier@3.5.3: {}
+
   prop-types@15.8.1:
     dependencies:
       loose-envify: 1.4.0
@@ -3291,7 +3321,7 @@ snapshots:
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
 
-  undici-types@6.21.0: {}
+  undici-types@7.8.0: {}
 
   unrs-resolver@1.9.1:
     dependencies:

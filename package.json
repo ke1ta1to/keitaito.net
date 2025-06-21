@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "web": "pnpm -F 'web'"
+    "web": "pnpm -F 'web'",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "repository": {
     "type": "git",
@@ -13,5 +15,8 @@
     "url": "https://github.com/ke1ta1to/keitaito.net/issues"
   },
   "homepage": "https://github.com/ke1ta1to/keitaito.net#readme",
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
 }
