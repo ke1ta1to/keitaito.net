@@ -1,4 +1,4 @@
-import AppFooter from "./app-footer";
+import { AppFooter } from "./app-footer";
 import { AppHeader } from "./app-header";
 
 export default async function AppLayout({

@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  /* ブランドカラー */
+  --color-primary: #007aff;
+  --color-secondary: #5856d6;
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-danger: #ff3b30;
+}
