@@ -75,6 +75,7 @@ pnpm web build-storybook
 TailwindでクラスNameを書く際は、以下の定義済みカラーを使用する：
 
 **ブランドカラー（必須使用）**:
+
 - `bg-primary`, `text-primary`, `border-primary` - プライマリカラー (#007aff)
 - `bg-secondary`, `text-secondary`, `border-secondary` - セカンダリカラー (#5856d6)
 - `bg-success`, `text-success`, `border-success` - 成功カラー (#34c759)
@@ -82,6 +83,7 @@ TailwindでクラスNameを書く際は、以下の定義済みカラーを使�
 - `bg-danger`, `text-danger`, `border-danger` - 危険カラー (#ff3b30)
 
 **その他のカラー**:
+
 - ニュートラルカラーはTailwindデフォルトの`neutral-*`を使用可能
 - 白・黒は`white`、`black`を使用
 
