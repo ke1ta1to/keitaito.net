@@ -5,5 +5,9 @@ export default async function IndexLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AppLayout>{children}</AppLayout>;
+  return (
+    <AppLayout>
+      <div className="mt-4 mb-4 px-2">{children}</div>
+    </AppLayout>
+  );
 }

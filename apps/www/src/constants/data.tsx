@@ -238,3 +238,19 @@ export const skills = {
     },
   ],
 } satisfies Skills;
+
+export interface Contact {
+  email: string;
+  emailNote: string;
+  xUsername: string;
+  xUrl: string;
+  xNote: string;
+}
+
+export const contact = {
+  email: "keitaito(at)keitaito.net",
+  emailNote: "(at)を@に置き換えてください",
+  xUsername: "ke1ta1to",
+  xUrl: "https://x.com/ke1ta1to",
+  xNote: "DMにてご連絡ください",
+} satisfies Contact;
