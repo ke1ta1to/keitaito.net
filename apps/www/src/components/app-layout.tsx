@@ -7,9 +7,11 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="from-primary/20 via-secondary/10 to-primary/20 min-h-screen bg-gradient-to-br">
+    <div className="from-primary-500/10 via-secondary-500/10 to-primary-500/10 bg-gradient-to-br">
       <AppHeader />
-      {children}
+      <div className="mx-auto min-h-screen max-w-7xl p-4">
+        {children}
+      </div>
       <AppFooter />
     </div>
   );

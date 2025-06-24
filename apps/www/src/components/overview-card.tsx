@@ -13,7 +13,10 @@ export function OverviewCard({
   ...props
 }: PropsWithChildren<OverviewCardProps>) {
   return (
-    <div className={cn("rounded px-4 pt-2 pb-4 shadow", className)} {...props}>
+    <div
+      className={cn("rounded bg-white px-4 pt-2 pb-4 shadow", className)}
+      {...props}
+    >
       <h2>{title}</h2>
       <div className="my-4 mt-2 h-0.5 bg-gray-100"></div>
       {children}
