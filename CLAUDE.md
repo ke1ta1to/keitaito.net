@@ -6,8 +6,7 @@
 
 pnpmワークスペースを使用したモノレポ構成：
 
-- `apps/web/` - React 19、TypeScript、Tailwind CSS v4を使用したNext.jsアプリケーション
-- `docs/` - デザインガイドラインとドキュメント
+- `apps/www/` - React 19、TypeScript、Tailwind CSS v4を使用したNext.jsアプリケーション
 
 Webアプリはコンポーネントベースのアーキテクチャを採用：
 
@@ -34,16 +33,19 @@ Webアプリはコンポーネントベースのアーキテクチャを採用�
 pnpm install
 
 # Webアプリの開発サーバー起動
-pnpm web dev
+pnpm www dev
 
 # Webアプリのビルド
-pnpm web build
+pnpm www build
 
 # プロダクションサーバー起動
-pnpm web start
+pnpm www start
 
-# コードのリント
-pnpm web lint
+# コードのリント（全プロジェクト）
+pnpm lint
+
+# 個別プロジェクトでのリント
+pnpm www lint
 
 # コードのフォーマット
 pnpm format
@@ -54,15 +56,13 @@ pnpm format:check
 
 ```bash
 # Storybook開発サーバー起動
-pnpm web storybook
+pnpm www storybook
 
 # Storybookのビルド
-pnpm web build-storybook
+pnpm www build-storybook
 ```
 
 ## デザインシステム
-
-`docs/design-guidelines.md`に記載された包括的なガラスモーフィズムデザインシステムを採用。主要な原則：
 
 - **カラー**: カスタムブランドカラー（プライマリ: #007aff）とニュートラルグレー
 - **ガラス効果**: `backdrop-blur-xl`、`bg-white/70`、微細なボーダーを多用
@@ -97,7 +97,7 @@ TailwindでクラスNameを書く際は、以下の定義済みカラーを使�
 ## プロジェクト構造
 
 ```
-apps/web/
+apps/www/
 ├── src/
 │   ├── app/                 # Next.js App Routerページ
 │   │   ├── (index)/        # インデックスルートグループ
@@ -111,8 +111,19 @@ apps/web/
 └── public/               # 静的アセット
 ```
 
+## データ管理とアーキテクチャ特徴
+
+- **データ管理**: `/src/constants/data.tsx`で全ての静的データを一元管理
+- **型安全性**: TypeScript interfaceによる厳密な型定義
+- **外部API連携**: Zenn、Qiita記事の自動取得機能
+- **構造化データ**: JSON-LD形式でSEO最適化を実装
+- **コンポーネント構成**:
+  - `/src/app/(index)/_components/` - ページ専用コンポーネント
+  - `/src/components/` - 共有コンポーネント（header、footer、layout）
+- **Storybook**: 全主要コンポーネントにストーリー設定済み
+
 ## 言語設定
 
 - **主要言語**: 日本語（HTMLで`lang="ja"`設定）
-- **ドキュメント**: デザインガイドラインは日本語
+- **ドキュメント**: プロジェクト内ドキュメントは日本語
 - コンポーネント開発では英語命名規則を使用可能

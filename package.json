@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "www": "pnpm -F 'www'",
+    "lint": "pnpm -r lint",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
