@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "web": "pnpm -F 'web'",
+    "www": "pnpm -F 'www'",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
