@@ -27,32 +27,11 @@ export const Default: Story = {
   },
 };
 
-export const CustomProfile: Story = {
+export const Fullscreen: Story = {
   args: {
-    profile: {
-      name: "山田太郎\nTaro Yamada",
-      birthday: "Jan. 2000",
-      location: "Osaka, Japan",
-      school: "大阪大学\n工学部 情報科学科",
-      x: "https://x.com/example",
-      github: "https://github.com/example",
-      zenn: "https://zenn.dev/example",
-      qiita: "https://qiita.com/example",
-    },
+    profile: profile,
   },
-};
-
-export const MinimalProfile: Story = {
-  args: {
-    profile: {
-      name: "田中花子",
-      birthday: "Dec. 1999",
-      location: "Kyoto, Japan",
-      school: "京都大学",
-      x: "https://x.com/example2",
-      github: "https://github.com/example2",
-      zenn: "https://zenn.dev/example2",
-      qiita: "https://qiita.com/example2",
-    },
+  parameters: {
+    layout: "fullscreen",
   },
 };

@@ -1,115 +1,115 @@
-import { Cake, GraduationCap, MapPin } from "lucide-react";
+import { Cake, Map, School, Signature } from "lucide-react";
 import Image from "next/image";
-import NextLink from "next/link";
 
+import { OverviewCard } from "@/components/overview-card";
 import type { profile } from "@/constants/data";
+import { calcAge } from "@/utils/calc-age";
 
 interface ProfileCardProps {
   profile: typeof profile;
 }
 
 export function ProfileCard({ profile }: ProfileCardProps) {
+  const age = calcAge(profile.birthday, new Date());
+  const birthdayStr = `'${profile.birthday.getFullYear().toString().slice(2)} (${age})`;
+
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-lg backdrop-blur-xl">
-      <div className="space-y-4">
-        <div className="flex items-start gap-4">
-          <Image
-            src="/icon_sm.webp"
-            alt="Profile picture"
-            width={80}
-            height={80}
-            className="rounded-full"
-          />
-          <div>
-            <h2 className="text-2xl font-bold whitespace-pre-line text-neutral-900">
+    <OverviewCard title="Profile">
+      <div className="flex flex-col items-center justify-evenly gap-8 sm:flex-row">
+        <Image
+          alt=""
+          src="/icon_sm.webp"
+          width={500}
+          height={500}
+          className="h-32 w-32 rounded-full"
+        />
+        <div className="self-start sm:self-center">
+          <ul className="space-y-1 whitespace-pre-wrap">
+            <li className="flex items-start gap-2">
+              <Signature className="shrink-0" />
               {profile.name}
-            </h2>
-          </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <Cake className="shrink-0" />
+              {birthdayStr}
+            </li>
+            <li className="flex items-start gap-2">
+              <Map className="shrink-0" />
+              {profile.location}
+            </li>
+            <li className="flex items-start gap-2">
+              <School className="shrink-0" />
+              {profile.school}
+            </li>
+          </ul>
         </div>
-
-        <div className="space-y-2 text-sm text-neutral-700">
-          <div className="flex items-center gap-2">
-            <Cake className="h-4 w-4 text-neutral-500" />
-            <span>{profile.birthday}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-neutral-500" />
-            <span>{profile.location}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <GraduationCap className="h-4 w-4 text-neutral-500" />
-            <span className="whitespace-pre-line">{profile.school}</span>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2 pt-2">
-          <NextLink
+      </div>
+      <ul className="mt-2 flex flex-wrap justify-center gap-2">
+        <li>
+          <a
             href={profile.x}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-primary inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/50 px-3 py-1.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-150 hover:bg-white/70"
+            className="block p-1"
           >
             <Image
+              alt=""
               src="/x.svg"
-              alt="X logo"
-              width={16}
-              height={16}
-              className="h-4 w-4"
+              width={128}
+              height={128}
+              className="h-auto w-6"
             />
-            <span>X</span>
-          </NextLink>
-
-          <NextLink
+          </a>
+        </li>
+        <li>
+          <a
             href={profile.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-primary inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/50 px-3 py-1.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-150 hover:bg-white/70"
+            className="block p-1"
           >
             <Image
+              alt=""
               src="/github.svg"
-              alt="GitHub logo"
-              width={16}
-              height={16}
-              className="h-4 w-4"
+              width={150}
+              height={150}
+              className="h-auto w-6"
             />
-            <span>GitHub</span>
-          </NextLink>
-
-          <NextLink
+          </a>
+        </li>
+        <li>
+          <a
             href={profile.zenn}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-primary inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/50 px-3 py-1.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-150 hover:bg-white/70"
+            className="block p-1"
           >
             <Image
+              alt=""
               src="/zenn.svg"
-              alt="Zenn logo"
-              width={16}
-              height={16}
-              className="h-4 w-4"
+              width={88.3}
+              height={88.3}
+              className="h-auto w-6"
             />
-            <span>Zenn</span>
-          </NextLink>
-
-          <NextLink
+          </a>
+        </li>
+        <li>
+          <a
             href={profile.qiita}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-primary inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/50 px-3 py-1.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-150 hover:bg-white/70"
+            className="block p-1"
           >
             <Image
+              alt=""
               src="/qiita.svg"
-              alt="Qiita logo"
-              width={16}
-              height={16}
-              className="h-4 w-4"
+              width={400}
+              height={400}
+              className="h-auto w-6"
             />
-            <span>Qiita</span>
-          </NextLink>
-        </div>
-      </div>
-    </div>
+          </a>
+        </li>
+      </ul>
+    </OverviewCard>
   );
 }
