@@ -1,0 +1,11 @@
+{
+  "title": "ポートフォリオ",
+  "description": "無駄に**技術スタック**を詰め込んだ、この*ポートフォリオサイト*です\n\nNext.js 15、React 19、Tailwind CSS v4を使用",
+  "url": "/works/portfolio",
+  "thumbnail": {
+    "alt": "",
+    "src": "./_assets/thumbnail.png",
+    "width": 1600,
+    "height": 900
+  }
+}

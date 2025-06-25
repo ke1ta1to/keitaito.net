@@ -1,0 +1,11 @@
+{
+  "title": "UEC 3D Map",
+  "description": "電気通信大学をウェブ上で**3D**で見ることができます\n\nキャンパス内の建物を*インタラクティブ*に探索可能",
+  "url": "/works/uec-3d-map",
+  "thumbnail": {
+    "alt": "",
+    "src": "./_assets/thumbnail.png",
+    "width": 1600,
+    "height": 900
+  }
+}

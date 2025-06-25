@@ -1,0 +1,11 @@
+{
+  "title": "モバイルオーダーシステム「MO」",
+  "description": "模擬店における汎用的な**モバイルオーダーシステム**\n\nサークルで**チーム開発**を行い、効率的な注文管理を実現",
+  "url": "/works/mo",
+  "thumbnail": {
+    "alt": "",
+    "src": "./_assets/thumbnail.jpg",
+    "width": 1600,
+    "height": 900
+  }
+}

@@ -6,8 +6,8 @@ export default async function IndexLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppLayout>
-      <div className="mt-4 mb-4 px-2">{children}</div>
+    <AppLayout bgColor="gradient">
+      <div className="mt-4 px-2">{children}</div>
     </AppLayout>
   );
 }
