@@ -7,5 +7,6 @@
     "src": "./_assets/thumbnail.png",
     "width": 1600,
     "height": 900
-  }
+  },
+  "keywords": ["調布祭", "学園祭", "電気通信大学", "ウェブサイト", "Nuxt.js"]
 }
