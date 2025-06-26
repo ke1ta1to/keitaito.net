@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function WorksLayout({
+export default async function WorksLayout({
   children,
 }: {
   children: React.ReactNode;

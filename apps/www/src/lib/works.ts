@@ -73,9 +73,7 @@ async function getThumbnail(
   slug: string,
   title: string,
 ): Promise<WorkThumbnail> {
-  const thumbnailModule = await import(
-    `@/app/works/${slug}/_assets/thumbnail.png`
-  );
+  const thumbnailModule = await import(`@/app/works/${slug}/_thumbnail.png`);
 
   return {
     alt: `${title}のサムネイル`,
