@@ -8,7 +8,7 @@ interface AppLayoutProps {
   bgColor?: "white" | "gradient";
 }
 
-export default async function AppLayout({
+export default function AppLayout({
   children,
   bgColor = "white",
 }: AppLayoutProps) {
