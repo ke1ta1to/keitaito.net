@@ -10,6 +10,8 @@ import { activities, contact, profile, skills } from "@/constants/data";
 import { fetchArticles } from "@/lib/articles-fetcher";
 import { getAllWorkMetadata } from "@/lib/works";
 
+export const revalidate = 86_400; // 1日ごとに再検証
+
 export default async function IndexPage() {
   const sortedActivities = activities.slice().reverse(); // 順番を逆にする
   const articles = await fetchArticles();
