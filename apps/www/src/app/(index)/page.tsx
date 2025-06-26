@@ -4,13 +4,17 @@ import { ContactCard } from "./_components/contact-card";
 import { JsonLd } from "./_components/json-lg";
 import { ProfileCard } from "./_components/profile-card";
 import { SkillsCard } from "./_components/skills-card";
+import { WorksCard } from "./_components/works-card";
 
 import { activities, contact, profile, skills } from "@/constants/data";
 import { fetchArticles } from "@/lib/articles-fetcher";
+import { getAllWorkMetadata } from "@/lib/works";
 
 export default async function IndexPage() {
   const sortedActivities = activities.slice().reverse(); // 順番を逆にする
   const articles = await fetchArticles();
+
+  const works = await getAllWorkMetadata();
 
   return (
     <>
@@ -31,7 +35,7 @@ export default async function IndexPage() {
             <ArticlesCard articles={articles} maxArticles={4} />
           </div>
           <div className="order-4 md:order-none">
-            {/* <WorksCard works={works} /> */}
+            <WorksCard works={works} />
           </div>
           <div className="order-5 md:order-none">
             <SkillsCard skills={skills} />
