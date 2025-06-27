@@ -7,6 +7,7 @@
     "lint": "pnpm -r lint",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
+    "test": "pnpm -r test",
     "prepare": "husky"
   },
   "repository": {
