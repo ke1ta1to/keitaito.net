@@ -1,0 +1,36 @@
+import Image from "next/image";
+
+import { LinkCard } from "@/components/link-card";
+import screenshotImage from "./_assets/screenshot.png";
+
+export const metadata = {
+  title: "UEC 3D Map",
+  description:
+    "電気通信大学のキャンパスを3Dで表示するWebアプリケーションです。",
+  keywords: ["3D", "Webアプリケーション", "電気通信大学"],
+};
+
+# UEC 3D Map
+
+<Image src={screenshotImage} alt="UEC 3D Map" unoptimized />
+
+UEC 3D Mapは電気通信大学のキャンパスを3Dで表示するWebアプリケーションです。大学の授業内で作成しました。
+こちらからアクセスできます。
+
+<LinkCard href="https://www.uec.ac.jp/about/profile/access/map/" />
+
+## モデルの作成
+
+3DモデルはBlenderを使用して作成しています。
+
+## ウェブサイトの作成
+
+ウェブサイトはNext.jsを使用して作成しています。3DモデルはThree.js、React Three Fiberを使用して表示しています。
+SSGで書き出し、S3とCloudFrontを使用して配信しています。
+
+### 使用技術
+
+- Next.js
+- Three.js
+- Tailwind CSS
+- AWS (S3, CloudFront)
