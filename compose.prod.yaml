@@ -1,6 +1,8 @@
 services:
   www:
     image: ghcr.io/ke1ta1to/keitaito.net:latest
+    environment:
+      - CUSTOM_URL=https://keitaito.net
 
   nginx:
     image: nginx:latest
