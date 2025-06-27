@@ -45,3 +45,5 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           file: apps/www/Dockerfile
           context: .
+          build-args: |
+            CUSTOM_URL=${{ secrets.CUSTOM_URL }}
