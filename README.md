@@ -1,5 +1,11 @@
 # keitaito.net
 
+[![.github/workflows/build.yaml](https://github.com/ke1ta1to/keitaito.net/actions/workflows/build.yaml/badge.svg)](https://github.com/ke1ta1to/keitaito.net/actions/workflows/build.yaml)
+[![.github/workflows/ci.yaml](https://github.com/ke1ta1to/keitaito.net/actions/workflows/ci.yaml/badge.svg)](https://github.com/ke1ta1to/keitaito.net/actions/workflows/ci.yaml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ke1ta1to/keitaito.net)
+![Website](https://img.shields.io/website?url=https%3A%2F%2Fkeitaito.net%2F&up_message=online&down_message=offline)
+![GitHub last commit](https://img.shields.io/github/last-commit/ke1ta1to/keitaito.net)
+
 ## 環境構築
 
 ### 推奨環境
