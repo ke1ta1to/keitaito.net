@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { ActivitiesCard } from "./_components/activities-card";
 import { ArticlesCard } from "./_components/articles-card";
 import { ContactCard } from "./_components/contact-card";
@@ -11,6 +13,11 @@ import { fetchArticles } from "@/lib/articles-fetcher";
 import { getAllWorkMetadata } from "@/lib/works";
 
 export const revalidate = 86_400; // 1日ごとに再検証
+
+export const metadata = {
+  title: "トップページ",
+  description: "Keita Itoのポートフォリオサイトです。",
+} satisfies Metadata;
 
 export default async function IndexPage() {
   const sortedActivities = activities.slice().reverse(); // 順番を逆にする
