@@ -8,6 +8,8 @@ RUN corepack enable
 
 WORKDIR /app
 
+ARG CUSTOM_URL
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/www/package.json ./apps/www/
 
@@ -20,8 +22,6 @@ RUN pnpm -F www build
 FROM node:22-slim AS runner
 
 WORKDIR /app
-
-ARG CUSTOM_URL
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
