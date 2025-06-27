@@ -15,9 +15,6 @@ describe("AppHeader", () => {
     render(<AppHeader />);
 
     expect(screen.getByRole("link", { name: "Overview" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Articles" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Works" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Contact" })).toBeInTheDocument();
   });
 
   it("renders header element", () => {

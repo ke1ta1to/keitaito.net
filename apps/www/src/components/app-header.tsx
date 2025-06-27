@@ -1,12 +1,7 @@
 import Image from "next/image";
 import NextLink from "next/link";
 
-const links = [
-  { label: "Overview", href: "/" },
-  { label: "Articles", href: "/articles" },
-  { label: "Works", href: "/works" },
-  { label: "Contact", href: "/contact" },
-];
+const links = [{ label: "Overview", href: "/" }];
 
 export function AppHeader() {
   return (
