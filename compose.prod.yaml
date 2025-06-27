@@ -1,7 +1,5 @@
 services:
   www:
-    build:
-      context: .
-      dockerfile: apps/www/Dockerfile
+    image: ghcr.io/ke1ta1to/keitaito.net:latest
     ports:
       - "3000:3000"
