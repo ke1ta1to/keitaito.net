@@ -1,0 +1,27 @@
+{
+  "name": "@keitaito.net/infra",
+  "version": "0.1.0",
+  "bin": {
+    "portfolio": "bin/portfolio.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.6",
+    "aws-cdk": "^2.1019.2",
+    "jest": "^30.0.3",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.202.0",
+    "constructs": "^10.4.2",
+    "dotenv": "^17.0.0"
+  }
+}
