@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     //   lastModified: new Date(),
     // },
     ...workSlugs.map<MetadataRoute.Sitemap[number]>((slug) => ({
-      url: new URL(slug, customUrl).toString(),
+      url: new URL(`works/${slug}`, customUrl).toString(),
       lastModified: new Date(),
     })),
   ];
