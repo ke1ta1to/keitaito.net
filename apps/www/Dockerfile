@@ -21,6 +21,8 @@ FROM node:22-slim AS runner
 
 WORKDIR /app
 
+ARG CUSTOM_URL
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
