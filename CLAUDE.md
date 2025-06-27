@@ -22,7 +22,11 @@ Webアプリはコンポーネントベースのアーキテクチャを採用�
 - **スタイリング**: Tailwind CSS v4 + カスタムガラスモーフィズムデザインシステム
 - **パッケージマネージャー**: pnpm 10.12.1
 - **コンポーネントドキュメント**: Storybook 9.0.12
+- **MDX**: ブログ記事やドキュメント作成（remarkとrehypeプラグイン使用）
+- **テスト**: Jest + React Testing Library
 - **リンティング**: ESLint（Next.js、TypeScript、Prettier設定）
+- **フォーマッター**: Prettier（Tailwind CSSプラグイン統合）
+- **Git hooks**: Husky（pre-commitでlintとformat実行）
 
 ## 開発コマンド
 
@@ -52,6 +56,19 @@ pnpm format
 pnpm format:check
 ```
 
+### テスト
+
+```bash
+# テスト実行（全ワークスペース）
+pnpm www test
+
+# テストウォッチモード
+pnpm www test:watch
+
+# 個別テストファイル実行（apps/www内で）
+pnpm test -- path/to/test.spec.ts
+```
+
 ### Storybook
 
 ```bash
@@ -62,30 +79,72 @@ pnpm www storybook
 pnpm www build-storybook
 ```
 
+### Docker
+
+```bash
+# Dockerイメージビルド
+docker build -t keitaito-net .
+
+# コンテナ実行
+docker run -p 3000:3000 keitaito-net
+```
+
 ## デザインシステム
 
-- **カラー**: カスタムブランドカラー（プライマリ: #007aff）とニュートラルグレー
-- **ガラス効果**: `backdrop-blur-xl`、`bg-white/70`、微細なボーダーを多用
-- **スペーシング**: Tailwindの4px単位システムと標準化されたコンポーネント間隔
-- **タイポグラフィ**: Tailwindデフォルト + カスタムニュートラルカラーパレット
-- **コンポーネント**: 全UIエレメントで透明度とブラー効果を使用したガラスモーフィズム
+### Tailwind CSS v4設定
 
-### カラー使用ルール
+- **設定方式**: CSS-in-CSS（`@theme`ディレクティブ使用）
+- **カラー定義**: OKLCHカラースペースで精密な色管理
+- **プラグイン**: `@tailwindcss/typography`（記事コンテンツ用）
 
-TailwindでクラスNameを書く際は、以下の定義済みカラーを使用する：
+### カラーパレット
 
-**ブランドカラー（必須使用）**:
+`apps/www/src/app/globals.css`の`@theme`で定義：
 
-- `bg-primary`, `text-primary`, `border-primary` - プライマリカラー (#007aff)
-- `bg-secondary`, `text-secondary`, `border-secondary` - セカンダリカラー (#5856d6)
-- `bg-success`, `text-success`, `border-success` - 成功カラー (#34c759)
-- `bg-warning`, `text-warning`, `border-warning` - 警告カラー (#ff9500)
-- `bg-danger`, `text-danger`, `border-danger` - 危険カラー (#ff3b30)
+**プライマリカラー** (`primary-*`):
 
-**その他のカラー**:
+- 50-950の11段階（`primary-50`から`primary-950`）
+- ベースカラー: `primary-500`（青系、`oklch(0.704 0.14 182.503)`）
+- 使用例: `bg-primary-500`、`text-primary-700`、`border-primary-300`
 
-- ニュートラルカラーはTailwindデフォルトの`neutral-*`を使用可能
-- 白・黒は`white`、`black`を使用
+**セカンダリカラー** (`secondary-*`):
+
+- 50-950の11段階（`secondary-50`から`secondary-950`）
+- ベースカラー: `secondary-500`（紫系、`oklch(0.685 0.169 237.323)`）
+- 使用例: `bg-secondary-500`、`text-secondary-700`
+
+### デザインパターン
+
+- **基本スタイル**: クリーンでシンプルなデザイン
+- **カード**: `bg-white rounded shadow`
+- **ヘッダー**: 固定配置（`sticky top-0`）、上部にプライマリカラーのボーダー
+- **フッター**: `bg-primary-50`の背景色
+- **レイアウト**: オプションでグラデーション背景
+- **スペーシング**: Tailwindデフォルトのスペーシングシステム（4px単位）
+  - `space-x-*`、`space-y-*`、`gap-*`などのユーティリティを使用
+- **タイポグラフィ**: `@tailwindcss/typography`プラグインでProseスタイル
+
+### スタイリングユーティリティ
+
+- **クラス結合**: `cn()`関数（clsx + tailwind-merge）
+- **使用例**: `cn("base-class", conditional && "conditional-class", className)`
+
+**注意**: ガラスモーフィズム効果（`backdrop-blur`、透明度のある背景）は現在使用されていません。
+
+### コンポーネントスタイリング規則
+
+1. **カラークラスの使用**:
+   - プライマリ: `primary-*`（例: `bg-primary-500`、`text-primary`、`border-primary-400`）
+   - セカンダリ: `secondary-*`
+   - ニュートラル: `gray-*`、`neutral-*`
+
+2. **共通パターン**:
+   - カード: `bg-white rounded shadow`
+   - ボタン: `bg-primary-500 hover:bg-primary-600 text-white rounded-lg`
+   - リンク: `text-primary hover:text-primary-600`
+
+3. **ユーティリティクラス管理**:
+   - `cn()`関数（`tailwind-merge`使用）でクラス名の条件付き結合
 
 ## コードスタイル
 
@@ -127,3 +186,33 @@ apps/www/
 - **主要言語**: 日本語（HTMLで`lang="ja"`設定）
 - **ドキュメント**: プロジェクト内ドキュメントは日本語
 - コンポーネント開発では英語命名規則を使用可能
+
+## 重要な設定ファイル
+
+- **TypeScript設定** (`apps/www/tsconfig.json`):
+  - `strict: true`で厳密な型チェック
+  - パスエイリアス`@/*`は`./src/*`を参照
+  - MDXファイルのサポート
+
+- **ESLint設定** (`apps/www/eslint.config.mjs`):
+  - インポート順序の自動整理
+  - 型インポートの強制（`import type`）
+  - Prettierとの統合
+
+- **Next.js設定** (`apps/www/next.config.ts`):
+  - MDXサポート（数式、GitHub Flavored Markdown対応）
+  - standalone出力（Docker対応）
+  - 画像最適化設定
+
+## Git hooks（Husky）
+
+コミット前に自動実行される品質チェック：
+
+- ESLintによるコード品質チェック
+- Prettierによるフォーマット統一
+
+手動で実行する場合：
+
+```bash
+pnpm lint && pnpm format
+```

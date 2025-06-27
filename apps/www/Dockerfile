@@ -1,11 +1,10 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:22-slim AS base
+FROM node:22-slim AS builder
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-
-FROM base AS builder
 
 WORKDIR /app
 
@@ -18,7 +17,7 @@ COPY . .
 
 RUN pnpm -F www build
 
-FROM base AS runner
+FROM node:22-slim AS runner
 
 WORKDIR /app
 
