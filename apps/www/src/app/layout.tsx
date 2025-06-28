@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import { getEnv } from "@/lib/env-vars";
 
 export const metadata = {
   title: {
     default: "Keita Ito",
     template: "%s | Keita Ito",
+  },
+  metadataBase: new URL(getEnv().customUrl),
+  alternates: {
+    canonical: "/",
   },
 } satisfies Metadata;
 

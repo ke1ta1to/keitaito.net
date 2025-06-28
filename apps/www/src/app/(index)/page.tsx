@@ -10,7 +10,6 @@ import { WorksCard } from "./_components/works-card";
 
 import { activities, contact, profile, skills } from "@/constants/data";
 import { fetchArticles } from "@/lib/articles-fetcher";
-import { getEnv } from "@/lib/env-vars";
 import { getAllWorkMetadata } from "@/lib/works";
 
 export const revalidate = 86_400; // 1日ごとに再検証
@@ -18,9 +17,6 @@ export const revalidate = 86_400; // 1日ごとに再検証
 export const metadata = {
   title: "トップページ",
   description: "Keita Itoのポートフォリオサイトです。",
-  alternates: {
-    canonical: getEnv().customUrl,
-  },
 } satisfies Metadata;
 
 export default async function IndexPage() {
