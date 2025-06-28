@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { getEnv } from "@/lib/env-vars";
 
 export const metadata = {
