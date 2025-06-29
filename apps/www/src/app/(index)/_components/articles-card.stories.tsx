@@ -33,7 +33,7 @@ const mockArticles: Article[] = [
     source: "zenn",
   },
   {
-    title: "モダンJavaScriptのベストプラクティス",
+    title: "JavaScriptのベストプラクティス",
     url: "https://qiita.com/example/items/modern-javascript-best-practices",
     liked_count: 52,
     published_at: "2023-12-15",

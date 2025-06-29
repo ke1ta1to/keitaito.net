@@ -1,10 +1,97 @@
+import Image from "next/image";
+
 export const metadata = {
-  title: "ポートフォリオ",
+  title: "ポートフォリオサイト",
   description:
-    "無駄に**技術スタック**を詰め込んだ、この*ポートフォリオサイト*です\n\nNext.js 15、React 19、Tailwind CSS v4を使用",
-  keywords: ["ポートフォリオ", "Next.js", "React", "Tailwind CSS"],
+    "React 19、Next.js 15、Tailwind CSS v4を使用したポートフォリオサイト。pnpmワークスペース、AWS CDK、Docker、GitHub Actions等による開発環境構築。",
+  keywords: [
+    "ポートフォリオ",
+    "Next.js",
+    "React",
+    "Tailwind CSS",
+    "TypeScript",
+    "AWS",
+    "CDK",
+    "Docker",
+  ],
 };
 
-# ポートフォリオ
+# ポートフォリオサイト
 
-作成中
+このプロジェクト自体のポートフォリオサイトです。React 19、Next.js 15、Tailwind CSS v4を使用したフルスタックプロジェクトとして構築しました。
+
+## アーキテクチャ概要
+
+### システム全体構成
+
+<Image
+  src={require("./_assets/architecture-overview.svg").default}
+  alt="アーキテクチャ全体図"
+  width={800}
+  height={600}
+/>
+
+### モノレポ構成
+
+pnpmワークスペースを使用したモノレポ構成：
+
+- **`apps/www/`** - Next.js 15アプリケーション（React 19、Tailwind CSS v4）
+- **`packages/infra/`** - AWS CDKインフラストラクチャ（TypeScript）
+
+### 技術スタック構成
+
+<Image
+  src={require("./_assets/tech-stack-comprehensive.svg").default}
+  alt="技術スタック構成"
+  width={900}
+  height={500}
+/>
+
+#### 主要技術要素
+
+**フロントエンド**
+
+- Next.js 15（App Router）、React 19、Tailwind CSS v4、TypeScript
+- MDX（remark + rehype + KaTeX）で数式対応記事システム
+
+**インフラ・DevOps**
+
+- AWS CDK、CloudFront + Route 53、Docker、GitHub Actions
+- nginx リバースプロキシで自宅サーバー統合
+
+**開発環境・品質管理**
+
+- pnpmワークスペース、ESLint + Prettier、Jest + RTL、Storybook
+
+### 特徴的な実装
+
+#### 1. 動的外部API連携
+
+ZennとQiitaのAPIから記事を自動取得し、Zodでバリデーション後、統合・ソート表示
+
+#### 2. 型安全なメタデータ管理
+
+作品ページの自動検出、動的インポート、Zodバリデーションで型安全性確保
+
+#### 3. Tailwind CSS v4構成
+
+CSS-in-CSS設定、OKLCHカラースペースで色管理
+
+#### 4. CI/CDパイプライン
+
+GitHub Actions（ci.yaml/build.yaml）、semverタグ自動リリース、GHCR連携
+
+#### 5. 自宅サーバー統合
+
+AWS CDK CloudFront + 自宅サーバー（nginx + Docker）、X-Origin-Verifyヘッダーでアクセス制御
+
+## 技術的特徴まとめ
+
+<Image
+  src={require("./_assets/tech-mindmap.svg").default}
+  alt="技術的特徴マインドマップ"
+  width={800}
+  height={600}
+/>
+
+**フルスタック開発技術の総合的な実装例**として、モノレポ構成から本番デプロイまでの開発フロー全体を体系化。
