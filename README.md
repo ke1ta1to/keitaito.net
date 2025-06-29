@@ -122,3 +122,34 @@ docker compose -f compose.dev.yaml down
 - **ジョブ**:
   - **lint**: コード品質チェック（`pnpm lint`）
   - **test**: テスト実行（`pnpm test`）
+
+## スクリプト
+
+### Mermaid図の同期
+
+指定したディレクトリ内の.mmdファイルから.svgファイルを自動生成するスクリプトです。
+
+```bash
+# 使用方法
+./scripts/sync-mermaid-diagrams.sh [ディレクトリパス]
+
+# 例: ポートフォリオページの図を同期
+./scripts/sync-mermaid-diagrams.sh apps/www/src/app/works/portfolio/_assets
+
+# 現在のディレクトリを対象にする場合
+./scripts/sync-mermaid-diagrams.sh .
+```
+
+**機能:**
+
+- 既存のSVGファイルより新しいmmdファイルのみを処理
+- 不要なSVGファイル（対応するmmdファイルがない）を検出
+- カラフルな出力で処理状況を表示
+- エラーハンドリングとヘルプメッセージ
+
+**前提条件:**
+
+- `@mermaid-js/mermaid-cli`がインストールされていること
+  ```bash
+  npm install -g @mermaid-js/mermaid-cli
+  ```

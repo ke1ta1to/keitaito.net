@@ -1,0 +1,43 @@
+graph TB
+    subgraph "Frontend Technologies"
+        A1[Next.js 15<br/>App Router]
+        A2[React 19<br/>Concurrent Features]
+        A3[Tailwind CSS v4<br/>CSS-in-CSS + OKLCH]
+        A4[TypeScript<br/>Strict Mode]
+        A5[MDX<br/>remark + rehype + KaTeX]
+        
+        A1 --> A2
+        A1 --> A3
+        A2 --> A4
+        A3 --> A5
+    end
+
+    subgraph "Infrastructure & DevOps"
+        B1[AWS CDK<br/>Infrastructure as Code]
+        B2[CloudFront + Route 53<br/>CDN + DNS]
+        B3[Docker<br/>Containerization]
+        B4[GitHub Actions<br/>CI/CD Automation]
+        B5[nginx<br/>Reverse Proxy]
+        
+        B1 --> B2
+        B2 --> B3
+        B3 --> B4
+        B4 --> B5
+    end
+
+    subgraph "Development & Quality"
+        C1[pnpm Workspace<br/>Monorepo Management]
+        C2[ESLint + Prettier<br/>Code Quality]
+        C3[Jest + RTL<br/>Unit Testing]
+        C4[Storybook<br/>Component Documentation]
+        C5[Husky<br/>Git Hooks]
+        
+        C1 --> C2
+        C1 --> C3
+        C2 --> C4
+        C3 --> C5
+    end
+    
+    A1 -.-> B4
+    B1 -.-> C1
+    A4 -.-> C2

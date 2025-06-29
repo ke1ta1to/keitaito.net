@@ -22,167 +22,76 @@ export const metadata = {
 
 ## アーキテクチャ概要
 
+### システム全体構成
+
+<Image
+  src={require("./_assets/architecture-overview.svg").default}
+  alt="アーキテクチャ全体図"
+  width={800}
+  height={600}
+/>
+
 ### モノレポ構成
 
-pnpmワークスペースを使用したモノレポ構成で、以下のパッケージで構成されています：
+pnpmワークスペースを使用したモノレポ構成：
 
-- **`apps/www/`** - フロントエンドアプリケーション（Next.js）
-- **`packages/infra/`** - インフラストラクチャ（AWS CDK）
+- **`apps/www/`** - Next.js 15アプリケーション（React 19、Tailwind CSS v4）
+- **`packages/infra/`** - AWS CDKインフラストラクチャ（TypeScript）
 
-### 技術スタック
+### 技術スタック構成
 
-#### フロントエンド（apps/www）
+<Image
+  src={require("./_assets/tech-stack-comprehensive.svg").default}
+  alt="技術スタック構成"
+  width={900}
+  height={500}
+/>
 
-**コア技術**
+#### 主要技術要素
 
-- **Next.js 15** - App Routerによるルーティング
-- **React 19** - React（Concurrent Features、Suspense等）
-- **TypeScript** - 型安全性
+**フロントエンド**
 
-**スタイリング**
+- Next.js 15（App Router）、React 19、Tailwind CSS v4、TypeScript
+- MDX（remark + rehype + KaTeX）で数式対応記事システム
 
-- **Tailwind CSS v4** - CSS-in-CSS構成、OKLCH
-- **@tailwindcss/typography** - 記事コンテンツ
-- カスタムカラーパレット（primary/secondary 50-950段階）
+**インフラ・DevOps**
 
-**コンテンツ管理**
+- AWS CDK、CloudFront + Route 53、Docker、GitHub Actions
+- nginx リバースプロキシで自宅サーバー統合
 
-- **MDX** - remark-gfm、remark-math、rehype-katex対応
-- 数式レンダリング（KaTeX）
-- GitHub Flavored Markdown
-- 構造化されたメタデータ管理（Zod バリデーション）
+**開発環境・品質管理**
 
-**開発体験**
-
-- **Storybook 9** - コンポーネントドキュメント
-- **Jest + React Testing Library** - コンポーネントテスト
-- **ESLint + Prettier** - コード品質管理（Flat Config）
-- **Husky** - pre-commitフック
-
-#### インフラストラクチャ（packages/infra）
-
-**Infrastructure as Code**
-
-- **AWS CDK** - TypeScriptによるインフラ定義
-- **CloudFront Distribution** - グローバルCDN
-- **Route 53** - DNS管理
-- **ACM Certificate** - SSL/TLS証明書
-
-**セキュリティ**
-
-- オリジン検証ヘッダー（X-Origin-Verify）
-- HTTPS強制リダイレクト
-- カスタムドメイン対応
+- pnpmワークスペース、ESLint + Prettier、Jest + RTL、Storybook
 
 ### 特徴的な実装
 
 #### 1. 動的外部API連携
 
-ZennとQiitaのAPIから記事を自動取得し、最新の投稿を表示：
+ZennとQiitaのAPIから記事を自動取得し、Zodでバリデーション後、統合・ソート表示
 
-```typescript
-// apps/www/src/lib/articles-fetcher.ts
-export async function fetchArticles() {
-  const [zennArticles, qiitaArticles] = await Promise.all([
-    fetchZennArticles(),
-    fetchQiitaArticles(),
-  ]);
-  // Zodによる型安全なバリデーション後、統合・ソート
-}
-```
+#### 2. 型安全なメタデータ管理
 
-#### 2. 型安全なワークメタデータ管理
-
-作品ページの自動検出とメタデータ管理：
-
-```typescript
-// apps/www/src/lib/works.ts
-export async function getAllWorkMetadata(): Promise<WorkMetadata[]> {
-  const slugs = await getWorkSlugs();
-  // 動的インポートとZodバリデーションによる型安全性確保
-}
-```
+作品ページの自動検出、動的インポート、Zodバリデーションで型安全性確保
 
 #### 3. Tailwind CSS v4構成
 
-```css
-/* apps/www/src/app/globals.css */
-@theme {
-  --color-primary-500: oklch(0.704 0.14 182.503);
-  /* OKLCHカラースペースによる精密な色管理 */
-}
-```
+CSS-in-CSS設定、OKLCHカラースペースで色管理
 
 #### 4. CI/CDパイプライン
 
-**GitHub Actions**
-
-- **ci.yaml** - lint・test並列実行
-- **build.yaml** - semverタグによる自動リリース、GitHub Container Registry連携
-
-**Docker構成**
-
-- **開発環境** - ローカルビルド（compose.dev.yaml）
-- **本番環境** - GHCR配信（compose.prod.yaml）
-- nginx リバースプロキシによるセキュリティ強化
+GitHub Actions（ci.yaml/build.yaml）、semverタグ自動リリース、GHCR連携
 
 #### 5. 自宅サーバー統合
 
-CDKで構築したCloudFrontから自宅サーバーへの接続：
+AWS CDK CloudFront + 自宅サーバー（nginx + Docker）、X-Origin-Verifyヘッダーでアクセス制御
 
-- AWS CDKによるCloudFront Distribution
-- カスタムオリジン（自宅サーバー:8100）
-- X-Origin-Verifyヘッダーによるアクセス制御
+## 技術的特徴まとめ
 
-### パフォーマンス最適化
+<Image
+  src={require("./_assets/tech-mindmap.svg").default}
+  alt="技術的特徴マインドマップ"
+  width={800}
+  height={600}
+/>
 
-#### Build最適化
-
-- Next.js standalone出力
-- 静的アセット最適化
-- MDXコンパイル時最適化
-
-### コード品質管理
-
-#### リンティング・フォーマット
-
-- **ESLint**
-- **Prettier**
-- インポート順序自動整理
-- 型インポート強制（`import type`）
-
-#### テスト戦略
-
-- コンポーネントテスト（Jest + React Testing Library）
-- CDKアサーション（`@aws-cdk/assertions`）
-- Storybookによる視覚的テスト
-
-### デプロイフロー
-
-1. **開発** - `pnpm www dev`（Hot Reload）
-2. **ビルド** - `pnpm www build`（型チェック・lint・test）
-3. **Docker化** - GitHub Container Registry
-4. **CDKデプロイ** - CloudFront + Route 53
-5. **自宅サーバー** - Docker Compose + nginx
-
-### 技術的
-
-#### 採用技術
-
-- React 19の新機能活用
-- Next.js 15 App Routerの活用
-- Tailwind CSS v4のCSS-in-CSS移行
-
-#### 開発環境
-
-- モノレポによる複数パッケージ管理
-- Infrastructure as Codeによるインフラ管理
-- GitHub Actionsによる自動化
-
-#### セキュリティ実装
-
-- オリジン検証によるセキュアな接続
-- 環境変数による機密情報管理
-- HTTPS強制・セキュリティヘッダー
-
-このポートフォリオサイトは、単なる静的サイトではなく、**フルスタック開発の技術力を示すプロジェクト**として設計・実装されています。
+**フルスタック開発技術の総合的な実装例**として、モノレポ構成から本番デプロイまでの開発フロー全体を体系化。

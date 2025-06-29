@@ -5,7 +5,7 @@ const links = [{ label: "Overview", href: "/" }];
 
 export function AppHeader() {
   return (
-    <header className="border-t-primary-400 sticky top-0 z-10 overflow-x-auto border-t-4 bg-white pt-3 pb-4 text-gray-900">
+    <header className="border-t-primary-500 sticky top-0 z-10 overflow-x-auto border-t-4 bg-white pt-3 pb-4 text-gray-900">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4">
         <NextLink href="/" className="shrink-0">
           <Image

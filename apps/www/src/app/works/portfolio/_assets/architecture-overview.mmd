@@ -1,0 +1,33 @@
+graph TB
+    subgraph "Development Environment"
+        A1[Local Development<br/>pnpm workspace]
+        A2[GitHub Repository<br/>apps/www + packages/infra]
+    end
+
+    subgraph "CI/CD Pipeline"
+        B1[GitHub Actions<br/>ci.yaml: lint & test]
+        B2[GitHub Actions<br/>build.yaml: Docker Build]
+        B3[GitHub Container Registry<br/>ghcr.io]
+    end
+
+    subgraph "AWS Cloud Infrastructure"
+        C1[Route 53<br/>DNS Management]
+        C2[CloudFront<br/>Global CDN]
+        C3[ACM Certificate<br/>SSL/TLS]
+    end
+
+    subgraph "Home Server Production"
+        D1[nginx Reverse Proxy<br/>X-Origin-Verify Check]
+        D2[Docker Container<br/>Next.js Standalone Build]
+    end
+
+    A1 --> A2
+    A2 --> B1
+    A2 --> B2
+    B1 --> B2
+    B2 --> B3
+    B3 --> D2
+    C1 --> C2
+    C3 --> C2
+    C2 --> D1
+    D1 --> D2

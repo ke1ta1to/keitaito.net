@@ -416,3 +416,45 @@ AWS CDKデプロイに必要な環境変数：
 
 - **必須バージョン**: pnpm@10.12.1（package.jsonのpackageManagerフィールドで厳密指定）
 - Node.js推奨バージョン: v22
+
+## 開発用スクリプト
+
+### Mermaid図の同期スクリプト
+
+`scripts/sync-mermaid-diagrams.sh` - Mermaid図ファイル（.mmd）からSVG画像を自動生成
+
+**基本使用方法:**
+
+```bash
+# ポートフォリオページの図を同期
+./scripts/sync-mermaid-diagrams.sh apps/www/src/app/works/portfolio/_assets
+
+# 現在のディレクトリを対象
+./scripts/sync-mermaid-diagrams.sh .
+
+# ヘルプ表示
+./scripts/sync-mermaid-diagrams.sh --help
+```
+
+**スクリプトの機能:**
+
+- mmdファイルの変更検出（タイムスタンプ比較）
+- 新規・更新されたファイルのみを処理
+- 不要なSVGファイルの警告表示
+- カラー出力で処理状況の視覚化
+- エラーハンドリングと詳細なログ
+
+**前提条件:**
+
+- `@mermaid-js/mermaid-cli`をグローバルインストール
+- Chrome/Chromiumが利用可能
+
+**実行例:**
+
+```bash
+# ポートフォリオページのMermaid図を更新した後
+./scripts/sync-mermaid-diagrams.sh apps/www/src/app/works/portfolio/_assets
+# → 変更されたmmdファイルのみSVG生成、既存ファイルはスキップ
+```
+
+このスクリプトにより、Mermaid図の更新とSVG同期が効率化されます。
