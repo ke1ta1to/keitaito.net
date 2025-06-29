@@ -1,6 +1,11 @@
 import { Cake, Map, School, Signature } from "lucide-react";
 import Image from "next/image";
 
+import githubImg from "@/assets/github.svg";
+import iconSmImg from "@/assets/icon_sm.webp";
+import qiitaImg from "@/assets/qiita.svg";
+import xImg from "@/assets/x.svg";
+import zennImg from "@/assets/zenn.svg";
 import { OverviewCard } from "@/components/overview-card";
 import type { profile } from "@/constants/data";
 import { calcAge } from "@/utils/calc-age";
@@ -16,13 +21,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   return (
     <OverviewCard title="Profile">
       <div className="flex flex-col items-center justify-evenly gap-8 sm:flex-row">
-        <Image
-          alt=""
-          src="/icon_sm.webp"
-          width={500}
-          height={500}
-          className="h-32 w-32 rounded-full"
-        />
+        <Image alt="" src={iconSmImg} className="h-32 w-32 rounded-full" />
         <div className="self-start sm:self-center">
           <ul className="space-y-1 whitespace-pre-wrap">
             <li className="flex items-start gap-2">
@@ -52,13 +51,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             rel="noopener noreferrer"
             className="block p-1"
           >
-            <Image
-              alt=""
-              src="/x.svg"
-              width={128}
-              height={128}
-              className="h-auto w-6"
-            />
+            <Image alt="" src={xImg} className="h-auto w-6" />
           </a>
         </li>
         <li>
@@ -68,13 +61,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             rel="noopener noreferrer"
             className="block p-1"
           >
-            <Image
-              alt=""
-              src="/github.svg"
-              width={150}
-              height={150}
-              className="h-auto w-6"
-            />
+            <Image alt="" src={githubImg} className="h-auto w-6" />
           </a>
         </li>
         <li>
@@ -84,13 +71,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             rel="noopener noreferrer"
             className="block p-1"
           >
-            <Image
-              alt=""
-              src="/zenn.svg"
-              width={88.3}
-              height={88.3}
-              className="h-auto w-6"
-            />
+            <Image alt="" src={zennImg} className="h-auto w-6" />
           </a>
         </li>
         <li>
@@ -100,13 +81,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             rel="noopener noreferrer"
             className="block p-1"
           >
-            <Image
-              alt=""
-              src="/qiita.svg"
-              width={400}
-              height={400}
-              className="h-auto w-6"
-            />
+            <Image alt="" src={qiitaImg} className="h-auto w-6" />
           </a>
         </li>
       </ul>
