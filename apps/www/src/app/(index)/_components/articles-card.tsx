@@ -1,6 +1,8 @@
 import { ExternalLink, Heart, Newspaper } from "lucide-react";
 import Image from "next/image";
 
+import qiitaImg from "@/assets/qiita.svg";
+import zennImg from "@/assets/zenn.svg";
 import { OverviewCard } from "@/components/overview-card";
 import type { Article } from "@/lib/articles-fetcher";
 
@@ -60,25 +62,13 @@ export function ArticlesCard({ articles, maxArticles }: ArticlesCardProps) {
 
 function ZennIcon() {
   return (
-    <Image
-      src="/zenn.svg"
-      width={88.3}
-      height={88.3}
-      alt="Zenn"
-      className="h-auto w-6 flex-shrink-0"
-    />
+    <Image src={zennImg} alt="Zenn" className="h-auto w-6 flex-shrink-0" />
   );
 }
 
 function QiitaIcon() {
   return (
-    <Image
-      src="/qiita.svg"
-      width={400}
-      height={400}
-      alt="Qiita"
-      className="h-auto w-6 flex-shrink-0"
-    />
+    <Image src={qiitaImg} alt="Qiita" className="h-auto w-6 flex-shrink-0" />
   );
 }
 
