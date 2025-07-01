@@ -14,7 +14,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 管理ユーザー
 model User {
-  id     Int    @id @default(autoincrement())
-  authId String @unique
+  id                  Int          @id @default(autoincrement())
+  authId              String       @unique
+  reviewedFriendSites FriendSite[] @relation("reviewer")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// 友達のサイト情報
+model FriendSite {
+  id Int @id @default(autoincrement())
+
+  // サイト基本情報
+  url         String  @unique
+  title       String
+  description String?
+  ogImage     String?
+  author      String?
+
+  // 承認フロー関連
+  status        FriendSiteStatus @default(PENDING)
+  submittedAt   DateTime         @default(now())
+  submittedBy   String // 申請者名またはメールアドレス
+  submittedNote String? // 申請時のメモ
+
+  // レビュー関連
+  reviewedAt   DateTime?
+  reviewedBy   User?     @relation("reviewer", fields: [reviewedById], references: [id])
+  reviewedById Int?
+
+  // 管理用
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(false) // 承認後の表示/非表示制御
+
+  // タイムスタンプ
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([isActive])
+}
+
+// 承認ステータス
+enum FriendSiteStatus {
+  PENDING // 承認待ち
+  APPROVED // 承認済み
+  REJECTED // 却下
 }
