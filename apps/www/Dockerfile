@@ -1,6 +1,12 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:22-slim AS builder
+FROM node:22-slim AS base
+
+RUN apt-get update -y \
+  && apt-get install -y openssl --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -12,14 +18,15 @@ ARG CUSTOM_URL
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/www/package.json ./apps/www/
+COPY packages/db/package.json ./packages/db/
 
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm -F www build
+RUN pnpm -F db generate && pnpm -F www build
 
-FROM node:22-slim AS runner
+FROM base AS runner
 
 WORKDIR /app
 

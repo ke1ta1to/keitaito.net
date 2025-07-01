@@ -5,3 +5,6 @@ services:
       dockerfile: apps/www/Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - CUSTOM_URL=https://keitaito.net/
+      - DATABASE_URL=postgresql://prisma:prisma@host.docker.internal:54322/postgres?pgbouncer=true
