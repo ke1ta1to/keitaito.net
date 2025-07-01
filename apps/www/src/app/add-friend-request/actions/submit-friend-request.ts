@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 
 import { handlePrismaError } from "../lib/error-handler";
 import { verifyTurnstileToken } from "../lib/turnstile-verification";
-import type { ActionResult, FriendRequestData } from "../types";
+import type { FriendRequestData } from "../lib/validation";
+import type { ActionResult } from "../types";
 
 export async function submitFriendRequest(
   data: FriendRequestData,
@@ -27,6 +28,7 @@ export async function submitFriendRequest(
         url: data.url,
         title: data.title,
         description: data.description || null,
+        ogImage: data.ogImage || null,
         author: data.author || null,
         submittedBy: data.email, // メールアドレスを申請者として使用
         submittedNote: data.submittedNote || null,

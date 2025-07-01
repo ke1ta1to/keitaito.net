@@ -15,6 +15,7 @@ import type { ActionResult } from "../types";
 import { Card } from "./ui/card";
 import { ErrorMessage } from "./ui/error-message";
 import { FormField } from "./ui/form-field";
+import { ImageUpload } from "./ui/image-upload";
 import { Turnstile } from "./ui/turnstile";
 
 interface FriendRequestFormProps {
@@ -26,10 +27,14 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
     register,
     handleSubmit,
     setError,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FriendRequestFormData>({
     resolver: zodResolver(friendRequestFormSchema),
   });
+
+  const ogImageValue = watch("ogImage");
 
   const {
     state: { token: turnstileToken, hasError: turnstileError },
@@ -171,6 +176,18 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
                   {...register("author")}
                   placeholder="山田太郎"
                   className="block w-full"
+                />
+              </FormField>
+
+              <FormField
+                label="サイト画像"
+                error={errors.ogImage?.message}
+                helpText="サイトのOGイメージやロゴなど（任意）"
+              >
+                <ImageUpload
+                  value={ogImageValue}
+                  onChange={(fileName) => setValue("ogImage", fileName)}
+                  disabled={isSubmitting}
                 />
               </FormField>
             </div>

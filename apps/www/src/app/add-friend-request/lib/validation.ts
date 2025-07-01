@@ -26,6 +26,7 @@ export const friendRequestFormSchema = z.object({
     .string()
     .max(500, "メッセージは500文字以内で入力してください")
     .optional(),
+  ogImage: z.string().optional(),
 });
 
 // サーバーアクション用のスキーマ（Turnstileトークンを含む）
