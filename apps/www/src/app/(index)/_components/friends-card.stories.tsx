@@ -13,7 +13,6 @@ const mockFriendSites: FriendSite[] = [
     ogImage:
       "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop",
     author: "田中太郎",
-    favicon: null,
   },
   {
     id: 2,
@@ -23,7 +22,6 @@ const mockFriendSites: FriendSite[] = [
     ogImage:
       "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=400&fit=crop",
     author: "山田花子",
-    favicon: null,
   },
   {
     id: 3,
@@ -32,8 +30,6 @@ const mockFriendSites: FriendSite[] = [
     description: "UIデザイナーの作品集",
     ogImage: null,
     author: "佐藤次郎",
-    favicon:
-      "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=24&h=24&fit=crop",
   },
   {
     id: 4,
@@ -43,7 +39,6 @@ const mockFriendSites: FriendSite[] = [
     ogImage:
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop",
     author: "鈴木一郎",
-    favicon: null,
   },
   {
     id: 5,
@@ -52,7 +47,6 @@ const mockFriendSites: FriendSite[] = [
     description: null,
     ogImage: null,
     author: "高橋みなみ",
-    favicon: null,
   },
 ];
 
@@ -95,7 +89,6 @@ export const WithoutImages: Story = {
         description: "画像なしのサイト",
         ogImage: null,
         author: "作者名",
-        favicon: null,
       },
     ],
   },
