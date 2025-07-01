@@ -1,13 +1,63 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
+import { useForm } from "react-hook-form";
+
+import { friendRequestSchema } from "../lib/validation";
+import type { FriendRequestFormData } from "../lib/validation";
+import type { ActionResult } from "../types";
+
+import { Card } from "./ui/card";
+import { ErrorMessage } from "./ui/error-message";
+import { FormField } from "./ui/form-field";
 
 interface FriendRequestFormProps {
-  action: (formData: FormData) => Promise<void>;
+  action: (data: FriendRequestFormData) => Promise<ActionResult>;
 }
 
 export function FriendRequestForm({ action }: FriendRequestFormProps) {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FriendRequestFormData>({
+    resolver: zodResolver(friendRequestSchema),
+  });
+
+  const onSubmit = async (data: FriendRequestFormData) => {
+    try {
+      const result = await action(data);
+
+      if (!result.success) {
+        // フィールド固有のエラーがある場合
+        if (result.field) {
+          setError(result.field as keyof FriendRequestFormData, {
+            type: "server",
+            message: result.error,
+          });
+        } else {
+          // フォーム全体のエラー
+          setError("root", {
+            type: "server",
+            message: result.error,
+          });
+        }
+      }
+      // 成功時はredirectされるので、ここには到達しない
+    } catch {
+      // 予期しないエラー
+      setError("root", {
+        type: "server",
+        message: "予期しないエラーが発生しました。再度お試しください。",
+      });
+    }
+  };
+
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+      <Card>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">相互リンク申請</h1>
           <p className="mt-2 text-gray-600">
@@ -16,84 +66,70 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
           </p>
         </div>
 
-        <form action={action} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* フォーム全体のエラーメッセージ */}
+          {errors.root?.message && (
+            <ErrorMessage message={errors.root.message} />
+          )}
+
           {/* サイト情報 */}
           <div>
             <h2 className="mb-4 text-lg font-medium text-gray-900">
               サイト情報
             </h2>
             <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="url"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  サイトURL <span className="text-red-500">*</span>
-                </label>
+              <FormField
+                label="サイトURL"
+                required
+                error={errors.url?.message}
+                helpText="あなたのサイトのURLを入力してください"
+              >
                 <input
                   type="url"
                   id="url"
-                  name="url"
-                  required
+                  {...register("url")}
                   placeholder="https://example.com"
-                  className="mt-1 block w-full"
+                  className="block w-full"
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  あなたのサイトのURLを入力してください
-                </p>
-              </div>
+              </FormField>
 
-              <div>
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  サイトタイトル <span className="text-red-500">*</span>
-                </label>
+              <FormField
+                label="サイトタイトル"
+                required
+                error={errors.title?.message}
+              >
                 <input
                   type="text"
                   id="title"
-                  name="title"
-                  required
+                  {...register("title")}
                   placeholder="My Awesome Website"
-                  className="mt-1 block w-full"
+                  className="block w-full"
                 />
-              </div>
+              </FormField>
 
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  サイト説明
-                </label>
+              <FormField
+                label="サイト説明"
+                error={errors.description?.message}
+                helpText="最大200文字程度で記載してください"
+              >
                 <textarea
                   id="description"
-                  name="description"
+                  {...register("description")}
                   rows={3}
                   placeholder="サイトの内容や特徴を簡潔に説明してください"
-                  className="mt-1 block w-full"
+                  className="block w-full"
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  最大200文字程度で記載してください
-                </p>
-              </div>
+              </FormField>
 
-              <div>
-                <label
-                  htmlFor="author"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  サイト運営者名
-                </label>
+              <FormField label="サイト運営者名" error={errors.author?.message}>
                 <input
                   type="text"
                   id="author"
-                  name="author"
+                  {...register("author")}
                   placeholder="山田太郎"
-                  className="mt-1 block w-full"
+                  className="block w-full"
                 />
-              </div>
+              </FormField>
             </div>
           </div>
 
@@ -103,41 +139,33 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
               申請者情報
             </h2>
             <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  メールアドレス <span className="text-red-500">*</span>
-                </label>
+              <FormField
+                label="メールアドレス"
+                required
+                error={errors.email?.message}
+                helpText="審査結果のご連絡に使用します"
+              >
                 <input
                   type="email"
                   id="email"
-                  name="email"
-                  required
+                  {...register("email")}
                   placeholder="your-email@example.com"
-                  className="mt-1 block w-full"
+                  className="block w-full"
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  審査結果のご連絡に使用します
-                </p>
-              </div>
+              </FormField>
 
-              <div>
-                <label
-                  htmlFor="submittedNote"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  メッセージ
-                </label>
+              <FormField
+                label="メッセージ"
+                error={errors.submittedNote?.message}
+              >
                 <textarea
                   id="submittedNote"
-                  name="submittedNote"
+                  {...register("submittedNote")}
                   rows={4}
                   placeholder="誰か分かりにくい場合や、その他のメッセージがあればご記入ください"
-                  className="mt-1 block w-full"
+                  className="block w-full"
                 />
-              </div>
+              </FormField>
             </div>
           </div>
 
@@ -158,14 +186,15 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
+              disabled={isSubmitting}
+              className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               <Send className="h-4 w-4" />
-              申請を送信
+              {isSubmitting ? "送信中..." : "申請を送信"}
             </button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }
