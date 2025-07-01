@@ -21,13 +21,14 @@ async function main() {
   });
 
   // FriendSiteデータの作成
+  // 注意: ogImageはSupabase Storage内のファイルパス（/assetsプレフィックスなし）を使用
   const friendSites = [
     {
       url: "https://example-blog.com",
       title: "Tech Blog by Tanaka",
       description:
         "技術ブログを書いています。主にWebフロントエンドの話題を扱っています。",
-      ogImage: "https://example-blog.com/og-image.png",
+      ogImage: "friend-sites/tech-blog-og.png",
       author: "田中太郎",
       status: FriendSiteStatus.APPROVED,
       submittedAt: new Date("2024-01-15"),
@@ -42,7 +43,7 @@ async function main() {
       url: "https://portfolio.yamada.dev",
       title: "Yamada's Portfolio",
       description: "フリーランスエンジニアのポートフォリオサイト",
-      ogImage: "https://portfolio.yamada.dev/og.jpg",
+      ogImage: "friend-sites/portfolio-og.jpg",
       author: "山田花子",
       status: FriendSiteStatus.APPROVED,
       submittedAt: new Date("2024-02-01"),
@@ -70,7 +71,7 @@ async function main() {
       url: "https://photo-gallery.net",
       title: "Photo Gallery",
       description: "風景写真を中心としたフォトギャラリー",
-      ogImage: "https://photo-gallery.net/images/og.png",
+      ogImage: "friend-sites/photo-gallery-og.png",
       author: "鈴木一郎",
       status: FriendSiteStatus.REJECTED,
       submittedAt: new Date("2024-02-20"),

@@ -23,6 +23,14 @@ interface FriendsCardProps {
 function FriendSiteCard({ site }: { site: FriendSite }) {
   const [imageError, setImageError] = useState(false);
 
+  // Supabase Storageの画像パスに/assets/プレフィックスを追加
+  const getImageSrc = (ogImage: string | null) => {
+    if (!ogImage) return null;
+    return `/assets/${ogImage}`;
+  };
+
+  const imageSrc = getImageSrc(site.ogImage);
+
   return (
     <a
       key={site.id}
@@ -32,9 +40,9 @@ function FriendSiteCard({ site }: { site: FriendSite }) {
       className="group flex overflow-hidden rounded border border-gray-100 bg-white shadow-sm sm:block"
     >
       <div className="relative aspect-square w-24 flex-shrink-0 overflow-hidden bg-gray-50 sm:aspect-video sm:w-auto">
-        {site.ogImage && !imageError ? (
+        {imageSrc && !imageError ? (
           <Image
-            src={site.ogImage}
+            src={imageSrc}
             alt={site.title}
             fill
             className="object-cover"

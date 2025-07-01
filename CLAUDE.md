@@ -18,6 +18,7 @@ pnpmワークスペースを使用したモノレポ構成：
 - 共有レイアウトコンポーネント（`app-header.tsx`、`app-footer.tsx`、`app-layout.tsx`）
 - コンポーネント開発・ドキュメント用のStorybook
 - MDXを使用した作品詳細ページ（`works/[作品名]/page.mdx`）
+- Supabase（データベース、ストレージ）
 
 ### インフラストラクチャ（packages/infra）
 
@@ -43,6 +44,7 @@ AWS CDKによるクラウドインフラ管理：
 - **フォーマッター**: Prettier（Tailwind CSSプラグイン対応）
 - **Git hooks**: Husky（pre-commitでlintとformat実行）
 - **バリデーション**: Zod（API応答の型検証）
+- **ストレージ**: Supabase Storage（S3互換API使用）
 
 ### インフラストラクチャ（packages/infra）
 
@@ -59,6 +61,20 @@ AWS CDKによるクラウドインフラ管理：
 
 - **パッケージマネージャー**: pnpm 10.12.1（ワークスペース使用）
 - **Node.jsバージョン**: v22
+
+### Supabase
+
+- **データベース**: PostgreSQL（Prisma ORM使用）
+- **ストレージ**: S3互換API（AWS SDK v3使用）
+- **認証**: サービスロールキー
+- **環境**: ローカル開発環境（supabase/cli）
+
+#### ストレージ設定
+
+- **バケット**: `assets`（パブリック設定）
+- **アクセス方式**: Next.js rewritesで`/assets/*`を`supabase/storage/v1/object/public/assets/*`にプロキシ
+- **対応ファイル形式**: 画像（JPEG、PNG、GIF、WebP、SVG）、PDF、動画（MP4、WebM）
+- **ファイルサイズ制限**: 50MiB
 
 ## 開発コマンド
 
@@ -144,6 +160,23 @@ export DOMAIN_NAME=example.com
 export SUBDOMAIN_NAME=www
 export CUSTOM_URL=https://example.com/
 export DOCKER_IMAGE_TAG=latest
+```
+
+### Supabase
+
+```bash
+# Supabaseローカル環境起動
+supabase start
+
+# データベースマイグレーション実行
+supabase db push
+
+# Supabaseローカル環境停止
+supabase stop
+
+# Supabaseダッシュボード確認
+# Studio: http://127.0.0.1:54323
+# Storage: http://127.0.0.1:54321/storage/v1/object/public/assets/
 ```
 
 ### Docker
