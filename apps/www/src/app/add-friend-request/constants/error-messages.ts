@@ -7,4 +7,7 @@ export const ERROR_MESSAGES = {
   GENERAL_ERROR:
     "申請の送信に失敗しました。しばらく時間をおいて再度お試しください。",
   UNEXPECTED_ERROR: "予期しないエラーが発生しました。再度お試しください。",
+  TURNSTILE_VERIFICATION_FAILED: "セキュリティ認証に失敗しました。",
+  TURNSTILE_SERVER_ERROR: "認証サーバーとの通信に失敗しました。",
+  TURNSTILE_CONFIG_ERROR: "サーバー設定エラーが発生しました。",
 } as const;

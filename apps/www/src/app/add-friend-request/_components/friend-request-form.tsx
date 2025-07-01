@@ -4,16 +4,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 
-import { friendRequestSchema } from "../lib/validation";
-import type { FriendRequestFormData } from "../lib/validation";
+import { useTurnstile } from "../hooks/use-turnstile";
+import { friendRequestFormSchema } from "../lib/validation";
+import type {
+  FriendRequestFormData,
+  FriendRequestData,
+} from "../lib/validation";
 import type { ActionResult } from "../types";
 
 import { Card } from "./ui/card";
 import { ErrorMessage } from "./ui/error-message";
 import { FormField } from "./ui/form-field";
+import { Turnstile } from "./ui/turnstile";
 
 interface FriendRequestFormProps {
-  action: (data: FriendRequestFormData) => Promise<ActionResult>;
+  action: (data: FriendRequestData) => Promise<ActionResult>;
 }
 
 export function FriendRequestForm({ action }: FriendRequestFormProps) {
@@ -23,16 +28,47 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<FriendRequestFormData>({
-    resolver: zodResolver(friendRequestSchema),
+    resolver: zodResolver(friendRequestFormSchema),
+  });
+
+  const {
+    state: { token: turnstileToken, hasError: turnstileError },
+    actions: {
+      handleVerify: handleTurnstileVerify,
+      handleError: handleTurnstileError,
+    },
+    widgetRef,
+    shouldReset,
+  } = useTurnstile({
+    resetOnError: false, // エラー時の自動リセットは無効にする
+    autoResetErrorTypes: [], // 自動リセットするエラータイプを明示的に空にする
+    onError: (errorType) => {
+      console.log(`Turnstile error: ${errorType}`);
+    },
   });
 
   const onSubmit = async (data: FriendRequestFormData) => {
+    if (!turnstileToken) {
+      handleTurnstileError();
+      return;
+    }
+
     try {
-      const result = await action(data);
+      const result = await action({
+        ...data,
+        turnstileToken,
+      } as FriendRequestData);
 
       if (!result.success) {
         // フィールド固有のエラーがある場合
-        if (result.field) {
+        if (result.field === "turnstileToken") {
+          // Turnstile認証エラーの場合のみリセット
+          if (shouldReset("verification") && widgetRef.current) {
+            widgetRef.current.reset();
+          }
+          handleTurnstileError();
+        } else if (result.field) {
+          // その他のバリデーションエラーの場合、Turnstileはリセットしない
           setError(result.field as keyof FriendRequestFormData, {
             type: "server",
             message: result.error,
@@ -46,7 +82,14 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
         }
       }
       // 成功時はredirectされるので、ここには到達しない
-    } catch {
+    } catch (error) {
+      console.error("Unexpected error in form submission:", error);
+
+      // 予期しないエラーの場合はネットワークエラーとして扱う
+      if (shouldReset("network") && widgetRef.current) {
+        widgetRef.current.reset();
+      }
+
       // 予期しないエラー
       setError("root", {
         type: "server",
@@ -169,6 +212,24 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
             </div>
           </div>
 
+          {/* Turnstile認証 */}
+          <div>
+            <h2 className="mb-4 text-lg font-medium text-gray-900">
+              セキュリティ認証
+            </h2>
+            <Turnstile
+              ref={widgetRef}
+              onVerify={handleTurnstileVerify}
+              onError={handleTurnstileError}
+              onExpire={handleTurnstileError}
+            />
+            {turnstileError && (
+              <p className="mt-2 text-sm text-red-600">
+                セキュリティ認証が必要です。上記の認証を完了してください。
+              </p>
+            )}
+          </div>
+
           {/* 注意事項 */}
           <div className="rounded-md bg-gray-50 p-4">
             <h3 className="text-sm font-medium text-gray-900">注意事項</h3>
@@ -186,7 +247,7 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !turnstileToken}
               className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               <Send className="h-4 w-4" />

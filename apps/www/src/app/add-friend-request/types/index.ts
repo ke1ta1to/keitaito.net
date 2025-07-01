@@ -5,6 +5,7 @@ export interface FriendRequestData {
   author?: string;
   email: string;
   submittedNote?: string;
+  turnstileToken: string;
 }
 
 export type ActionResult =

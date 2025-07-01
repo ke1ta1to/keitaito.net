@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-export const friendRequestSchema = z.object({
+// フォーム用のスキーマ（Turnstileトークンは除外）
+export const friendRequestFormSchema = z.object({
   url: z
     .string()
     .min(1, "サイトURLは必須です")
@@ -27,4 +28,10 @@ export const friendRequestSchema = z.object({
     .optional(),
 });
 
-export type FriendRequestFormData = z.infer<typeof friendRequestSchema>;
+// サーバーアクション用のスキーマ（Turnstileトークンを含む）
+export const friendRequestSchema = friendRequestFormSchema.extend({
+  turnstileToken: z.string().min(1, "セキュリティ認証が必要です"),
+});
+
+export type FriendRequestFormData = z.infer<typeof friendRequestFormSchema>;
+export type FriendRequestData = z.infer<typeof friendRequestSchema>;

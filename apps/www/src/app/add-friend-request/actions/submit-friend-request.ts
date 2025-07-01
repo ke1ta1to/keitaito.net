@@ -4,12 +4,23 @@ import { prisma } from "@keitaito.net/db";
 import { redirect } from "next/navigation";
 
 import { handlePrismaError } from "../lib/error-handler";
+import { verifyTurnstileToken } from "../lib/turnstile-verification";
 import type { ActionResult, FriendRequestData } from "../types";
 
 export async function submitFriendRequest(
   data: FriendRequestData,
 ): Promise<ActionResult> {
   try {
+    // Turnstileトークンを検証
+    const turnstileResult = await verifyTurnstileToken(data.turnstileToken);
+    if (!turnstileResult.success) {
+      return {
+        success: false,
+        error: turnstileResult.error || "セキュリティ認証に失敗しました",
+        field: "turnstileToken",
+      };
+    }
+
     // Prismaを使ってデータベースに保存
     await prisma.friendSite.create({
       data: {
