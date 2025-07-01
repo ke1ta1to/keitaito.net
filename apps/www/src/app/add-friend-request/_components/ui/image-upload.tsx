@@ -2,7 +2,7 @@
 
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 interface ImageUploadProps {
   value?: string;
@@ -22,6 +22,15 @@ export function ImageUpload({
     value ? `/assets/${value}` : null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // valueプロパティの変更を監視してpreviewUrlを更新
+  useEffect(() => {
+    if (value) {
+      setPreviewUrl(`/assets/${value}`);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [value]);
 
   const handleFileSelect = async (file: File) => {
     if (!file) return;

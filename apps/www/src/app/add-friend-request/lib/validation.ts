@@ -1,11 +1,25 @@
 import { z } from "zod";
 
+import { validatePublicUrl } from "@/lib/url-validation";
+
+// URLの詳細バリデーション
+const urlSchema = z
+  .string()
+  .min(1, "サイトURLは必須です")
+  .refine(
+    (url) => {
+      const validation = validatePublicUrl(url);
+      return validation.isValid;
+    },
+    (url) => {
+      const validation = validatePublicUrl(url);
+      return { message: validation.error || "無効なURLです" };
+    },
+  );
+
 // フォーム用のスキーマ（Turnstileトークンは除外）
 export const friendRequestFormSchema = z.object({
-  url: z
-    .string()
-    .min(1, "サイトURLは必須です")
-    .url("有効なURLを入力してください"),
+  url: urlSchema,
   title: z
     .string()
     .min(1, "サイトタイトルは必須です")

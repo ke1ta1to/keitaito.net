@@ -12,6 +12,7 @@ import type {
 } from "../lib/validation";
 import type { ActionResult } from "../types";
 
+import { AutoFillButton } from "./ui/auto-fill-button";
 import { Card } from "./ui/card";
 import { ErrorMessage } from "./ui/error-message";
 import { FormField } from "./ui/form-field";
@@ -35,6 +36,46 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
   });
 
   const ogImageValue = watch("ogImage");
+  const urlValue = watch("url");
+
+  const handleAutoFill = (data: {
+    title?: string;
+    description?: string;
+    ogImage?: string;
+  }) => {
+    const currentValues = {
+      title: watch("title"),
+      description: watch("description"),
+      ogImage: ogImageValue,
+    };
+
+    // 既存のデータがある場合は確認
+    const hasExistingData =
+      currentValues.title || currentValues.description || currentValues.ogImage;
+
+    if (hasExistingData) {
+      const shouldOverwrite = confirm(
+        "既に入力されている項目があります。自動取得したデータで上書きしますか？",
+      );
+
+      if (!shouldOverwrite) {
+        return;
+      }
+    }
+
+    // フォームに値を設定
+    if (data.title) {
+      setValue("title", data.title);
+    }
+
+    if (data.description) {
+      setValue("description", data.description);
+    }
+
+    if (data.ogImage) {
+      setValue("ogImage", data.ogImage);
+    }
+  };
 
   const {
     state: { token: turnstileToken, hasError: turnstileError },
@@ -140,6 +181,15 @@ export function FriendRequestForm({ action }: FriendRequestFormProps) {
                   className="block w-full"
                 />
               </FormField>
+
+              {/* 自動入力ボタン */}
+              <div className="mt-2">
+                <AutoFillButton
+                  url={urlValue || ""}
+                  onSuccess={handleAutoFill}
+                  disabled={isSubmitting}
+                />
+              </div>
 
               <FormField
                 label="サイトタイトル"
