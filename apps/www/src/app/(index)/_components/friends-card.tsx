@@ -1,5 +1,6 @@
-import { ArrowUpRight, Globe } from "lucide-react";
+import { ArrowUpRight, Globe, Plus } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { OverviewCard } from "@/components/overview-card";
 
@@ -70,6 +71,15 @@ export function FriendsCard({ friendSites }: FriendsCardProps) {
           ))}
         </div>
       )}
+      <div className="mt-4 flex justify-center">
+        <Link
+          href="/add-friend-request"
+          className="border-primary-300 bg-primary-50 text-primary-700 hover:bg-primary-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium"
+        >
+          <Plus className="h-4 w-4" />
+          相互リンクを申請する
+        </Link>
+      </div>
     </OverviewCard>
   );
 }
