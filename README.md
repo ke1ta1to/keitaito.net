@@ -24,6 +24,11 @@ pnpm www dev
 
 # ビルド
 pnpm www build
+
+# データベース操作
+pnpm db generate
+pnpm db push
+pnpm db seed
 ```
 
 ## ディレクトリ構造
@@ -34,6 +39,10 @@ pnpm www build
 .
 ├── apps/
 │   └── www/                  # Next.jsアプリケーション
+├── packages/
+│   ├── db/                   # Prisma（データベース）
+│   └── infra/               # AWS CDKインフラストラクチャ
+├── supabase/                 # Supabaseローカル開発環境
 ├── CLAUDE.md                 # Claude Code用設定
 └── pnpm-workspace.yaml       # pnpmワークスペース設定
 ```
@@ -50,9 +59,34 @@ apps/www/
 │   │   │   │   ├── activities-card.stories.tsx
 │   │   │   │   ├── articles-card.tsx
 │   │   │   │   ├── articles-card.stories.tsx
+│   │   │   │   ├── friends-card.tsx      # 友達サイト表示カード
 │   │   │   │   └── ... (各コンポーネントと対応するStoriesファイル)
 │   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
+│   │   ├── add-friend-request/   # 友達申請ページ
+│   │   │   ├── _components/
+│   │   │   │   ├── friend-request-form.tsx
+│   │   │   │   └── ui/           # UI専用コンポーネント
+│   │   │   │       ├── auto-fill-button.tsx
+│   │   │   │       ├── image-upload.tsx
+│   │   │   │       ├── turnstile.tsx
+│   │   │   │       └── ... (フォーム関連UI)
+│   │   │   ├── actions/
+│   │   │   │   └── submit-friend-request.ts
+│   │   │   ├── hooks/
+│   │   │   │   └── use-turnstile.ts
+│   │   │   ├── lib/
+│   │   │   │   ├── validation.ts
+│   │   │   │   ├── error-handler.ts
+│   │   │   │   └── turnstile-verification.ts
+│   │   │   ├── types/
+│   │   │   │   └── index.ts
+│   │   │   └── page.tsx
+│   │   ├── api/             # API Routes
+│   │   │   ├── fetch-site-info/
+│   │   │   │   └── route.ts # OGP情報取得
+│   │   │   └── upload-image/
+│   │   │       └── route.ts # 画像アップロード
 │   │   ├── works/           # 作品詳細ページ
 │   │   │   ├── [作品名]/   # 各作品ディレクトリ
 │   │   │   │   ├── _assets/     # 作品固有のアセット
@@ -71,7 +105,12 @@ apps/www/
 │   │   └── data.tsx         # 静的データの一元管理
 │   ├── lib/                 # ユーティリティ関数
 │   │   ├── articles-fetcher.ts  # 外部記事API連携
-│   │   └── works.ts            # 作品データ管理
+│   │   ├── works.ts            # 作品データ管理
+│   │   ├── friend-sites.ts     # 友達サイトデータ管理
+│   │   ├── s3.ts              # Supabase Storage (S3 SDK)
+│   │   ├── url-validation.ts   # URL検証・SSRF対策
+│   │   ├── upload-config.ts    # アップロード設定
+│   │   └── site-info-fetcher.ts # OGP情報取得
 │   └── utils/               # 汎用ユーティリティ
 │       ├── cn.ts            # クラス名結合（tailwind-merge）
 │       ├── cn.test.ts
@@ -79,6 +118,17 @@ apps/www/
 ├── public/                  # 静的ファイル
 │   └── *.svg               # ロゴ・アイコン類
 └── .storybook/             # Storybook設定
+```
+
+### packages/db の構造
+
+```
+packages/db/
+├── prisma/
+│   ├── migrations/          # データベースマイグレーション
+│   ├── schema.prisma        # Prismaスキーマ定義
+│   └── seed.ts             # 初期データ投入
+└── package.json
 ```
 
 ## Docker構成
@@ -123,6 +173,40 @@ docker compose -f compose.dev.yaml down
   - **lint**: コード品質チェック（`pnpm lint`）
   - **test**: テスト実行（`pnpm test`）
 
+## データベース
+
+### Prisma ORM
+
+- **データベース**: PostgreSQL（Supabase）
+- **ORM**: Prisma 5.19.1
+- **マイグレーション**: 自動生成・管理
+
+#### 主要なテーブル
+
+- **FriendSite**: 友達サイト（相互リンク）管理
+  - URL、タイトル、説明、画像
+  - 申請者情報、承認状態
+  - 表示順序、アクティブ状態
+
+#### 開発コマンド
+
+```bash
+# Prismaクライアント生成
+pnpm db generate
+
+# データベーススキーマ同期
+pnpm db push
+
+# 初期データ投入
+pnpm db seed
+
+# マイグレーション作成
+pnpm db migrate
+
+# Prisma Studio起動
+pnpm db studio
+```
+
 ## スクリプト
 
 ### Mermaid図の同期
@@ -153,3 +237,32 @@ docker compose -f compose.dev.yaml down
   ```bash
   npm install -g @mermaid-js/mermaid-cli
   ```
+
+## 機能
+
+### 友達申請（相互リンク）機能
+
+- **申請フォーム**: `/add-friend-request`
+  - サイト情報入力（URL、タイトル、説明、運営者）
+  - 画像アップロード（最大5MB）
+  - OGP情報自動取得
+  - Cloudflare Turnstileによるスパム対策
+  - バリデーション（SSRF攻撃対策含む）
+
+- **管理機能**:
+  - 申請状態管理（PENDING/APPROVED/REJECTED）
+  - 表示順序調整
+  - アクティブ状態制御
+
+- **表示機能**:
+  - 承認済みサイトの一覧表示
+  - Supabase Storageからの画像配信
+  - レスポンシブデザイン
+
+### セキュリティ機能
+
+- **SSRF対策**: プライベートIP・ローカルホストへのアクセス防止
+- **ファイルアップロード制限**: サイズ・形式の検証
+- **URL検証**: 悪意のあるURLの排除
+- **Cloudflare Turnstile**: 人間性認証
+- **入力サニタイゼーション**: XSS攻撃対策

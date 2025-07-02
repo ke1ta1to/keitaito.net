@@ -491,3 +491,118 @@ AWS CDKデプロイに必要な環境変数：
 ```
 
 このスクリプトにより、Mermaid図の更新とSVG同期が効率化されます。
+
+## 友達申請（相互リンク）機能の実装詳細
+
+### アーキテクチャ概要
+
+```mermaid
+graph TB
+    A[ユーザー] --> B[友達申請フォーム]
+    B --> C{Cloudflare Turnstile}
+    C -->|認証成功| D[バリデーション]
+    C -->|認証失敗| E[エラー表示]
+    D --> F[OGP情報取得]
+    D --> G[画像アップロード]
+    F --> H[Supabase Storage]
+    G --> H
+    H --> I[データベース保存]
+    I --> J[承認待ち状態]
+    K[管理者] --> L[承認/拒否]
+    L --> M[公開表示]
+```
+
+### セキュリティ機能
+
+1. **SSRF（Server-Side Request Forgery）対策**:
+   - プライベートIPアドレス範囲の検証
+   - ローカルホスト識別子のブロック
+   - URLスキーマ制限（HTTP/HTTPS のみ）
+
+2. **ファイルアップロード制限**:
+   - 許可ファイル形式: JPEG, PNG, GIF, WebP
+   - 最大ファイルサイズ: 5MB（一般）、10MB（OG画像）
+   - Content-Type検証
+
+3. **入力値検証**:
+   - Zodスキーマによる型安全なバリデーション
+   - XSS攻撃対策（入力値サニタイゼーション）
+   - SQL インジェクション対策（Prisma ORM使用）
+
+### OGP情報自動取得機能
+
+- **HTMLパース**: cheerioライブラリによるDOM操作
+- **メタタグ抽出**: Open Graph、Twitter Cards対応
+- **画像ダウンロード**: 取得したOG画像の自動保存
+- **タイムアウト制御**: 15秒でタイムアウト
+- **エラーハンドリング**: 取得失敗時の適切なフォールバック
+
+### 画像管理システム
+
+- **ストレージ**: Supabase Storage（S3互換API）
+- **アクセス方式**: Next.js rewritesによるプロキシ
+- **パス構造**:
+  - 友達サイト画像: `/assets/friend-sites/`
+  - OG画像: `/assets/friend-sites/og/`
+- **ファイル名生成**: タイムスタンプ + ランダム文字列
+
+### データベース設計
+
+```sql
+model FriendSite {
+  id            String   @id @default(cuid())
+  url           String   @unique
+  title         String
+  description   String?
+  ogImage       String?
+  author        String?
+  submittedBy   String   // メールアドレス
+  submittedNote String?
+  status        Status   @default(PENDING)
+  isActive      Boolean  @default(false)
+  displayOrder  Int?
+  submittedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+```
+
+### リファクタリング成果
+
+今回の実装では、コードの保守性向上のために以下のユーティリティを作成：
+
+- **`/src/lib/url-validation.ts`**: URL検証・SSRF対策の集約
+- **`/src/lib/upload-config.ts`**: アップロード設定の中央管理
+- **`/src/lib/site-info-fetcher.ts`**: OGP取得ロジックの抽出
+
+これにより、重複コードの削除と機能の再利用性が向上しました。
+
+## API設計
+
+### `/api/upload-image`
+
+- **メソッド**: POST
+- **Content-Type**: multipart/form-data
+- **パラメータ**: file（画像ファイル）
+- **レスポンス**: `{ success: boolean, fileName?: string, error?: string }`
+- **機能**: 画像をSupabase Storageにアップロード
+
+### `/api/fetch-site-info`
+
+- **メソッド**: POST
+- **Content-Type**: application/json
+- **パラメータ**: `{ url: string }`
+- **レスポンス**: `{ success: boolean, data?: SiteInfo, error?: string }`
+- **機能**: 指定URLからOGP情報を取得・画像ダウンロード
+
+### Server Actions
+
+- **`submitFriendRequest`**: 友達申請データの保存
+  - Turnstile認証検証
+  - データベース保存
+  - リダイレクト処理
