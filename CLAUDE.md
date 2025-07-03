@@ -606,3 +606,266 @@ enum Status {
   - Turnstile認証検証
   - データベース保存
   - リダイレクト処理
+
+## Supabaseセルフホスト本番環境
+
+### 本番環境用設定ファイル
+
+#### `supabase/config.production.toml`
+
+本番環境用のSupabase設定ファイル。開発環境との主な違い：
+
+- **セキュリティ強化**: TLS必須、レートリミット強化、パスワード強度要件
+- **認証設定**: メール確認必須、セッション管理強化、Captcha必須
+- **パフォーマンス**: 接続プール有効化、最大行数制限
+- **プロダクション向け**: Supabase Studio無効、実際のSMTP使用
+
+#### `docker-compose.supabase.yml`
+
+本番環境用のSupabaseスタック全体のDocker Compose構成：
+
+**含まれるサービス:**
+
+- PostgreSQL (supabase/postgres)
+- GoTrue (supabase/gotrue) - 認証
+- PostgREST (postgrest/postgrest) - REST API
+- Realtime (supabase/realtime) - リアルタイム通信
+- Storage API (supabase/storage-api) - ファイルストレージ
+- ImageProxy (darthsim/imgproxy) - 画像変換
+- Edge Runtime (supabase/edge-runtime) - Deno関数
+- Kong (kong) - APIゲートウェイ
+
+**永続化ストレージ:**
+
+- `supabase_db_data`: PostgreSQLデータ
+- `supabase_storage_data`: アップロードファイル
+- `supabase_edge_runtime_data`: Denoキャッシュ
+
+#### `.env.supabase.production.example`
+
+本番環境用環境変数テンプレート。重要な設定項目：
+
+**機密情報 (厳重管理必須):**
+
+- `JWT_SECRET`: 全サービス共通のJWT署名キー
+- `SERVICE_ROLE_KEY`: サーバーサイド専用キー
+- `POSTGRES_PASSWORD`: データベースパスワード
+- `SMTP_PASS`: メール送信用パスワード
+- OAuth Client Secrets
+
+**公開設定:**
+
+- `ANON_KEY`: クライアントサイド公開キー
+- `SUPABASE_API_URL`: 公開API URL
+- `SUPABASE_SITE_URL`: サイトURL
+
+#### `scripts/setup-supabase-production.sh`
+
+本番環境セットアップ自動化スクリプト。機能：
+
+**キー生成 (`generate-keys`):**
+
+- OpenSSLによるセキュアなキー生成
+- JWT Secret (Base64, 32文字)
+- PostgreSQLパスワード (24文字)
+- Realtimeキー (Hex, 32文字)
+- Node.jsスクリプトによるSupabaseキー生成
+
+**初期セットアップ (`setup`):**
+
+- 必要ディレクトリ作成
+- Kong設定ファイル生成
+- PostgreSQL初期化SQLスクリプト作成
+- Docker Composeサービス起動
+- ヘルスチェック実行
+
+**運用コマンド:**
+
+- `start`: サービス起動
+- `status`: サービス状態確認
+
+### 本番環境デプロイワークフロー
+
+#### 1. 事前準備
+
+```bash
+# 前提条件確認
+docker --version
+docker-compose --version
+openssl version
+node --version
+```
+
+#### 2. セキュリティキー生成
+
+```bash
+./scripts/setup-supabase-production.sh generate-keys
+```
+
+**生成されるキー:**
+
+- JWT_SECRET
+- POSTGRES_PASSWORD
+- REALTIME_DB_ENC_KEY
+- REALTIME_SECRET_KEY_BASE
+- ANON_KEY (JWT)
+- SERVICE_ROLE_KEY (JWT)
+
+#### 3. 環境変数設定
+
+```bash
+cp .env.supabase.production.example .env.supabase.production
+```
+
+**必須設定項目:**
+
+- 生成されたセキュリティキー
+- SMTP設定 (SendGrid等)
+- ドメイン設定
+- SSL証明書設定
+
+#### 4. 初期デプロイ
+
+```bash
+./scripts/setup-supabase-production.sh setup
+```
+
+**実行内容:**
+
+- Kong APIゲートウェイ設定作成
+- PostgreSQL初期化スクリプト作成
+- 全サービスコンテナ起動
+- データベース初期化
+- ヘルスチェック実行
+
+#### 5. 運用開始
+
+```bash
+# サービス状態確認
+./scripts/setup-supabase-production.sh status
+
+# ログ確認
+docker-compose -f docker-compose.supabase.yml logs -f
+
+# 個別サービス確認
+docker-compose -f docker-compose.supabase.yml ps
+```
+
+### セキュリティベストプラクティス
+
+#### 機密情報管理
+
+**推奨方法:**
+
+- Docker Secrets
+- Kubernetes Secrets
+- HashiCorp Vault
+- AWS Systems Manager Parameter Store
+- Azure Key Vault
+- Google Secret Manager
+
+**避けるべき方法:**
+
+- 平文での環境変数ファイル保存
+- Gitリポジトリへの機密情報コミット
+- ログへの機密情報出力
+
+#### ネットワークセキュリティ
+
+**Kong APIゲートウェイ設定:**
+
+- CORS設定
+- レート制限
+- API認証 (Key-Auth)
+- TLS終端
+
+**ファイアウォール推奨設定:**
+
+- 8000/8443ポートのみ外部公開
+- 内部サービス間通信はDocker network内に制限
+- SSH接続はキーベース認証のみ
+
+#### 監視・ログ
+
+**推奨監視項目:**
+
+- サービス稼働状況
+- データベース接続数
+- API応答時間
+- ストレージ使用量
+- エラー率
+
+**ログ管理:**
+
+- 中央化ログ収集 (ELK Stack等)
+- ログローテーション設定
+- 機密情報のマスキング
+
+### トラブルシューティング
+
+#### よくある問題
+
+**サービス起動失敗:**
+
+```bash
+# 個別サービスログ確認
+docker-compose -f docker-compose.supabase.yml logs supabase_db
+docker-compose -f docker-compose.supabase.yml logs supabase_auth
+
+# ネットワーク確認
+docker network ls
+docker network inspect supabase_supabase_network
+```
+
+**データベース接続エラー:**
+
+```bash
+# データベース直接接続テスト
+docker exec -it supabase_db psql -U supabase_admin -d postgres
+
+# 接続設定確認
+docker exec -it supabase_db env | grep -E "(POSTGRES|JWT)"
+```
+
+**認証エラー:**
+
+```bash
+# JWT設定確認
+docker exec -it supabase_auth env | grep JWT
+
+# キー一致確認 (全サービスで同一JWT_SECRETが必要)
+docker-compose -f docker-compose.supabase.yml exec supabase_rest env | grep JWT
+```
+
+#### 設定変更後の対応
+
+```bash
+# 設定変更後の再起動
+docker-compose -f docker-compose.supabase.yml --env-file .env.supabase.production down
+docker-compose -f docker-compose.supabase.yml --env-file .env.supabase.production up -d
+
+# 特定サービスのみ再起動
+docker-compose -f docker-compose.supabase.yml restart supabase_auth
+```
+
+### バックアップ・復旧
+
+#### データベースバックアップ
+
+```bash
+# ダンプ作成
+docker exec supabase_db pg_dump -U supabase_admin postgres > backup.sql
+
+# 復元
+docker exec -i supabase_db psql -U supabase_admin postgres < backup.sql
+```
+
+#### ストレージバックアップ
+
+```bash
+# ストレージデータのバックアップ
+docker run --rm -v supabase_supabase_storage_data:/data -v $(pwd):/backup alpine tar czf /backup/storage-backup.tar.gz -C /data .
+
+# 復元
+docker run --rm -v supabase_supabase_storage_data:/data -v $(pwd):/backup alpine tar xzf /backup/storage-backup.tar.gz -C /data
+```

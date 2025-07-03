@@ -9,8 +9,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   async rewrites() {
-    const supabaseUrl =
-      process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
+    const supabaseUrl = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
 
     return [
       {

@@ -3,8 +3,11 @@ services:
     build:
       context: .
       dockerfile: apps/www/Dockerfile
+      args:
+        - CUSTOM_URL=${CUSTOM_URL}
+        - NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+        - SUPABASE_URL=${SUPABASE_URL}
     ports:
       - "3000:3000"
-    environment:
-      - CUSTOM_URL=https://keitaito.net/
-      - DATABASE_URL=postgresql://prisma:prisma@host.docker.internal:54322/postgres?pgbouncer=true
+    env_file:
+      - .env.prod

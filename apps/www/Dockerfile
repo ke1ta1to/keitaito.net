@@ -15,6 +15,8 @@ RUN corepack enable
 WORKDIR /app
 
 ARG CUSTOM_URL
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG SUPABASE_URL
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/www/package.json ./apps/www/
@@ -40,6 +42,8 @@ COPY --from=builder /app/apps/www/public ./apps/www/public
 
 COPY --from=builder --chown=nextjs:nodejs /app/apps/www/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/www/.next/static ./apps/www/.next/static
+
+COPY --from=builder /app/packages/db/prisma ./prisma
 
 USER nextjs
 

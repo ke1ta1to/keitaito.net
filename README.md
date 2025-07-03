@@ -207,6 +207,103 @@ pnpm db migrate
 pnpm db studio
 ```
 
+## デプロイメント
+
+### Supabaseセルフホスト本番環境
+
+本プロジェクトではSupabaseをセルフホストして本番環境で運用することができます。
+
+#### 構成ファイル
+
+- **`supabase/config.production.toml`**: 本番環境用Supabase設定
+- **`docker-compose.supabase.yml`**: Supabaseスタック用Docker Compose
+- **`.env.supabase.production.example`**: 本番環境用環境変数テンプレート
+- **`scripts/setup-supabase-production.sh`**: 自動セットアップスクリプト
+
+#### セキュリティ機能
+
+- **TLS/HTTPS必須**: 本番環境ではSSL接続のみ許可
+- **レートリミット**: API呼び出し回数制限を強化
+- **パスワード強度**: 最低8文字、英大小文字数字必須
+- **Captcha必須**: Cloudflare Turnstileでスパム対策
+- **メール確認**: ユーザー登録時のメール確認必須
+- **セッション管理**: 24時間タイムボックス、2時間非アクティブタイムアウト
+
+#### サービス構成
+
+- **PostgreSQL**: メインデータベース
+- **GoTrue**: 認証サービス
+- **PostgREST**: REST APIサービス
+- **Realtime**: リアルタイム通信
+- **Storage API**: ファイルストレージ
+- **ImageProxy**: 画像変換サービス
+- **Edge Runtime**: Deno関数実行環境
+- **Kong**: APIゲートウェイ
+
+#### ポート構成
+
+| サービス     | ポート | 説明                  |
+| ------------ | ------ | --------------------- |
+| Kong Gateway | 8000   | HTTP APIゲートウェイ  |
+| Kong Gateway | 8443   | HTTPS APIゲートウェイ |
+| PostgreSQL   | 5432   | データベース          |
+| Auth         | 9999   | 認証サービス          |
+| REST API     | 3000   | PostgREST             |
+| Realtime     | 4000   | リアルタイム通信      |
+| Storage      | 5000   | ストレージAPI         |
+| ImageProxy   | 5001   | 画像変換              |
+| Edge Runtime | 54321  | Deno関数              |
+
+#### 環境変数一覧
+
+**必須設定:**
+
+- `JWT_SECRET`: JWT署名用秘密鍵
+- `POSTGRES_PASSWORD`: PostgreSQLパスワード
+- `ANON_KEY`: 匿名アクセス用キー
+- `SERVICE_ROLE_KEY`: サービスロール用キー
+- `SUPABASE_API_URL`: 公開サービスURL
+- `SUPABASE_SITE_URL`: サイトURL
+
+**SMTP設定:**
+
+- `SMTP_HOST`: SMTPサーバーホスト
+- `SMTP_USER`: SMTPユーザー
+- `SMTP_PASS`: SMTPパスワード
+- `SMTP_ADMIN_EMAIL`: 管理者メールアドレス
+
+**オプション設定:**
+
+- OAuth設定（Google、GitHub等）
+- S3互換ストレージ設定
+- Edge Function用シークレット
+
+#### デプロイ手順
+
+1. **セキュリティキー生成**
+
+   ```bash
+   ./scripts/setup-supabase-production.sh generate-keys
+   ```
+
+2. **環境変数設定**
+
+   ```bash
+   cp .env.supabase.production.example .env.supabase.production
+   # 生成されたキーや本番環境の設定を入力
+   ```
+
+3. **初期セットアップと起動**
+
+   ```bash
+   ./scripts/setup-supabase-production.sh setup
+   ```
+
+4. **サービス状態確認**
+   ```bash
+   ./scripts/setup-supabase-production.sh status
+   ```
+
 ## スクリプト
 
 ### Mermaid図の同期
