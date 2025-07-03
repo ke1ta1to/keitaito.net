@@ -18,6 +18,7 @@ pnpmワークスペースを使用したモノレポ構成：
 - 共有レイアウトコンポーネント（`app-header.tsx`、`app-footer.tsx`、`app-layout.tsx`）
 - コンポーネント開発・ドキュメント用のStorybook
 - MDXを使用した作品詳細ページ（`works/[作品名]/page.mdx`）
+- Supabase（データベース、ストレージ）
 
 ### インフラストラクチャ（packages/infra）
 
@@ -43,6 +44,7 @@ AWS CDKによるクラウドインフラ管理：
 - **フォーマッター**: Prettier（Tailwind CSSプラグイン対応）
 - **Git hooks**: Husky（pre-commitでlintとformat実行）
 - **バリデーション**: Zod（API応答の型検証）
+- **ストレージ**: Supabase Storage（S3互換API使用）
 
 ### インフラストラクチャ（packages/infra）
 
@@ -59,6 +61,20 @@ AWS CDKによるクラウドインフラ管理：
 
 - **パッケージマネージャー**: pnpm 10.12.1（ワークスペース使用）
 - **Node.jsバージョン**: v22
+
+### Supabase
+
+- **データベース**: PostgreSQL（Prisma ORM使用）
+- **ストレージ**: S3互換API（AWS SDK v3使用）
+- **認証**: サービスロールキー
+- **環境**: ローカル開発環境（supabase/cli）
+
+#### ストレージ設定
+
+- **バケット**: `assets`（パブリック設定）
+- **アクセス方式**: Next.js rewritesで`/assets/*`を`supabase/storage/v1/object/public/assets/*`にプロキシ
+- **対応ファイル形式**: 画像（JPEG、PNG、GIF、WebP、SVG）、PDF、動画（MP4、WebM）
+- **ファイルサイズ制限**: 50MiB
 
 ## 開発コマンド
 
@@ -144,6 +160,23 @@ export DOMAIN_NAME=example.com
 export SUBDOMAIN_NAME=www
 export CUSTOM_URL=https://example.com/
 export DOCKER_IMAGE_TAG=latest
+```
+
+### Supabase
+
+```bash
+# Supabaseローカル環境起動
+supabase start
+
+# データベースマイグレーション実行
+supabase db push
+
+# Supabaseローカル環境停止
+supabase stop
+
+# Supabaseダッシュボード確認
+# Studio: http://127.0.0.1:54323
+# Storage: http://127.0.0.1:54321/storage/v1/object/public/assets/
 ```
 
 ### Docker
@@ -458,3 +491,381 @@ AWS CDKデプロイに必要な環境変数：
 ```
 
 このスクリプトにより、Mermaid図の更新とSVG同期が効率化されます。
+
+## 友達申請（相互リンク）機能の実装詳細
+
+### アーキテクチャ概要
+
+```mermaid
+graph TB
+    A[ユーザー] --> B[友達申請フォーム]
+    B --> C{Cloudflare Turnstile}
+    C -->|認証成功| D[バリデーション]
+    C -->|認証失敗| E[エラー表示]
+    D --> F[OGP情報取得]
+    D --> G[画像アップロード]
+    F --> H[Supabase Storage]
+    G --> H
+    H --> I[データベース保存]
+    I --> J[承認待ち状態]
+    K[管理者] --> L[承認/拒否]
+    L --> M[公開表示]
+```
+
+### セキュリティ機能
+
+1. **SSRF（Server-Side Request Forgery）対策**:
+   - プライベートIPアドレス範囲の検証
+   - ローカルホスト識別子のブロック
+   - URLスキーマ制限（HTTP/HTTPS のみ）
+
+2. **ファイルアップロード制限**:
+   - 許可ファイル形式: JPEG, PNG, GIF, WebP
+   - 最大ファイルサイズ: 5MB（一般）、10MB（OG画像）
+   - Content-Type検証
+
+3. **入力値検証**:
+   - Zodスキーマによる型安全なバリデーション
+   - XSS攻撃対策（入力値サニタイゼーション）
+   - SQL インジェクション対策（Prisma ORM使用）
+
+### OGP情報自動取得機能
+
+- **HTMLパース**: cheerioライブラリによるDOM操作
+- **メタタグ抽出**: Open Graph、Twitter Cards対応
+- **画像ダウンロード**: 取得したOG画像の自動保存
+- **タイムアウト制御**: 15秒でタイムアウト
+- **エラーハンドリング**: 取得失敗時の適切なフォールバック
+
+### 画像管理システム
+
+- **ストレージ**: Supabase Storage（S3互換API）
+- **アクセス方式**: Next.js rewritesによるプロキシ
+- **パス構造**:
+  - 友達サイト画像: `/assets/friend-sites/`
+  - OG画像: `/assets/friend-sites/og/`
+- **ファイル名生成**: タイムスタンプ + ランダム文字列
+
+### データベース設計
+
+```sql
+model FriendSite {
+  id            String   @id @default(cuid())
+  url           String   @unique
+  title         String
+  description   String?
+  ogImage       String?
+  author        String?
+  submittedBy   String   // メールアドレス
+  submittedNote String?
+  status        Status   @default(PENDING)
+  isActive      Boolean  @default(false)
+  displayOrder  Int?
+  submittedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+```
+
+### リファクタリング成果
+
+今回の実装では、コードの保守性向上のために以下のユーティリティを作成：
+
+- **`/src/lib/url-validation.ts`**: URL検証・SSRF対策の集約
+- **`/src/lib/upload-config.ts`**: アップロード設定の中央管理
+- **`/src/lib/site-info-fetcher.ts`**: OGP取得ロジックの抽出
+
+これにより、重複コードの削除と機能の再利用性が向上しました。
+
+## API設計
+
+### `/api/upload-image`
+
+- **メソッド**: POST
+- **Content-Type**: multipart/form-data
+- **パラメータ**: file（画像ファイル）
+- **レスポンス**: `{ success: boolean, fileName?: string, error?: string }`
+- **機能**: 画像をSupabase Storageにアップロード
+
+### `/api/fetch-site-info`
+
+- **メソッド**: POST
+- **Content-Type**: application/json
+- **パラメータ**: `{ url: string }`
+- **レスポンス**: `{ success: boolean, data?: SiteInfo, error?: string }`
+- **機能**: 指定URLからOGP情報を取得・画像ダウンロード
+
+### Server Actions
+
+- **`submitFriendRequest`**: 友達申請データの保存
+  - Turnstile認証検証
+  - データベース保存
+  - リダイレクト処理
+
+## Supabaseセルフホスト本番環境
+
+### 本番環境用設定ファイル
+
+#### `supabase/config.production.toml`
+
+本番環境用のSupabase設定ファイル。開発環境との主な違い：
+
+- **セキュリティ強化**: TLS必須、レートリミット強化、パスワード強度要件
+- **認証設定**: メール確認必須、セッション管理強化、Captcha必須
+- **パフォーマンス**: 接続プール有効化、最大行数制限
+- **プロダクション向け**: Supabase Studio無効、実際のSMTP使用
+
+#### `docker-compose.supabase.yml`
+
+本番環境用のSupabaseスタック全体のDocker Compose構成：
+
+**含まれるサービス:**
+
+- PostgreSQL (supabase/postgres)
+- GoTrue (supabase/gotrue) - 認証
+- PostgREST (postgrest/postgrest) - REST API
+- Realtime (supabase/realtime) - リアルタイム通信
+- Storage API (supabase/storage-api) - ファイルストレージ
+- ImageProxy (darthsim/imgproxy) - 画像変換
+- Edge Runtime (supabase/edge-runtime) - Deno関数
+- Kong (kong) - APIゲートウェイ
+
+**永続化ストレージ:**
+
+- `supabase_db_data`: PostgreSQLデータ
+- `supabase_storage_data`: アップロードファイル
+- `supabase_edge_runtime_data`: Denoキャッシュ
+
+#### `.env.supabase.production.example`
+
+本番環境用環境変数テンプレート。重要な設定項目：
+
+**機密情報 (厳重管理必須):**
+
+- `JWT_SECRET`: 全サービス共通のJWT署名キー
+- `SERVICE_ROLE_KEY`: サーバーサイド専用キー
+- `POSTGRES_PASSWORD`: データベースパスワード
+- `SMTP_PASS`: メール送信用パスワード
+- OAuth Client Secrets
+
+**公開設定:**
+
+- `ANON_KEY`: クライアントサイド公開キー
+- `SUPABASE_API_URL`: 公開API URL
+- `SUPABASE_SITE_URL`: サイトURL
+
+#### `scripts/setup-supabase-production.sh`
+
+本番環境セットアップ自動化スクリプト。機能：
+
+**キー生成 (`generate-keys`):**
+
+- OpenSSLによるセキュアなキー生成
+- JWT Secret (Base64, 32文字)
+- PostgreSQLパスワード (24文字)
+- Realtimeキー (Hex, 32文字)
+- Node.jsスクリプトによるSupabaseキー生成
+
+**初期セットアップ (`setup`):**
+
+- 必要ディレクトリ作成
+- Kong設定ファイル生成
+- PostgreSQL初期化SQLスクリプト作成
+- Docker Composeサービス起動
+- ヘルスチェック実行
+
+**運用コマンド:**
+
+- `start`: サービス起動
+- `status`: サービス状態確認
+
+### 本番環境デプロイワークフロー
+
+#### 1. 事前準備
+
+```bash
+# 前提条件確認
+docker --version
+docker-compose --version
+openssl version
+node --version
+```
+
+#### 2. セキュリティキー生成
+
+```bash
+./scripts/setup-supabase-production.sh generate-keys
+```
+
+**生成されるキー:**
+
+- JWT_SECRET
+- POSTGRES_PASSWORD
+- REALTIME_DB_ENC_KEY
+- REALTIME_SECRET_KEY_BASE
+- ANON_KEY (JWT)
+- SERVICE_ROLE_KEY (JWT)
+
+#### 3. 環境変数設定
+
+```bash
+cp .env.supabase.production.example .env.supabase.production
+```
+
+**必須設定項目:**
+
+- 生成されたセキュリティキー
+- SMTP設定 (SendGrid等)
+- ドメイン設定
+- SSL証明書設定
+
+#### 4. 初期デプロイ
+
+```bash
+./scripts/setup-supabase-production.sh setup
+```
+
+**実行内容:**
+
+- Kong APIゲートウェイ設定作成
+- PostgreSQL初期化スクリプト作成
+- 全サービスコンテナ起動
+- データベース初期化
+- ヘルスチェック実行
+
+#### 5. 運用開始
+
+```bash
+# サービス状態確認
+./scripts/setup-supabase-production.sh status
+
+# ログ確認
+docker-compose -f docker-compose.supabase.yml logs -f
+
+# 個別サービス確認
+docker-compose -f docker-compose.supabase.yml ps
+```
+
+### セキュリティベストプラクティス
+
+#### 機密情報管理
+
+**推奨方法:**
+
+- Docker Secrets
+- Kubernetes Secrets
+- HashiCorp Vault
+- AWS Systems Manager Parameter Store
+- Azure Key Vault
+- Google Secret Manager
+
+**避けるべき方法:**
+
+- 平文での環境変数ファイル保存
+- Gitリポジトリへの機密情報コミット
+- ログへの機密情報出力
+
+#### ネットワークセキュリティ
+
+**Kong APIゲートウェイ設定:**
+
+- CORS設定
+- レート制限
+- API認証 (Key-Auth)
+- TLS終端
+
+**ファイアウォール推奨設定:**
+
+- 8000/8443ポートのみ外部公開
+- 内部サービス間通信はDocker network内に制限
+- SSH接続はキーベース認証のみ
+
+#### 監視・ログ
+
+**推奨監視項目:**
+
+- サービス稼働状況
+- データベース接続数
+- API応答時間
+- ストレージ使用量
+- エラー率
+
+**ログ管理:**
+
+- 中央化ログ収集 (ELK Stack等)
+- ログローテーション設定
+- 機密情報のマスキング
+
+### トラブルシューティング
+
+#### よくある問題
+
+**サービス起動失敗:**
+
+```bash
+# 個別サービスログ確認
+docker-compose -f docker-compose.supabase.yml logs supabase_db
+docker-compose -f docker-compose.supabase.yml logs supabase_auth
+
+# ネットワーク確認
+docker network ls
+docker network inspect supabase_supabase_network
+```
+
+**データベース接続エラー:**
+
+```bash
+# データベース直接接続テスト
+docker exec -it supabase_db psql -U supabase_admin -d postgres
+
+# 接続設定確認
+docker exec -it supabase_db env | grep -E "(POSTGRES|JWT)"
+```
+
+**認証エラー:**
+
+```bash
+# JWT設定確認
+docker exec -it supabase_auth env | grep JWT
+
+# キー一致確認 (全サービスで同一JWT_SECRETが必要)
+docker-compose -f docker-compose.supabase.yml exec supabase_rest env | grep JWT
+```
+
+#### 設定変更後の対応
+
+```bash
+# 設定変更後の再起動
+docker-compose -f docker-compose.supabase.yml --env-file .env.supabase.production down
+docker-compose -f docker-compose.supabase.yml --env-file .env.supabase.production up -d
+
+# 特定サービスのみ再起動
+docker-compose -f docker-compose.supabase.yml restart supabase_auth
+```
+
+### バックアップ・復旧
+
+#### データベースバックアップ
+
+```bash
+# ダンプ作成
+docker exec supabase_db pg_dump -U supabase_admin postgres > backup.sql
+
+# 復元
+docker exec -i supabase_db psql -U supabase_admin postgres < backup.sql
+```
+
+#### ストレージバックアップ
+
+```bash
+# ストレージデータのバックアップ
+docker run --rm -v supabase_supabase_storage_data:/data -v $(pwd):/backup alpine tar czf /backup/storage-backup.tar.gz -C /data .
+
+# 復元
+docker run --rm -v supabase_supabase_storage_data:/data -v $(pwd):/backup alpine tar xzf /backup/storage-backup.tar.gz -C /data
+```

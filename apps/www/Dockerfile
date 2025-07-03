@@ -1,6 +1,12 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:22-slim AS builder
+FROM node:22-slim AS base
+
+RUN apt-get update -y \
+  && apt-get install -y openssl --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -9,17 +15,20 @@ RUN corepack enable
 WORKDIR /app
 
 ARG CUSTOM_URL
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG SUPABASE_URL
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/www/package.json ./apps/www/
+COPY packages/db/package.json ./packages/db/
 
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm -F www build
+RUN pnpm -F db generate && pnpm -F www build
 
-FROM node:22-slim AS runner
+FROM base AS runner
 
 WORKDIR /app
 
@@ -33,6 +42,8 @@ COPY --from=builder /app/apps/www/public ./apps/www/public
 
 COPY --from=builder --chown=nextjs:nodejs /app/apps/www/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/www/.next/static ./apps/www/.next/static
+
+COPY --from=builder /app/packages/db/prisma ./prisma
 
 USER nextjs
 
