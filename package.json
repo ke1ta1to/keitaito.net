@@ -1,0 +1,7 @@
+{
+  "name": "keitaito.net",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {},
+  "packageManager": "pnpm@10.14.0"
+}
