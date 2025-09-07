@@ -2,6 +2,12 @@
   "name": "keitaito.net",
   "version": "1.0.0",
   "private": true,
-  "scripts": {},
-  "packageManager": "pnpm@10.14.0"
+  "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
 }
