@@ -1,1 +1,14 @@
-{}
+{
+  "overrides": [
+    {
+      "files": "packages/strapi/**",
+      "excludeFiles": [
+        "packages/strapi/types/generated/contentTypes.d.ts",
+        "packages/strapi/types/generated/components.d.ts"
+      ],
+      "options": {
+        "singleQuote": true
+      }
+    }
+  ]
+}
