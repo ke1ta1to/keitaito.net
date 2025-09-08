@@ -2,5 +2,8 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
+  - '@swc/core'
+  - core-js-pure
+  - esbuild
   - sharp
   - unrs-resolver
