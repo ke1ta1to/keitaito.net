@@ -6,11 +6,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
-  const config = new DocumentBuilder().build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory, {
-    useGlobalPrefix: true,
-  });
+  if (process.env.SWAGGER_ENABLED === 'true') {
+    const config = new DocumentBuilder().build();
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, documentFactory, {
+      useGlobalPrefix: true,
+    });
+  }
 
   await app.listen(process.env.port ?? 3000);
 }
