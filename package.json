@@ -6,7 +6,7 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.16.1",
   "devDependencies": {
     "prettier": "^3.6.2"
   }

@@ -2,6 +2,7 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
+  - '@nestjs/core'
   - '@swc/core'
   - core-js-pure
   - esbuild
