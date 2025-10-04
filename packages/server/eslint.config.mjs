@@ -39,6 +39,11 @@ export default defineConfig(
       importPlugin.flatConfigs.recommended,
       importPlugin.flatConfigs.typescript,
     ],
+    settings: {
+      'import/resolver': {
+        typescript: {},
+      },
+    },
     rules: {
       'import/order': [
         'error',

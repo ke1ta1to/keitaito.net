@@ -12,6 +12,8 @@ export const usersTable = pgTable('users', {
     .$onUpdateFn(() => sql`now()`),
 });
 
+export type User = typeof usersTable.$inferSelect;
+
 export const activitiesTable = pgTable('activities', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer().references(() => usersTable.id),
@@ -19,3 +21,5 @@ export const activitiesTable = pgTable('activities', {
   description: text().notNull(),
   dateText: text().notNull(),
 });
+
+export type Activity = typeof activitiesTable.$inferSelect;
