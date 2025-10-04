@@ -1,34 +1,59 @@
 import { Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
 
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 
 import { DbService } from 'src/db/db.service';
-import { activitiesTable } from 'src/db/schema';
+import { activitiesTable, Activity } from 'src/db/schema';
 
 @Injectable()
 export class ActivitiesService {
   constructor(private readonly dbService: DbService) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  create(createActivityDto: CreateActivityDto) {
-    return 'This action adds a new activity';
+  async create(createActivityDto: CreateActivityDto): Promise<Activity> {
+    const [activity] = await this.dbService.db
+      .insert(activitiesTable)
+      .values(createActivityDto)
+      .returning();
+    return activity;
   }
 
-  async findAll() {
+  async findAll(): Promise<Activity[]> {
     return await this.dbService.db.select().from(activitiesTable);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} activity`;
+  async findOne(id: number): Promise<Activity | null> {
+    const activities = await this.dbService.db
+      .select()
+      .from(activitiesTable)
+      .where(eq(activitiesTable.id, id))
+      .limit(1);
+    if (activities.length === 0) {
+      return null;
+    }
+    return activities[0];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateActivityDto: UpdateActivityDto) {
-    return `This action updates a #${id} activity`;
+  async update(
+    id: number,
+    updateActivityDto: UpdateActivityDto,
+  ): Promise<Activity> {
+    return (
+      await this.dbService.db
+        .update(activitiesTable)
+        .set(updateActivityDto)
+        .where(eq(activitiesTable.id, id))
+        .returning()
+    )[0];
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} activity`;
+  async remove(id: number): Promise<Activity> {
+    return (
+      await this.dbService.db
+        .delete(activitiesTable)
+        .where(eq(activitiesTable.id, id))
+        .returning()
+    )[0];
   }
 }

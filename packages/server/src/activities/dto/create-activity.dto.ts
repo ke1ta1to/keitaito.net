@@ -1,10 +1,10 @@
-import type { usersTable } from 'src/db/schema';
+import type { activitiesTable } from 'src/db/schema';
 
-type User = typeof usersTable.$inferSelect;
+type ActivityInsert = typeof activitiesTable.$inferInsert;
 
-export class CreateActivityDto implements User {
-  id: number;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
+export class CreateActivityDto implements ActivityInsert {
+  title: string;
+  description: string;
+  dateText: string;
+  userId?: number | null | undefined;
 }
