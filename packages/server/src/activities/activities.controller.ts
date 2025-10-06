@@ -38,8 +38,8 @@ export class ActivitiesController {
   @Get(':id')
   @ApiOkResponse({ type: Activity })
   @ApiNotFoundResponse()
-  async findOne(@Param('id') id: string) {
-    const activity = await this.activitiesService.findOne(+id);
+  findOne(@Param('id') id: string) {
+    const activity = this.activitiesService.findOne(+id);
     if (!activity) {
       throw new NotFoundException();
     }

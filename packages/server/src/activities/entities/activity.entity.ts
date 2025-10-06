@@ -1,6 +1,4 @@
-import type { Activity as ActivityType } from 'src/db/schema';
-
-export class Activity implements ActivityType {
+export class Activity {
   id: number;
   userId: number | null;
   title: string;
