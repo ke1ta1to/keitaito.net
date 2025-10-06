@@ -3,11 +3,16 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
@@ -32,8 +37,13 @@ export class ActivitiesController {
 
   @Get(':id')
   @ApiOkResponse({ type: Activity })
-  findOne(@Param('id') id: string) {
-    return this.activitiesService.findOne(+id);
+  @ApiNotFoundResponse()
+  async findOne(@Param('id') id: string) {
+    const activity = await this.activitiesService.findOne(+id);
+    if (!activity) {
+      throw new NotFoundException();
+    }
+    return activity;
   }
 
   @Patch(':id')
