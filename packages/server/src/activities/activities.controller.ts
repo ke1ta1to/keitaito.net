@@ -1,63 +1,67 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
+  SerializeOptions,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
 
 import { ActivitiesService } from './activities.service';
-import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-activity.dto';
-import { Activity } from './entities/activity.entity';
+import { ActivityCreateDto } from './dto/activity.create.dto';
+import { ActivityResponseDto } from './dto/activity.response.dto';
+import { ActivityUpdateDto } from './dto/activity.update.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
+@SerializeOptions({ type: ActivityResponseDto })
 @Controller('activities')
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}
 
   @Post()
-  @ApiCreatedResponse({ type: Activity })
-  create(@Body() createActivityDto: CreateActivityDto) {
-    return this.activitiesService.create(createActivityDto);
+  @ApiCreatedResponse({ type: ActivityResponseDto })
+  create(@Body() createActivityDto: ActivityCreateDto) {
+    const userId = 1; // TODO
+    return this.activitiesService.create({
+      data: { ...createActivityDto, user: { connect: { id: userId } } },
+    });
   }
 
   @Get()
-  @ApiOkResponse({ type: [Activity] })
+  @ApiOkResponse({ type: [ActivityResponseDto] })
   findAll() {
     return this.activitiesService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: Activity })
+  @ApiOkResponse({ type: ActivityResponseDto })
   @ApiNotFoundResponse()
-  findOne(@Param('id') id: string) {
-    const activity = this.activitiesService.findOne(+id);
-    if (!activity) {
-      throw new NotFoundException();
-    }
-    return activity;
+  findOne(@Param('id') id: number) {
+    return this.activitiesService.findOne({ id });
   }
 
   @Patch(':id')
-  @ApiOkResponse({ type: Activity })
+  @ApiOkResponse({ type: ActivityResponseDto })
   update(
-    @Param('id') id: string,
-    @Body() updateActivityDto: UpdateActivityDto,
+    @Param('id') id: number,
+    @Body() updateActivityDto: ActivityUpdateDto,
   ) {
-    return this.activitiesService.update(+id, updateActivityDto);
+    return this.activitiesService.update({ id, data: updateActivityDto });
   }
 
   @Delete(':id')
-  @ApiOkResponse({ type: Activity })
-  remove(@Param('id') id: string) {
-    return this.activitiesService.remove(+id);
+  @ApiNoContentResponse()
+  remove(@Param('id') id: number) {
+    return this.activitiesService.remove({ id });
   }
 }

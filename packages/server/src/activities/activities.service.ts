@@ -1,27 +1,35 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-activity.dto';
+import { Prisma } from 'generated/prisma';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ActivitiesService {
-  constructor() {}
+  constructor(private prisma: PrismaService) {}
 
-  create(createActivityDto: CreateActivityDto) {
-    return {};
+  create(params: { data: Prisma.ActivityCreateInput }) {
+    const { data } = params;
+    return this.prisma.activity.create({ data });
   }
 
   findAll() {
-    return {};
+    return this.prisma.activity.findMany();
   }
 
-  findOne(id: number) {
-    return {};
+  findOne(params: { id: number }) {
+    const { id } = params;
+    return this.prisma.activity.findUniqueOrThrow({
+      where: { id },
+    });
   }
 
-  update(id: number, updateActivityDto: UpdateActivityDto) {
-    return {};
+  update(params: { id: number; data: Prisma.ActivityUpdateInput }) {
+    const { id, data } = params;
+    return this.prisma.activity.update({ where: { id }, data });
   }
 
-  remove(id: number) {}
+  remove(params: { id: number }) {
+    const { id } = params;
+    return this.prisma.activity.delete({ where: { id } });
+  }
 }
