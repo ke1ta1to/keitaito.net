@@ -7,8 +7,7 @@ const config = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/$1',
-    '^generated/(.*)$': '<rootDir>/../generated/$1',
+    '^@/(.*)$': '<rootDir>/$1',
   },
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
