@@ -62,4 +62,10 @@ export default defineConfig(
       ],
     },
   },
+  {
+    files: ['**/*.e2e-spec.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+    },
+  },
 );

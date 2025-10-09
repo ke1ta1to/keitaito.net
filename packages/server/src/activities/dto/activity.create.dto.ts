@@ -1,5 +1,7 @@
+import { IsDefined, IsOptional } from 'class-validator';
+
 export class ActivityCreateDto {
-  title: string;
-  content?: string | null;
-  dateText: string;
+  @IsDefined() title: string;
+  @IsOptional() content?: string | null;
+  @IsDefined() dateText: string;
 }
