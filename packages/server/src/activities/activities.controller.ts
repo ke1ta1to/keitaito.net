@@ -38,7 +38,7 @@ export class ActivitiesController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [ActivityResponseDto] })
+  @ApiOkResponse({ type: ActivityResponseDto, isArray: true })
   findAll() {
     return this.activitiesService.findAll();
   }
