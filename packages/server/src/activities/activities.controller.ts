@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -60,8 +61,9 @@ export class ActivitiesController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   @ApiNoContentResponse()
-  remove(@Param('id') id: number) {
-    return this.activitiesService.remove({ id });
+  async remove(@Param('id') id: number): Promise<void> {
+    await this.activitiesService.remove({ id });
   }
 }

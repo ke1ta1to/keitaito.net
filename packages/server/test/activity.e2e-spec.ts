@@ -294,7 +294,7 @@ describe('ActivitiesController (e2e)', () => {
   });
 
   describe('DELETE /activities/:id', () => {
-    it('should delete and return the activity', async () => {
+    it('should delete the activity without response body', async () => {
       const created = await prismaService.activity.create({
         data: {
           title: 'activity to delete',
@@ -306,13 +306,12 @@ describe('ActivitiesController (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/activities/${created.id}`)
-        .expect(200)
-        .expect(({ body }) => {
-          expect(body.id).toBe(created.id);
-          expect(body.title).toBe('activity to delete');
-          expect(body.content).toBe('to be deleted');
-          expect(body.dateText).toBe('May 24, 2024');
-        });
+        .expect(204);
+
+      const deleted = await prismaService.activity.findUnique({
+        where: { id: created.id },
+      });
+      expect(deleted).toBeNull();
     });
 
     it('should return 404 when activity to delete does not exist', () => {
