@@ -16,7 +16,7 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaFilter(httpAdapter));
 
-  const config = new DocumentBuilder().build();
+  const config = new DocumentBuilder().addBearerAuth().build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
