@@ -32,7 +32,6 @@ describe('ActivitiesController (e2e)', () => {
     app.useGlobalFilters(new PrismaFilter(httpAdapter));
     prismaService = app.get(PrismaService);
     await app.init();
-    await prismaService.activity.deleteMany();
   });
 
   describe('GET /activities', () => {
