@@ -5,7 +5,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class ActivitiesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   create(params: { data: Prisma.ActivityCreateInput }) {
     const { data } = params;
@@ -16,7 +16,7 @@ export class ActivitiesService {
     return this.prisma.activity.findMany();
   }
 
-  findOne(params: { id: number }) {
+  findOneOrThrow(params: { id: number }) {
     const { id } = params;
     return this.prisma.activity.findUniqueOrThrow({
       where: { id },

@@ -7,8 +7,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(userCreateDto: UserCreateDto) {
     return 'This action adds a new user';
   }
@@ -17,10 +18,15 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOneOrThrow(id: number) {
+    return this.prisma.user.findUniqueOrThrow({ where: { id } });
   }
 
+  findOneByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, userUpdateDto: UserUpdateDto) {
     return `This action updates a #${id} user`;
   }

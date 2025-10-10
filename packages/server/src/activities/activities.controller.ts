@@ -48,7 +48,7 @@ export class ActivitiesController {
   @ApiOkResponse({ type: ActivityResponseDto })
   @ApiNotFoundResponse()
   findOne(@Param('id') id: number) {
-    return this.activitiesService.findOne({ id });
+    return this.activitiesService.findOneOrThrow({ id });
   }
 
   @Patch(':id')
