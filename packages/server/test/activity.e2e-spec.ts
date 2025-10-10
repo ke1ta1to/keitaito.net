@@ -32,6 +32,15 @@ describe('ActivitiesController (e2e)', () => {
     app.useGlobalFilters(new PrismaFilter(httpAdapter));
     prismaService = app.get(PrismaService);
     await app.init();
+    await prismaService.user.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        id: 1,
+        email: 'test-user@example.com',
+        name: 'Test User',
+      },
+    });
   });
 
   describe('GET /activities', () => {
