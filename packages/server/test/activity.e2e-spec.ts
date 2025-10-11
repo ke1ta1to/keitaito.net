@@ -258,9 +258,10 @@ describe('ActivitiesController (e2e)', () => {
   });
 
   describe('PATCH /activities/:id', () => {
-    it('should update and return the activity', async () => {
+    it('should update and return the activity when id matches user', async () => {
       const created = await prismaService.activity.create({
         data: {
+          id: 1,
           title: 'activity to update',
           content: 'before update',
           dateText: 'May 22, 2024',
@@ -284,9 +285,36 @@ describe('ActivitiesController (e2e)', () => {
         });
     });
 
+    it('should return 403 when activity owner differs from user', async () => {
+      const created = await prismaService.activity.create({
+        data: {
+          title: 'activity forbidden update',
+          content: 'do not update owner mismatch',
+          dateText: 'May 22, 2024',
+          user: {
+            create: {
+              id: 2,
+              email: 'other-user@example.com',
+              name: 'Other User',
+              password: 'Password!',
+            },
+          },
+        },
+      });
+
+      await request(app.getHttpServer())
+        .patch(`/activities/${created.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'attempted update title',
+        })
+        .expect(403);
+    });
+
     it('should return 400 if extra properties are sent', async () => {
       const created = await prismaService.activity.create({
         data: {
+          id: 1,
           title: 'activity to update with extra',
           content: 'before update extra',
           dateText: 'May 23, 2024',
@@ -313,7 +341,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 404 when activity to update does not exist', () => {
       return request(app.getHttpServer())
-        .patch('/activities/999999')
+        .patch('/activities/1')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'non-existent activity',
@@ -328,9 +356,10 @@ describe('ActivitiesController (e2e)', () => {
   });
 
   describe('DELETE /activities/:id', () => {
-    it('should delete the activity without response body', async () => {
+    it('should delete the activity without response body when id matches user', async () => {
       const created = await prismaService.activity.create({
         data: {
+          id: 1,
           title: 'activity to delete',
           content: 'to be deleted',
           dateText: 'May 24, 2024',
@@ -349,9 +378,37 @@ describe('ActivitiesController (e2e)', () => {
       expect(deleted).toBeNull();
     });
 
+    it('should return 403 when activity owner differs from user', async () => {
+      const created = await prismaService.activity.create({
+        data: {
+          title: 'activity forbidden delete',
+          content: 'still there',
+          dateText: 'May 24, 2024',
+          user: {
+            create: {
+              id: 2,
+              email: 'other-user-delete@example.com',
+              name: 'Other User Delete',
+              password: 'Password!',
+            },
+          },
+        },
+      });
+
+      await request(app.getHttpServer())
+        .delete(`/activities/${created.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(403);
+
+      const existing = await prismaService.activity.findUnique({
+        where: { id: created.id },
+      });
+      expect(existing).not.toBeNull();
+    });
+
     it('should return 404 when activity to delete does not exist', () => {
       return request(app.getHttpServer())
-        .delete('/activities/999999')
+        .delete('/activities/1')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {
