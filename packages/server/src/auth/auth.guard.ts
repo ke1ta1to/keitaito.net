@@ -8,7 +8,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
+
+import { PayloadDto } from './dto/payload.dto';
+
+import { UserResponseDto } from '@/users/dto/user.response.dto';
+import { UsersService } from '@/users/users.service';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
@@ -19,6 +25,7 @@ export class AuthGuard implements CanActivate {
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -37,15 +44,18 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync<{
-        sub: number;
-        email: string;
-        name: string;
-      }>(token, {
-        secret: this.configService.getOrThrow('JWT_SECRET'),
-      });
+      const payload = plainToInstance(
+        PayloadDto,
+        await this.jwtService.verifyAsync<PayloadDto>(token, {
+          secret: this.configService.getOrThrow('JWT_SECRET'),
+        }),
+      );
       // @ts-expect-error: custom property
-      request['user'] = payload;
+      request['auth'] = payload;
+
+      const user = await this.usersService.findOneOrThrow(payload.sub);
+      // @ts-expect-error: custom property
+      request['user'] = plainToInstance(UserResponseDto, user);
     } catch {
       throw new UnauthorizedException();
     }
