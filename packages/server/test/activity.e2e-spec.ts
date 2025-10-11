@@ -7,12 +7,14 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 
 import { AppModule } from '@/app.module';
+import { AuthService } from '@/auth/auth.service';
 import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
 describe('ActivitiesController (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
+  let accessToken: string;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +33,7 @@ describe('ActivitiesController (e2e)', () => {
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaFilter(httpAdapter));
     prismaService = app.get(PrismaService);
+    const authService = app.get(AuthService);
     await app.init();
     await prismaService.user.upsert({
       where: { id: 1 },
@@ -39,14 +42,21 @@ describe('ActivitiesController (e2e)', () => {
         id: 1,
         email: 'test-user@example.com',
         name: 'Test User',
+        password: 'Password!',
       },
     });
+    const signInRes = await authService.signIn({
+      email: 'test-user@example.com',
+      password: 'Password!',
+    });
+    accessToken = signInRes.access_token;
   });
 
   describe('GET /activities', () => {
     it('should return activities with expected properties', () => {
       return request(app.getHttpServer())
         .get('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
         .expect((res) => {
           const body = res.body as unknown;
@@ -67,6 +77,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should create and return the new activity', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
           content: "activity's content",
@@ -83,6 +94,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if title is missing', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           content: "activity's content",
           dateText: 'May 20, 2024',
@@ -101,6 +113,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if dateText is missing', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
           content: "activity's content",
@@ -121,6 +134,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if extra properties are sent', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
           content: "activity's content",
@@ -141,6 +155,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if title is null', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: null,
           content: "activity's content",
@@ -160,6 +175,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if dateText is null', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
           content: "activity's content",
@@ -181,6 +197,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if title and dateText are null', () => {
       return request(app.getHttpServer())
         .post('/activities')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: null,
           content: "activity's content",
@@ -213,6 +230,7 @@ describe('ActivitiesController (e2e)', () => {
       });
       return request(app.getHttpServer())
         .get(`/activities/${created.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
         .expect(({ body }) => {
           expect(body.id).toBe(created.id);
@@ -225,6 +243,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 404 when activity does not exist', () => {
       return request(app.getHttpServer())
         .get('/activities/999999')
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {
           expect(body.statusCode).toBe(404);
@@ -247,6 +266,7 @@ describe('ActivitiesController (e2e)', () => {
 
       await request(app.getHttpServer())
         .patch(`/activities/${created.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'activity updated title',
           content: 'after update',
@@ -272,6 +292,7 @@ describe('ActivitiesController (e2e)', () => {
 
       await request(app.getHttpServer())
         .patch(`/activities/${created.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'should not update',
           extraProperty: 'extra',
@@ -289,6 +310,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 404 when activity to update does not exist', () => {
       return request(app.getHttpServer())
         .patch('/activities/999999')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'non-existent activity',
         })
@@ -314,6 +336,7 @@ describe('ActivitiesController (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/activities/${created.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(204);
 
       const deleted = await prismaService.activity.findUnique({
@@ -325,6 +348,7 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 404 when activity to delete does not exist', () => {
       return request(app.getHttpServer())
         .delete('/activities/999999')
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {
           expect(body.statusCode).toBe(404);
