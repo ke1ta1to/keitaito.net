@@ -1,32 +1,26 @@
 import {
-  Body,
   ClassSerializerInterceptor,
   Controller,
-  Delete,
   Get,
   Param,
-  Patch,
-  Post,
   SerializeOptions,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 
-import { UserCreateDto } from './dto/user.create.dto';
 import { UserResponseDto } from './dto/user.response.dto';
-import { UserUpdateDto } from './dto/user.update.dto';
 import { UsersService } from './users.service';
+
+import { AuthGuard } from '@/auth/auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ type: UserResponseDto })
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  create(@Body() userCreateDto: UserCreateDto) {
-    return this.usersService.create(userCreateDto);
-  }
 
   @Get()
   @ApiOkResponse({ type: UserResponseDto, isArray: true })
@@ -37,15 +31,5 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.usersService.findOneOrThrow(id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: number, @Body() userUpdateDto: UserUpdateDto) {
-    return this.usersService.update(id, userUpdateDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.usersService.remove(id);
   }
 }
