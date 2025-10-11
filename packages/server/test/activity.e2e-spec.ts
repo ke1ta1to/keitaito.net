@@ -35,16 +35,20 @@ describe('ActivitiesController (e2e)', () => {
     prismaService = app.get(PrismaService);
     const authService = app.get(AuthService);
     await app.init();
-    await prismaService.user.upsert({
-      where: { id: 1 },
-      update: {},
-      create: {
-        id: 1,
-        email: 'test-user@example.com',
-        name: 'Test User',
-        password: 'Password!',
-      },
-    });
+    await prismaService.$transaction([
+      prismaService.user.deleteMany(),
+      prismaService.user.upsert({
+        where: { id: 1 },
+        update: {},
+        create: {
+          id: 1,
+          email: 'test-user@example.com',
+          name: 'Test User',
+          password: 'Password!',
+        },
+      }),
+    ]);
+
     const signInRes = await authService.signIn({
       email: 'test-user@example.com',
       password: 'Password!',
