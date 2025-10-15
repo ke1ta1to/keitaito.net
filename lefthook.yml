@@ -1,0 +1,35 @@
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "*"
+      run: |
+        pnpm exec prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+    lint-www:
+      root: www/
+      glob: "*.{js,jsx,ts,tsx}"
+      run: |
+        pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+    lint-server:
+      root: server/
+      glob: "*.{js,jsx,ts,tsx}"
+      run: |
+        pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+    typecheck-www:
+      root: www/
+      glob: "*.{ts,tsx}"
+      run: |
+        pnpm exec tsc --noEmit
+    typecheck-server:
+      root: server/
+      glob: "*.{ts,tsx}"
+      run: |
+        pnpm exec tsc --noEmit
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}

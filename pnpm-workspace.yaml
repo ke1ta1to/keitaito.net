@@ -8,6 +8,7 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@scarf/scarf'
   - esbuild
+  - lefthook
   - prisma
   - sharp
   - unrs-resolver

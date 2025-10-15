@@ -6,6 +6,10 @@
     "format:check": "prettier . --check"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/types": "^20.0.0",
+    "lefthook": "^1.13.6",
     "prettier": "^3.6.2"
   },
   "packageManager": "pnpm@10.18.3"
