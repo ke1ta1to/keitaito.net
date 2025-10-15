@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "pnpm -w format",
-    "format:check": "pnpm -w format:check"
+    "format:check": "pnpm -w format:check",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "^15.5.4",

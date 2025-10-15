@@ -1,7 +1,7 @@
 {
   "overrides": [
     {
-      "files": "packages/server/**/*",
+      "files": "server/**/*",
       "options": {
         "singleQuote": true,
         "trailingComma": "all"
