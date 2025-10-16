@@ -1,0 +1,12 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "3010:3010"
+    env_file:
+      - ./server/.env
+    environment:
+      # ホストのPostgreSQLに接続するためのDATABASE_URLを上書き
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres?schema=public

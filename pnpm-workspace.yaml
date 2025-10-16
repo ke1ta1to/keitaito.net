@@ -12,3 +12,5 @@ onlyBuiltDependencies:
   - prisma
   - sharp
   - unrs-resolver
+
+injectWorkspacePackages: true
