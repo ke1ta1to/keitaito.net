@@ -10,3 +10,9 @@ services:
     environment:
       # ホストのPostgreSQLに接続するためのDATABASE_URLを上書き
       - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres?schema=public
+  www:
+    build:
+      context: .
+      dockerfile: www/Dockerfile
+    ports:
+      - "3000:3000"
