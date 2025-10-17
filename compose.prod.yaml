@@ -1,0 +1,16 @@
+services:
+  server:
+    image: ghcr.io/ke1ta1to/pf-server:sha-2d9b3e2
+    platform: linux/amd64
+    ports:
+      - "3010:3010"
+    env_file:
+      - ./server/.env
+    environment:
+      # ホストのPostgreSQLに接続するためのDATABASE_URLを上書き
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres?schema=public
+  www:
+    image: ghcr.io/ke1ta1to/pf-www:sha-2d9b3e2
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
