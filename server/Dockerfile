@@ -9,7 +9,7 @@ COPY . .
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm -F server exec prisma generate
 RUN pnpm -F server build
-RUN pnpm deploy -F server --prod /prod
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm deploy -F server --prod /prod
 
 FROM node:22-alpine AS runner
 WORKDIR /app
