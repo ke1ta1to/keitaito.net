@@ -5,8 +5,11 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
-COPY . .
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY server/package.json server/
+COPY www/package.json www/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+COPY . .
 RUN pnpm -F server exec prisma generate
 RUN pnpm -F server build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm deploy -F server --prod /prod
