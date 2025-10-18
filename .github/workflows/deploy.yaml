@@ -20,7 +20,7 @@ jobs:
     name: Build Server
     runs-on: ubuntu-latest
     permissions:
-      # contents: read
+      contents: read
       packages: write
     steps:
       - uses: actions/checkout@v5
@@ -48,13 +48,13 @@ jobs:
           provenance: false
           context: .
           file: server/Dockerfile
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   build-www:
     name: Build WWW
     runs-on: ubuntu-latest
     permissions:
-      # contents: read
+      contents: read
       packages: write
     steps:
       - uses: actions/checkout@v5
@@ -82,5 +82,5 @@ jobs:
           provenance: false
           context: .
           file: www/Dockerfile
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
