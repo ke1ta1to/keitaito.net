@@ -45,8 +45,8 @@ jobs:
           provenance: false
           context: .
           file: server/Dockerfile
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max
   build-www:
     name: Build WWW
     runs-on: ubuntu-latest
@@ -79,5 +79,5 @@ jobs:
           provenance: false
           context: .
           file: www/Dockerfile
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max
