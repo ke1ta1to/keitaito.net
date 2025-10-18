@@ -4,7 +4,9 @@ FROM node:22-alpine AS builder
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN apk add --no-cache libc6-compat
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add --no-cache libc6-compat && \
+    rm -rf /var/cache/apk/*
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
