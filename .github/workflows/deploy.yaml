@@ -9,6 +9,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - server
+      - www
   workflow_dispatch:
 
 env:
