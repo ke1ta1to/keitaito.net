@@ -4,11 +4,11 @@ import { ActivitiesController } from './activities.controller';
 import { ActivitiesService } from './activities.service';
 
 import { AuthModule } from '@/auth/auth.module';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, PrismaModule],
   controllers: [ActivitiesController],
-  providers: [ActivitiesService, PrismaService],
+  providers: [ActivitiesService],
 })
 export class ActivitiesModule {}
