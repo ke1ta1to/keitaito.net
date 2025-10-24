@@ -14,7 +14,7 @@ export class PrismaService
   }>
   implements OnModuleInit
 {
-  private readonly logger = new Logger(PrismaService.name);
+  private readonly logger = new Logger('Prisma');
 
   constructor() {
     super({
