@@ -1,16 +1,3 @@
-packages:
-  - server
-  - www
-
 onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@prisma/client'
-  - '@prisma/engines'
-  - '@scarf/scarf'
-  - esbuild
   - lefthook
-  - prisma
-  - sharp
-  - unrs-resolver
-
 injectWorkspacePackages: true
