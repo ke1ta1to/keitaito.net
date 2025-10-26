@@ -6,6 +6,13 @@
         "singleQuote": true,
         "trailingComma": "all"
       }
+    },
+    {
+      "files": "www/**/*",
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"],
+        "tailwindFunctions": ["cn", "cva"]
+      }
     }
   ]
 }
