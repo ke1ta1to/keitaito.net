@@ -12,3 +12,5 @@ onlyBuiltDependencies:
   - esbuild
   - lefthook
   - prisma
+  - sharp
+  - unrs-resolver
