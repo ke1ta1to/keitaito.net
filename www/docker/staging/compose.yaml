@@ -1,0 +1,8 @@
+name: pf-staging
+services:
+  www:
+    build:
+      context: ../../../
+      dockerfile: www/docker/staging/Dockerfile
+    ports:
+      - "3001:3000"

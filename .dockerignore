@@ -20,6 +20,10 @@ server/jest.config.mjs
 server/node_modules
 server/src/generated
 server/test
+www/.env*
+!www/.env.production.example
+!www/.env.staging.example
+!www/.env.development.example
 www/.gitignore
 www/.next
 www/Dockerfile*

@@ -1,0 +1,8 @@
+name: pf-production
+services:
+  www:
+    build:
+      context: ../../../
+      dockerfile: www/docker/production/Dockerfile
+    ports:
+      - "3002:3000"
