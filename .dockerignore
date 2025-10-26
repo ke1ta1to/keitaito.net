@@ -21,9 +21,9 @@ server/node_modules
 server/src/generated
 server/test
 www/.env*
-!www/.env.production.example
-!www/.env.staging.example
-!www/.env.development.example
+!www/.env.production.local.example
+!www/.env.staging.local.example
+!www/.env.development.local.example
 www/.gitignore
 www/.next
 www/Dockerfile*

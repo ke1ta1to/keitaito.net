@@ -5,4 +5,4 @@ services:
       context: ../../../
       dockerfile: www/docker/staging/Dockerfile
     ports:
-      - "3001:3000"
+      - "3002:3000"

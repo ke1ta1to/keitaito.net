@@ -12,7 +12,7 @@ COPY server/package.json server/
 COPY www/package.json www/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
-COPY www/docker/staging/.env.staging.example www/.env.production
+COPY www/.env.staging.local.example www/.env.production
 RUN pnpm -F www build
 
 FROM node:22-alpine AS runner

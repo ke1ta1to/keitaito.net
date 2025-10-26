@@ -5,4 +5,4 @@ services:
       context: ../../../
       dockerfile: www/docker/production/Dockerfile
     ports:
-      - "3002:3000"
+      - "3003:3000"
