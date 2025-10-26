@@ -1,3 +1,14 @@
-onlyBuiltDependencies:
-  - lefthook
+packages:
+  - server
+  - www
+
 injectWorkspacePackages: true
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - esbuild
+  - lefthook
+  - prisma
