@@ -26,5 +26,5 @@ jobs:
           cache: "pnpm"
           node-version-file: .nvmrc
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -F server prisma generate
+      - run: pnpm -F server exec prisma generate
       - run: pnpm -r --if-present lint
