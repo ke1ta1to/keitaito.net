@@ -21,7 +21,7 @@ describe('ActivitiesController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication({ logger: false });
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -29,12 +29,13 @@ describe('ActivitiesController (e2e)', () => {
         forbidNonWhitelisted: true,
       }),
     );
-
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaFilter(httpAdapter));
     prismaService = app.get(PrismaService);
     const authService = app.get(AuthService);
+
     await app.init();
+
     await prismaService.$transaction([
       prismaService.user.deleteMany(),
       prismaService.user.upsert({

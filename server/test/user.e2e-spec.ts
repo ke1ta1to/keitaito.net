@@ -22,7 +22,7 @@ describe('UsersController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication({ logger: false });
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -30,13 +30,13 @@ describe('UsersController (e2e)', () => {
         forbidNonWhitelisted: true,
       }),
     );
-
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaFilter(httpAdapter));
-    prismaService = app.get(PrismaService);
-    const authService = app.get(AuthService);
+
     await app.init();
 
+    prismaService = app.get(PrismaService);
+    const authService = app.get(AuthService);
     await prismaService.user.deleteMany();
     const seedUser = await prismaService.user.create({
       data: {

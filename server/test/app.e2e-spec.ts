@@ -1,10 +1,13 @@
+import { ValidationPipe } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
 import { AppModule } from '@/app.module';
+import { PrismaFilter } from '@/prisma/prisma.filter';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -14,7 +17,17 @@ describe('AppController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication({ logger: false });
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new PrismaFilter(httpAdapter));
+
     await app.init();
   });
 
