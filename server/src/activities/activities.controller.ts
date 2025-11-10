@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   SerializeOptions,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -25,6 +26,7 @@ import { ActivityCreateDto } from './dto/activity.create.dto';
 import { ActivityResponseDto } from './dto/activity.response.dto';
 import { ActivityUpdateDto } from './dto/activity.update.dto';
 
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { UserResponseDto } from '@/users/dto/user.response.dto';
 import { User } from '@/users/user.decorator';
 
@@ -32,6 +34,7 @@ import { User } from '@/users/user.decorator';
 @SerializeOptions({ type: ActivityResponseDto })
 @ApiBearerAuth()
 @Controller('activities')
+@UseGuards(JwtAuthGuard)
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}
 

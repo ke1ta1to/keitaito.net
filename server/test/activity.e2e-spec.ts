@@ -51,8 +51,9 @@ describe('ActivitiesController (e2e)', () => {
     ]);
 
     const signInRes = await authService.signIn({
+      id: 1,
       email: 'test-user@example.com',
-      password: 'Password!',
+      name: 'Test User',
     });
     accessToken = signInRes.access_token;
   });
@@ -75,6 +76,10 @@ describe('ActivitiesController (e2e)', () => {
             expect(activity).toHaveProperty('updatedAt');
           });
         });
+    });
+
+    it('should return 401 when no authorization token is provided', () => {
+      return request(app.getHttpServer()).get('/activities').expect(401);
     });
   });
 
@@ -221,6 +226,17 @@ describe('ActivitiesController (e2e)', () => {
           expect(body.message).toHaveLength(2);
         });
     });
+
+    it('should return 401 when no authorization token is provided', () => {
+      return request(app.getHttpServer())
+        .post('/activities')
+        .send({
+          title: "activity's title",
+          content: "activity's content",
+          dateText: 'May 20, 2024',
+        })
+        .expect(401);
+    });
   });
 
   describe('GET /activities/:id', () => {
@@ -255,6 +271,10 @@ describe('ActivitiesController (e2e)', () => {
           expect(typeof body.message).toBe('string');
           expect(body.message.length).toBeGreaterThan(0);
         });
+    });
+
+    it('should return 401 when no authorization token is provided', () => {
+      return request(app.getHttpServer()).get('/activities/1').expect(401);
     });
   });
 
@@ -354,6 +374,15 @@ describe('ActivitiesController (e2e)', () => {
           expect(body.message.length).toBeGreaterThan(0);
         });
     });
+
+    it('should return 401 when no authorization token is provided', () => {
+      return request(app.getHttpServer())
+        .patch('/activities/1')
+        .send({
+          title: 'attempted update without auth',
+        })
+        .expect(401);
+    });
   });
 
   describe('DELETE /activities/:id', () => {
@@ -417,6 +446,10 @@ describe('ActivitiesController (e2e)', () => {
           expect(typeof body.message).toBe('string');
           expect(body.message.length).toBeGreaterThan(0);
         });
+    });
+
+    it('should return 401 when no authorization token is provided', () => {
+      return request(app.getHttpServer()).delete('/activities/1').expect(401);
     });
   });
 });

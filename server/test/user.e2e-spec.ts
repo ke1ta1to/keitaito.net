@@ -47,8 +47,9 @@ describe('UsersController (e2e)', () => {
     });
     seedUserId = seedUser.id;
     const signInRes = await authService.signIn({
+      id: seedUser.id,
       email: 'test-user@example.com',
-      password: 'Password!',
+      name: 'Test User',
     });
     accessToken = signInRes.access_token;
   });
