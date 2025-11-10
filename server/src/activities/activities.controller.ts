@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -26,13 +25,11 @@ import { ActivityCreateDto } from './dto/activity.create.dto';
 import { ActivityResponseDto } from './dto/activity.response.dto';
 import { ActivityUpdateDto } from './dto/activity.update.dto';
 
-import { AuthGuard } from '@/auth/auth.guard';
 import { UserResponseDto } from '@/users/dto/user.response.dto';
 import { User } from '@/users/user.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ type: ActivityResponseDto })
-@UseGuards(AuthGuard)
 @ApiBearerAuth()
 @Controller('activities')
 export class ActivitiesController {

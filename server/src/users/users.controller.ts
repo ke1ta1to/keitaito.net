@@ -4,20 +4,15 @@ import {
   Get,
   Param,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 import { UserResponseDto } from './dto/user.response.dto';
 import { UsersService } from './users.service';
 
-import { AuthGuard } from '@/auth/auth.guard';
-
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ type: UserResponseDto })
-@UseGuards(AuthGuard)
-@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
