@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { ActivitiesModule } from './activities/activities.module';
+import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './logger.middleware';
 import { UsersModule } from './users/users.module';
 
@@ -10,6 +11,7 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({ isGlobal: true }),
     ActivitiesModule,
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule implements NestModule {
