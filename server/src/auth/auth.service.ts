@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 import { JwtPayload } from './jwt-payload.interface';
+import { PasswordService } from './password.service';
 
 import { UsersService } from '@/users/users.service';
 
@@ -10,15 +11,17 @@ import { UsersService } from '@/users/users.service';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string) {
     const user = await this.usersService.findOneByEmail(email);
-    // TODO: ハッシュ化されたパスワードとの比較に変更
-    if (user === null || user.password !== password) {
-      return null;
-    }
+
+    if (user === null) return null;
+    const isValid = await this.passwordService.compare(password, user.password);
+    if (!isValid) return null;
+
     return user;
   }
 

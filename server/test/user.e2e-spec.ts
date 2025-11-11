@@ -8,6 +8,7 @@ import type { App } from 'supertest/types';
 
 import { AppModule } from '@/app.module';
 import { AuthService } from '@/auth/auth.service';
+import { PasswordService } from '@/auth/password.service';
 import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
@@ -16,6 +17,7 @@ describe('UsersController (e2e)', () => {
   let prismaService: PrismaService;
   let accessToken: string;
   let seedUserId: number;
+  let passwordService: PasswordService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,13 +38,14 @@ describe('UsersController (e2e)', () => {
     await app.init();
 
     prismaService = app.get(PrismaService);
+    passwordService = app.get(PasswordService);
     const authService = app.get(AuthService);
     await prismaService.user.deleteMany();
     const seedUser = await prismaService.user.create({
       data: {
         email: 'test-user@example.com',
         name: 'Test User',
-        password: 'Password!',
+        password: await passwordService.hash('Password!'),
       },
     });
     seedUserId = seedUser.id;
@@ -60,7 +63,7 @@ describe('UsersController (e2e)', () => {
         data: {
           email: 'second-user@example.com',
           name: 'Second User',
-          password: 'Password!',
+          password: await passwordService.hash('Password!'),
         },
       });
 

@@ -8,6 +8,7 @@ import type { App } from 'supertest/types';
 
 import { AppModule } from '@/app.module';
 import { AuthService } from '@/auth/auth.service';
+import { PasswordService } from '@/auth/password.service';
 import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
@@ -15,6 +16,7 @@ describe('ActivitiesController (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
   let accessToken: string;
+  let passwordService: PasswordService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,6 +34,7 @@ describe('ActivitiesController (e2e)', () => {
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaFilter(httpAdapter));
     prismaService = app.get(PrismaService);
+    passwordService = app.get(PasswordService);
     const authService = app.get(AuthService);
 
     await app.init();
@@ -45,7 +48,7 @@ describe('ActivitiesController (e2e)', () => {
           id: 1,
           email: 'test-user@example.com',
           name: 'Test User',
-          password: 'Password!',
+          password: await passwordService.hash('Password!'),
         },
       }),
     ]);
@@ -317,7 +320,7 @@ describe('ActivitiesController (e2e)', () => {
               id: 2,
               email: 'other-user@example.com',
               name: 'Other User',
-              password: 'Password!',
+              password: await passwordService.hash('Password!'),
             },
           },
         },
@@ -419,7 +422,7 @@ describe('ActivitiesController (e2e)', () => {
               id: 2,
               email: 'other-user-delete@example.com',
               name: 'Other User Delete',
-              password: 'Password!',
+              password: await passwordService.hash('Password!'),
             },
           },
         },
