@@ -1,4 +1,4 @@
-import { DarkModeToggle } from "@/components/dark-mode-toggel";
+import { DarkModeToggle } from "@/components/dark-mode-togge";
 import { Button } from "@/components/ui/button";
 
 export default async function IndexPage() {
