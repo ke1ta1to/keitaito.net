@@ -1,4 +1,6 @@
+import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/nextjs-vite";
+import "../src/app/globals.css";
 
 const preview: Preview = {
   parameters: {
@@ -15,7 +17,20 @@ const preview: Preview = {
       // 'off' - skip a11y checks entirely
       test: "todo",
     },
+
+    layout: "centered",
   },
+
+  decorators: [
+    withThemeByClassName({
+      themes: {
+        // nameOfTheme: 'classNameForTheme',
+        light: "",
+        dark: "dark",
+      },
+      defaultTheme: "light",
+    }),
+  ],
 };
 
 export default preview;
