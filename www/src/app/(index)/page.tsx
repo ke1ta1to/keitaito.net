@@ -1,3 +1,4 @@
+import { DarkModeToggle } from "@/components/dark-mode-toggel";
 import { Button } from "@/components/ui/button";
 
 export default async function IndexPage() {
@@ -5,6 +6,7 @@ export default async function IndexPage() {
     <div>
       <Button>Click me</Button>
       <p>{process.env.NEXT_PUBLIC_MESSAGE}</p>
+      <DarkModeToggle />
     </div>
   );
 }
