@@ -1,4 +1,4 @@
-interface ActivitiesListProps {
+interface ActivitiesProps {
   activities: {
     date: string;
     title: string;
@@ -6,7 +6,7 @@ interface ActivitiesListProps {
   }[];
 }
 
-export function ActivitiesList(props: ActivitiesListProps) {
+export function Activities(props: ActivitiesProps) {
   const { activities } = props;
 
   return (
