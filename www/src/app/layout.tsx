@@ -1,3 +1,4 @@
+import { AppLayout } from "@/components/layouts/app-layout";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -12,7 +13,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AppLayout>{children}</AppLayout>
         </ThemeProvider>
       </body>
     </html>
