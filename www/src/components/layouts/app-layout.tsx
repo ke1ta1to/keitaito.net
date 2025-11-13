@@ -10,7 +10,7 @@ export function AppLayout(props: AppLayoutProps) {
   return (
     <>
       <Header />
-      {children}
+      <div className="mx-auto max-w-6xl px-4 py-4 pb-8">{children}</div>
     </>
   );
 }

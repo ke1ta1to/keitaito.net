@@ -1,4 +1,4 @@
-interface ActivitiesProps {
+export interface ActivitiesProps {
   activities: {
     date: string;
     title: string;
