@@ -1,3 +1,4 @@
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -30,6 +31,7 @@ import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { UserResponseDto } from '@/users/dto/user.response.dto';
 import { User } from '@/users/user.decorator';
 
+@UseInterceptors(CacheInterceptor)
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ type: ActivityResponseDto })
 @ApiBearerAuth()
