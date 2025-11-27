@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -6,10 +7,16 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import type { Request } from 'express';
 
 import { AuthService } from './auth.service';
+import { SignUpDto } from './dto/sign-up.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 
@@ -34,6 +41,13 @@ export class AuthController {
   @ApiOkResponse({ example: { access_token: 'your-access-token' } })
   signIn(@Req() req: Request) {
     return this.authService.signIn(req.user);
+  }
+
+  @Post('sign-up')
+  @ApiBody({ type: SignUpDto })
+  @ApiCreatedResponse({ example: { access_token: 'your-access-token' } })
+  signUp(@Body() signUpDto: SignUpDto) {
+    return this.authService.signUp(signUpDto.email, signUpDto.password);
   }
 
   @UseGuards(JwtAuthGuard)

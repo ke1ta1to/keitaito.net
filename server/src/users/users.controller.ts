@@ -7,7 +7,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 
 import { UserResponseDto } from './dto/user.response.dto';
 import { UsersService } from './users.service';
@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ type: UserResponseDto })
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {

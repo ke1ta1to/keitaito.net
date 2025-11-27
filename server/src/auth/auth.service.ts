@@ -31,4 +31,10 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+  async signUp(email: string, password: string) {
+    const hashedPassword = await this.passwordService.hash(password);
+    const user = await this.usersService.create(email, hashedPassword);
+    return this.signIn(user);
+  }
 }
