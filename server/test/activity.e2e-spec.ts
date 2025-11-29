@@ -24,7 +24,6 @@ describe('ActivitiesController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication({ logger: false });
-    app.setGlobalPrefix('api');
     app.enableVersioning({
       type: VersioningType.URI,
       defaultVersion: ['1'],
@@ -66,10 +65,10 @@ describe('ActivitiesController (e2e)', () => {
     accessToken = signInRes.access_token;
   });
 
-  describe('GET /api/v1/activities', () => {
+  describe('GET /v1/activities', () => {
     it('should return activities with expected properties', () => {
       return request(app.getHttpServer())
-        .get('/api/v1/activities')
+        .get('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
         .expect((res) => {
@@ -87,14 +86,14 @@ describe('ActivitiesController (e2e)', () => {
     });
 
     it('should return 401 when no authorization token is provided', () => {
-      return request(app.getHttpServer()).get('/api/v1/activities').expect(401);
+      return request(app.getHttpServer()).get('/v1/activities').expect(401);
     });
   });
 
-  describe('POST /api/v1/activities', () => {
+  describe('POST /v1/activities', () => {
     it('should create and return the new activity', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
@@ -111,7 +110,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 400 if title is missing', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           content: "activity's content",
@@ -130,7 +129,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 400 if dateText is missing', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
@@ -151,7 +150,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 400 if extra properties are sent', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
@@ -172,7 +171,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 400 if title is null', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: null,
@@ -192,7 +191,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 400 if dateText is null', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: "activity's title",
@@ -214,7 +213,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 400 if title and dateText are null', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: null,
@@ -237,7 +236,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 401 when no authorization token is provided', () => {
       return request(app.getHttpServer())
-        .post('/api/v1/activities')
+        .post('/v1/activities')
         .send({
           title: "activity's title",
           content: "activity's content",
@@ -247,7 +246,7 @@ describe('ActivitiesController (e2e)', () => {
     });
   });
 
-  describe('GET /api/v1/activities/:id', () => {
+  describe('GET /v1/activities/:id', () => {
     it('should return the requested activity', async () => {
       const created = await prismaService.activity.create({
         data: {
@@ -258,7 +257,7 @@ describe('ActivitiesController (e2e)', () => {
         },
       });
       return request(app.getHttpServer())
-        .get(`/api/v1/activities/${created.id}`)
+        .get(`/v1/activities/${created.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
         .expect(({ body }) => {
@@ -271,7 +270,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 404 when activity does not exist', () => {
       return request(app.getHttpServer())
-        .get('/api/v1/activities/999999')
+        .get('/v1/activities/999999')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {
@@ -282,13 +281,11 @@ describe('ActivitiesController (e2e)', () => {
     });
 
     it('should return 401 when no authorization token is provided', () => {
-      return request(app.getHttpServer())
-        .get('/api/v1/activities/1')
-        .expect(401);
+      return request(app.getHttpServer()).get('/v1/activities/1').expect(401);
     });
   });
 
-  describe('PATCH /api/v1/activities/:id', () => {
+  describe('PATCH /v1/activities/:id', () => {
     it('should update and return the activity when id matches user', async () => {
       const created = await prismaService.activity.create({
         data: {
@@ -301,7 +298,7 @@ describe('ActivitiesController (e2e)', () => {
       });
 
       await request(app.getHttpServer())
-        .patch(`/api/v1/activities/${created.id}`)
+        .patch(`/v1/activities/${created.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'activity updated title',
@@ -334,7 +331,7 @@ describe('ActivitiesController (e2e)', () => {
       });
 
       await request(app.getHttpServer())
-        .patch(`/api/v1/activities/${created.id}`)
+        .patch(`/v1/activities/${created.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'attempted update title',
@@ -354,7 +351,7 @@ describe('ActivitiesController (e2e)', () => {
       });
 
       await request(app.getHttpServer())
-        .patch(`/api/v1/activities/${created.id}`)
+        .patch(`/v1/activities/${created.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'should not update',
@@ -372,7 +369,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 404 when activity to update does not exist', () => {
       return request(app.getHttpServer())
-        .patch('/api/v1/activities/1')
+        .patch('/v1/activities/1')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'non-existent activity',
@@ -387,7 +384,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 401 when no authorization token is provided', () => {
       return request(app.getHttpServer())
-        .patch('/api/v1/activities/1')
+        .patch('/v1/activities/1')
         .send({
           title: 'attempted update without auth',
         })
@@ -395,7 +392,7 @@ describe('ActivitiesController (e2e)', () => {
     });
   });
 
-  describe('DELETE /api/v1/activities/:id', () => {
+  describe('DELETE /v1/activities/:id', () => {
     it('should delete the activity without response body when id matches user', async () => {
       const created = await prismaService.activity.create({
         data: {
@@ -408,7 +405,7 @@ describe('ActivitiesController (e2e)', () => {
       });
 
       await request(app.getHttpServer())
-        .delete(`/api/v1/activities/${created.id}`)
+        .delete(`/v1/activities/${created.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(204);
 
@@ -436,7 +433,7 @@ describe('ActivitiesController (e2e)', () => {
       });
 
       await request(app.getHttpServer())
-        .delete(`/api/v1/activities/${created.id}`)
+        .delete(`/v1/activities/${created.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(403);
 
@@ -448,7 +445,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 404 when activity to delete does not exist', () => {
       return request(app.getHttpServer())
-        .delete('/api/v1/activities/1')
+        .delete('/v1/activities/1')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {
@@ -460,7 +457,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 401 when no authorization token is provided', () => {
       return request(app.getHttpServer())
-        .delete('/api/v1/activities/1')
+        .delete('/v1/activities/1')
         .expect(401);
     });
   });

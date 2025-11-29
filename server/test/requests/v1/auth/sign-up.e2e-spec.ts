@@ -1,5 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
@@ -11,7 +11,7 @@ import { PasswordService } from '@/auth/password.service';
 import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
-describe('POST /auth/sign-up (e2e)', () => {
+describe('POST /v1/auth/sign-up (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
   let passwordService: PasswordService;
@@ -22,6 +22,10 @@ describe('POST /auth/sign-up (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication({ logger: false });
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: ['1'],
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -41,7 +45,7 @@ describe('POST /auth/sign-up (e2e)', () => {
 
   it('should create a new user and return an access token', async () => {
     const res = await request(app.getHttpServer())
-      .post('/auth/sign-up')
+      .post('/v1/auth/sign-up')
       .send({
         email: 'new-user@example.com',
         password: 'Password!',
@@ -72,7 +76,7 @@ describe('POST /auth/sign-up (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .post('/auth/sign-up')
+      .post('/v1/auth/sign-up')
       .send({
         email: 'duplicate-user@example.com',
         password: 'Password!',

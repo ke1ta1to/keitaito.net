@@ -1,5 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
@@ -12,7 +12,7 @@ import { PasswordService } from '@/auth/password.service';
 import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
-describe('GET /auth/profile (e2e)', () => {
+describe('GET /v1/auth/profile (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
   let passwordService: PasswordService;
@@ -24,6 +24,10 @@ describe('GET /auth/profile (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication({ logger: false });
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: ['1'],
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -57,7 +61,7 @@ describe('GET /auth/profile (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .get('/auth/profile')
+      .get('/v1/auth/profile')
       .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .expect(({ body }) => {
@@ -69,6 +73,6 @@ describe('GET /auth/profile (e2e)', () => {
   });
 
   it('should return 401 when authorization header is missing', () => {
-    return request(app.getHttpServer()).get('/auth/profile').expect(401);
+    return request(app.getHttpServer()).get('/v1/auth/profile').expect(401);
   });
 });

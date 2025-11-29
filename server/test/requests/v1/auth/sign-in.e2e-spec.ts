@@ -1,5 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
@@ -11,7 +11,7 @@ import { PasswordService } from '@/auth/password.service';
 import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
-describe('POST /auth/sign-in (e2e)', () => {
+describe('POST /v1/auth/sign-in (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
   let passwordService: PasswordService;
@@ -22,6 +22,10 @@ describe('POST /auth/sign-in (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication({ logger: false });
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: ['1'],
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -48,7 +52,7 @@ describe('POST /auth/sign-in (e2e)', () => {
     });
 
     const res = await request(app.getHttpServer())
-      .post('/auth/sign-in')
+      .post('/v1/auth/sign-in')
       .send({
         email: 'signin-user@example.com',
         password: 'Password!',
@@ -61,7 +65,7 @@ describe('POST /auth/sign-in (e2e)', () => {
 
   it('should return 401 for invalid credentials', () => {
     return request(app.getHttpServer())
-      .post('/auth/sign-in')
+      .post('/v1/auth/sign-in')
       .send({
         email: 'not-exist@example.com',
         password: 'wrong-password',
