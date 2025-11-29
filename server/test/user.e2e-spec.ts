@@ -1,63 +1,44 @@
 import type { INestApplication } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
-import type { TestingModule } from '@nestjs/testing';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
-import { AppModule } from '@/app.module';
+import { createTestApp } from './utils/create-app';
+
 import { AuthService } from '@/auth/auth.service';
 import { PasswordService } from '@/auth/password.service';
-import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
   let accessToken: string;
-  let seedUserId: number;
+  let userId: number;
   let passwordService: PasswordService;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication({ logger: false });
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    const { httpAdapter } = app.get(HttpAdapterHost);
-    app.useGlobalFilters(new PrismaFilter(httpAdapter));
-
+    app = await createTestApp();
     await app.init();
 
     prismaService = app.get(PrismaService);
     passwordService = app.get(PasswordService);
     const authService = app.get(AuthService);
     await prismaService.user.deleteMany();
-    const seedUser = await prismaService.user.create({
-      data: {
+    const hashedPassword = await passwordService.hash('Password!');
+    const user = await prismaService.user.upsert({
+      where: { email: 'test-user@example.com' },
+      update: {},
+      create: {
         email: 'test-user@example.com',
+        password: hashedPassword,
         name: 'Test User',
-        password: await passwordService.hash('Password!'),
       },
     });
-    seedUserId = seedUser.id;
-    const signInRes = await authService.signIn({
-      id: seedUser.id,
-      email: 'test-user@example.com',
-      name: 'Test User',
-    });
-    accessToken = signInRes.access_token;
+    userId = user.id;
+    const signUpRes = await authService.signIn({ id: userId });
+    accessToken = signUpRes.access_token;
   });
 
-  describe('GET /users', () => {
+  describe('GET /v1/users', () => {
     it('should return users without password field', async () => {
       await prismaService.user.create({
         data: {
@@ -68,7 +49,7 @@ describe('UsersController (e2e)', () => {
       });
 
       return request(app.getHttpServer())
-        .get('/users')
+        .get('/v1/users')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
         .expect(({ body }) => {
@@ -97,18 +78,18 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return 401 when authorization header is missing', () => {
-      return request(app.getHttpServer()).get('/users').expect(401);
+      return request(app.getHttpServer()).get('/v1/users').expect(401);
     });
   });
 
-  describe('GET /users/:id', () => {
+  describe('GET /v1/users/:id', () => {
     it('should return the requested user', () => {
       return request(app.getHttpServer())
-        .get(`/users/${seedUserId}`)
+        .get(`/v1/users/${userId}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
         .expect(({ body }) => {
-          expect(body.id).toBe(seedUserId);
+          expect(body.id).toBe(userId);
           expect(body.email).toBe('test-user@example.com');
           expect(body.name).toBe('Test User');
           expect(body.password).toBeUndefined();
@@ -119,13 +100,13 @@ describe('UsersController (e2e)', () => {
 
     it('should return 401 when authorization header is missing', () => {
       return request(app.getHttpServer())
-        .get(`/users/${seedUserId}`)
+        .get(`/v1/users/${userId}`)
         .expect(401);
     });
 
     it('should return 404 when the user does not exist', () => {
       return request(app.getHttpServer())
-        .get('/users/999999')
+        .get('/v1/users/999999')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {

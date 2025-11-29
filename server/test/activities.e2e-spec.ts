@@ -1,68 +1,37 @@
 import type { INestApplication } from '@nestjs/common';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
-import type { TestingModule } from '@nestjs/testing';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
-import { AppModule } from '@/app.module';
+import { createTestApp } from './utils/create-app';
+
 import { AuthService } from '@/auth/auth.service';
 import { PasswordService } from '@/auth/password.service';
-import { PrismaFilter } from '@/prisma/prisma.filter';
 import { PrismaService } from '@/prisma/prisma.service';
 
 describe('ActivitiesController (e2e)', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
+  let userId: number;
   let accessToken: string;
   let passwordService: PasswordService;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    app = await createTestApp();
+    await app.init();
 
-    app = moduleFixture.createNestApplication({ logger: false });
-    app.enableVersioning({
-      type: VersioningType.URI,
-      defaultVersion: ['1'],
-    });
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    const { httpAdapter } = app.get(HttpAdapterHost);
-    app.useGlobalFilters(new PrismaFilter(httpAdapter));
     prismaService = app.get(PrismaService);
     passwordService = app.get(PasswordService);
     const authService = app.get(AuthService);
-
-    await app.init();
-
-    await prismaService.$transaction([
-      prismaService.user.deleteMany(),
-      prismaService.user.upsert({
-        where: { id: 1 },
-        update: {},
-        create: {
-          id: 1,
-          email: 'test-user@example.com',
-          name: 'Test User',
-          password: await passwordService.hash('Password!'),
-        },
-      }),
-    ]);
-
-    const signInRes = await authService.signIn({
-      id: 1,
-      email: 'test-user@example.com',
-      name: 'Test User',
+    await prismaService.user.deleteMany();
+    const hashedPassword = await passwordService.hash('Password!');
+    const user = await prismaService.user.upsert({
+      where: { email: 'test-user@example.com' },
+      update: {},
+      create: { email: 'test-user@example.com', password: hashedPassword },
     });
-    accessToken = signInRes.access_token;
+    userId = user.id;
+    const signUpRes = await authService.signIn({ id: userId });
+    accessToken = signUpRes.access_token;
   });
 
   describe('GET /v1/activities', () => {
@@ -253,7 +222,7 @@ describe('ActivitiesController (e2e)', () => {
           title: 'activity for get one',
           content: 'activity content',
           dateText: 'May 21, 2024',
-          userId: 1,
+          userId,
         },
       });
       return request(app.getHttpServer())
@@ -293,7 +262,7 @@ describe('ActivitiesController (e2e)', () => {
           title: 'activity to update',
           content: 'before update',
           dateText: 'May 22, 2024',
-          userId: 1,
+          userId,
         },
       });
 
@@ -321,7 +290,6 @@ describe('ActivitiesController (e2e)', () => {
           dateText: 'May 22, 2024',
           user: {
             create: {
-              id: 2,
               email: 'other-user@example.com',
               name: 'Other User',
               password: await passwordService.hash('Password!'),
@@ -342,11 +310,10 @@ describe('ActivitiesController (e2e)', () => {
     it('should return 400 if extra properties are sent', async () => {
       const created = await prismaService.activity.create({
         data: {
-          id: 1,
           title: 'activity to update with extra',
           content: 'before update extra',
           dateText: 'May 23, 2024',
-          userId: 1,
+          userId,
         },
       });
 
@@ -400,7 +367,7 @@ describe('ActivitiesController (e2e)', () => {
           title: 'activity to delete',
           content: 'to be deleted',
           dateText: 'May 24, 2024',
-          userId: 1,
+          userId,
         },
       });
 
@@ -423,7 +390,6 @@ describe('ActivitiesController (e2e)', () => {
           dateText: 'May 24, 2024',
           user: {
             create: {
-              id: 2,
               email: 'other-user-delete@example.com',
               name: 'Other User Delete',
               password: await passwordService.hash('Password!'),

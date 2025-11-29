@@ -56,8 +56,6 @@ describe('GET /v1/auth/profile (e2e)', () => {
     });
     const { access_token } = await authService.signIn({
       id: user.id,
-      email: user.email,
-      name: user.name,
     });
 
     return request(app.getHttpServer())
