@@ -2,9 +2,9 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
-import { createTestApp } from './utils/create-app';
+import { createTestApp } from '../../utils/create-test-app';
+import { createTestUser } from '../../utils/create-test-user';
 
-import { AuthService } from '@/auth/auth.service';
 import { PasswordService } from '@/auth/password.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
@@ -19,23 +19,12 @@ describe('UsersController (e2e)', () => {
     app = await createTestApp();
     await app.init();
 
+    const testUser = await createTestUser(app);
+    accessToken = testUser.accessToken;
+    userId = testUser.userId;
+
     prismaService = app.get(PrismaService);
     passwordService = app.get(PasswordService);
-    const authService = app.get(AuthService);
-    await prismaService.user.deleteMany();
-    const hashedPassword = await passwordService.hash('Password!');
-    const user = await prismaService.user.upsert({
-      where: { email: 'test-user@example.com' },
-      update: {},
-      create: {
-        email: 'test-user@example.com',
-        password: hashedPassword,
-        name: 'Test User',
-      },
-    });
-    userId = user.id;
-    const signUpRes = await authService.signIn({ id: userId });
-    accessToken = signUpRes.access_token;
   });
 
   describe('GET /v1/users', () => {

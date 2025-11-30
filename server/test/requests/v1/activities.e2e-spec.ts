@@ -2,9 +2,9 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
-import { createTestApp } from './utils/create-app';
+import { createTestApp } from '../../utils/create-test-app';
+import { createTestUser } from '../../utils/create-test-user';
 
-import { AuthService } from '@/auth/auth.service';
 import { PasswordService } from '@/auth/password.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
@@ -13,25 +13,15 @@ describe('ActivitiesController (e2e)', () => {
   let prismaService: PrismaService;
   let userId: number;
   let accessToken: string;
-  let passwordService: PasswordService;
 
   beforeEach(async () => {
     app = await createTestApp();
     await app.init();
 
     prismaService = app.get(PrismaService);
-    passwordService = app.get(PasswordService);
-    const authService = app.get(AuthService);
-    await prismaService.user.deleteMany();
-    const hashedPassword = await passwordService.hash('Password!');
-    const user = await prismaService.user.upsert({
-      where: { email: 'test-user@example.com' },
-      update: {},
-      create: { email: 'test-user@example.com', password: hashedPassword },
-    });
-    userId = user.id;
-    const signUpRes = await authService.signIn({ id: userId });
-    accessToken = signUpRes.access_token;
+    const createdUser = await createTestUser(app);
+    userId = createdUser.userId;
+    accessToken = createdUser.accessToken;
   });
 
   describe('GET /v1/activities', () => {
@@ -258,7 +248,6 @@ describe('ActivitiesController (e2e)', () => {
     it('should update and return the activity when id matches user', async () => {
       const created = await prismaService.activity.create({
         data: {
-          id: 1,
           title: 'activity to update',
           content: 'before update',
           dateText: 'May 22, 2024',
@@ -283,6 +272,7 @@ describe('ActivitiesController (e2e)', () => {
     });
 
     it('should return 403 when activity owner differs from user', async () => {
+      const passwordService = app.get(PasswordService);
       const created = await prismaService.activity.create({
         data: {
           title: 'activity forbidden update',
@@ -336,7 +326,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 404 when activity to update does not exist', () => {
       return request(app.getHttpServer())
-        .patch('/v1/activities/1')
+        .patch('/v1/activities/999999')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'non-existent activity',
@@ -363,7 +353,6 @@ describe('ActivitiesController (e2e)', () => {
     it('should delete the activity without response body when id matches user', async () => {
       const created = await prismaService.activity.create({
         data: {
-          id: 1,
           title: 'activity to delete',
           content: 'to be deleted',
           dateText: 'May 24, 2024',
@@ -383,6 +372,7 @@ describe('ActivitiesController (e2e)', () => {
     });
 
     it('should return 403 when activity owner differs from user', async () => {
+      const passwordService = app.get(PasswordService);
       const created = await prismaService.activity.create({
         data: {
           title: 'activity forbidden delete',
@@ -411,7 +401,7 @@ describe('ActivitiesController (e2e)', () => {
 
     it('should return 404 when activity to delete does not exist', () => {
       return request(app.getHttpServer())
-        .delete('/v1/activities/1')
+        .delete('/v1/activities/999999')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(404)
         .expect(({ body }) => {
