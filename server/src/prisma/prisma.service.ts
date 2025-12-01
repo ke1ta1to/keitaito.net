@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 
 import { PrismaClient } from '@/generated/prisma';
 
@@ -12,7 +17,7 @@ export class PrismaService
       { emit: 'event'; level: 'error' },
     ];
   }>
-  implements OnModuleInit
+  implements OnModuleInit, OnModuleDestroy
 {
   private readonly logger = new Logger('Prisma');
 
@@ -37,5 +42,9 @@ export class PrismaService
     this.$on('warn', (e) => this.logger.warn(e.message));
     this.$on('error', (e) => this.logger.error(e.message));
     await this.$connect();
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
   }
 }

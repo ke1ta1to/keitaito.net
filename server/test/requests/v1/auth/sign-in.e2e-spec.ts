@@ -43,6 +43,10 @@ describe('POST /v1/auth/sign-in (e2e)', () => {
     await prismaService.user.deleteMany();
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   it('should return an access token for valid credentials', async () => {
     await prismaService.user.create({
       data: {

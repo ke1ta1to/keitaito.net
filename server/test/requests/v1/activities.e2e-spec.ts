@@ -24,6 +24,10 @@ describe('ActivitiesController (e2e)', () => {
     accessToken = createdUser.accessToken;
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   describe('GET /v1/activities', () => {
     it('should return activities with expected properties', () => {
       return request(app.getHttpServer())

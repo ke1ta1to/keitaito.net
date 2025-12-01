@@ -27,6 +27,10 @@ describe('UsersController (e2e)', () => {
     passwordService = app.get(PasswordService);
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   describe('GET /v1/users', () => {
     it('should return users without password field', async () => {
       await prismaService.user.create({

@@ -46,6 +46,10 @@ describe('GET /v1/auth/profile (e2e)', () => {
     await prismaService.user.deleteMany();
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   it('should return profile when authorized', async () => {
     const user = await prismaService.user.create({
       data: {

@@ -43,6 +43,10 @@ describe('POST /v1/auth/sign-up (e2e)', () => {
     await prismaService.user.deleteMany();
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   it('should create a new user and return an access token', async () => {
     const res = await request(app.getHttpServer())
       .post('/v1/auth/sign-up')
