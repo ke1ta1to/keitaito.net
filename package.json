@@ -1,9 +1,5 @@
 {
   "name": "keitaito.net",
   "scripts": {},
-  "packageManager": "pnpm@10.26.1",
-  "devDependencies": {
-    "@types/node": "^24.10.4",
-    "typescript": "^5.9.3"
-  }
+  "packageManager": "pnpm@10.27.0"
 }
