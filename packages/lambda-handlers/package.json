@@ -1,0 +1,7 @@
+{
+  "name": "@repo/lambda-handlers",
+  "scripts": {},
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.159"
+  }
+}

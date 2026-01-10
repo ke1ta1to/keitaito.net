@@ -1,16 +1,39 @@
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as path from "path";
+import * as cdk from "aws-cdk-lib/core";
+import { Construct } from "constructs";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs";
+import * as apiGateway from "aws-cdk-lib/aws-apigatewayv2";
+import * as apiGatewayIntegrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 
 export class PortfolioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const functionsDir = path.join(
+      __dirname,
+      "../../",
+      "lambda-handlers/src/functions"
+    );
+    const getActivitiesFunction = new lambdaNodejs.NodejsFunction(
+      this,
+      "GetActivitiesFunction",
+      {
+        runtime: lambda.Runtime.NODEJS_24_X,
+        entry: path.join(functionsDir, "get-activities.ts"),
+      }
+    );
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'PortfolioQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const api = new apiGateway.HttpApi(this, "PortfolioApi");
+    api.addRoutes({
+      methods: [apiGateway.HttpMethod.GET],
+      path: "/activities",
+      integration: new apiGatewayIntegrations.HttpLambdaIntegration(
+        "GetActivitiesIntegration",
+        getActivitiesFunction
+      ),
+    });
+
+    new cdk.CfnOutput(this, "ApiUrl", { value: api.apiEndpoint });
   }
 }
