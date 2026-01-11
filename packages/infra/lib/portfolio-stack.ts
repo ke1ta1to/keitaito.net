@@ -16,42 +16,24 @@ export class PortfolioStack extends cdk.Stack {
 
     const userPool = new cognito.UserPool(this, "UserPool", {
       signInAliases: { email: true },
-    });
-
-    const scopes = [
-      new cognito.ResourceServerScope({
-        scopeName: "activities.read",
-        scopeDescription: "Read access to activities",
-      }),
-      new cognito.ResourceServerScope({
-        scopeName: "activities.write",
-        scopeDescription: "Write access to activities",
-      }),
-    ];
-
-    const resourceServer = userPool.addResourceServer("ResourceServer", {
-      identifier: "portfolio-api",
-      scopes,
+      selfSignUpEnabled: false,
     });
 
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
-      generateSecret: true,
-      oAuth: {
-        flows: {
-          clientCredentials: true,
-        },
-        scopes: scopes.map((scope) =>
-          cognito.OAuthScope.resourceServer(resourceServer, scope)
-        ),
-      },
     });
 
-    const userPoolDomain = new cognito.UserPoolDomain(this, "UserPoolDomain", {
-      userPool,
+    new cognito.CfnManagedLoginBranding(this, "ManagedLoginBranding", {
+      userPoolId: userPool.userPoolId,
+      clientId: userPoolClient.userPoolClientId,
+      useCognitoProvidedValues: true,
+    });
+
+    const userPoolDomain = userPool.addDomain("UserPoolDomain", {
       cognitoDomain: {
         domainPrefix: `${id.toLowerCase()}-${cdk.Aws.ACCOUNT_ID}`,
       },
+      managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
     });
 
     const authorizer = new apiGateway.CognitoUserPoolsAuthorizer(
@@ -123,7 +105,6 @@ export class PortfolioStack extends cdk.Stack {
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
-        authorizationScopes: ["portfolio-api/activities.read"],
       }
     );
     activities.addMethod(
@@ -136,7 +117,6 @@ export class PortfolioStack extends cdk.Stack {
         },
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
-        authorizationScopes: ["portfolio-api/activities.write"],
       }
     );
 
@@ -145,9 +125,6 @@ export class PortfolioStack extends cdk.Stack {
     });
     new cdk.CfnOutput(this, "UserPoolClientId", {
       value: userPoolClient.userPoolClientId,
-    });
-    new cdk.CfnOutput(this, "UserPoolClientSecret", {
-      value: userPoolClient.userPoolClientSecret.unsafeUnwrap(),
     });
     new cdk.CfnOutput(this, "CognitoDomain", {
       value: userPoolDomain.domainName,
