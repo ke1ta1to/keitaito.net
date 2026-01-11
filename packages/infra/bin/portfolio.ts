@@ -11,7 +11,7 @@ const envName = EnvironmentContextSchema.parse(app.node.tryGetContext("env"));
 
 switch (envName) {
   case "dev":
-    new PortfolioStack(app, "portfolio-dev", {
+    new PortfolioStack(app, "PortfolioDevelopment", {
       env: {
         account: process.env.CDK_DEFAULT_ACCOUNT,
         region: process.env.CDK_DEFAULT_REGION,
@@ -19,7 +19,7 @@ switch (envName) {
     });
     break;
   case "prod":
-    new PortfolioStack(app, "portfolio-prod", {
+    new PortfolioStack(app, "PortfolioProduction", {
       env: {
         account: process.env.CDK_DEFAULT_ACCOUNT,
         region: process.env.CDK_DEFAULT_REGION,
