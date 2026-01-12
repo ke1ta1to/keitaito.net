@@ -12,6 +12,11 @@ export class PortfolioStack extends cdk.Stack {
 
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
+      defaultCorsPreflightOptions: {
+        allowOrigins: apiGateway.Cors.ALL_ORIGINS,
+        allowMethods: apiGateway.Cors.ALL_METHODS,
+        allowHeaders: apiGateway.Cors.DEFAULT_HEADERS,
+      },
     });
 
     const userPool = new cognito.UserPool(this, "UserPool", {
@@ -21,6 +26,10 @@ export class PortfolioStack extends cdk.Stack {
 
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
+      oAuth: {
+        callbackUrls: ["http://localhost:3000/admin"],
+        logoutUrls: ["http://localhost:3000/admin"],
+      },
     });
 
     new cognito.CfnManagedLoginBranding(this, "ManagedLoginBranding", {
