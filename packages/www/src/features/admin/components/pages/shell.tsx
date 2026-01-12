@@ -29,7 +29,7 @@ export default function AdminShell() {
         <Route
           index
           element={
-            <div className="flex flex-col">
+            <div className="">
               <p>Admin Dashboard</p>
               <SignInButton />
               <FetchTokenButton />

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 export function FetchTokenButton() {
@@ -20,5 +21,5 @@ export function FetchTokenButton() {
     const data = await res.json();
     console.log("response data:", data);
   };
-  return <button onClick={handleFetchToken}>Fetch Token</button>;
+  return <Button variant="destructive" onClick={handleFetchToken}>Fetch Token</Button>;
 }
