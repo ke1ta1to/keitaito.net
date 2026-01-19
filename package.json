@@ -1,8 +1,4 @@
 {
   "name": "keitaito.net",
-  "scripts": {},
-  "devDependencies": {
-    "esbuild": "^0.27.2"
-  },
   "packageManager": "pnpm@10.27.0"
 }
