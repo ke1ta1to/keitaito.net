@@ -3,7 +3,7 @@ GOARCH := arm64
 CGO_ENABLED := 0
 DIST_DIR := ../../dist/functions
 
-FUNCTIONS := get-activities get-activity
+FUNCTIONS := get-activities get-activity create-activity
 
 .PHONY: all clean $(FUNCTIONS)
 

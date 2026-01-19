@@ -80,6 +80,15 @@ export class PortfolioStack extends cdk.Stack {
     table.grantReadData(getActivityFn);
     getActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
+    const createActivityFn = new lambda.Function(this, "CreateActivityFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "create-activity")),
+    });
+    table.grantWriteData(createActivityFn);
+    createActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+
     const activities = restApi.root.addResource("activities");
     activities.addMethod(
       "GET",
@@ -94,6 +103,15 @@ export class PortfolioStack extends cdk.Stack {
     activityById.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(getActivityFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+      },
+    );
+
+    activities.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(createActivityFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,

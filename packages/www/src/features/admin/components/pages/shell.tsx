@@ -1,7 +1,6 @@
 import { Amplify } from "aws-amplify";
 import { HashRouter, Link, Route, Routes } from "react-router";
-import { SignInButton } from "../sign-in-button";
-import { FetchTokenButton } from "../fetch-token-button";
+import { ApiTestPanel } from "../api-test-panel";
 
 Amplify.configure({
   Auth: {
@@ -29,30 +28,38 @@ export default function AdminShell() {
         <Route
           index
           element={
-            <div className="">
-              <p>Admin Dashboard</p>
-              <SignInButton />
-              <FetchTokenButton />
-              <Link to="/users">Go to User Management</Link>
-              <Link to="/settings">Go to Settings</Link>
+            <div className="min-h-screen bg-background p-8">
+              <ApiTestPanel />
+              <div className="max-w-2xl mx-auto mt-6 flex gap-4">
+                <Link to="/users" className="text-sm text-muted-foreground hover:underline">
+                  Go to User Management
+                </Link>
+                <Link to="/settings" className="text-sm text-muted-foreground hover:underline">
+                  Go to Settings
+                </Link>
+              </div>
             </div>
           }
         />
         <Route
           path="users"
           element={
-            <div>
-              <p>User Management</p>
-              <Link to="/">Back to Dashboard</Link>
+            <div className="min-h-screen bg-background p-8">
+              <p className="text-xl font-semibold">User Management</p>
+              <Link to="/" className="text-sm text-muted-foreground hover:underline">
+                Back to Dashboard
+              </Link>
             </div>
           }
         />
         <Route
           path="settings"
           element={
-            <div>
-              <p>Settings</p>
-              <Link to="/">Back to Dashboard</Link>
+            <div className="min-h-screen bg-background p-8">
+              <p className="text-xl font-semibold">Settings</p>
+              <Link to="/" className="text-sm text-muted-foreground hover:underline">
+                Back to Dashboard
+              </Link>
             </div>
           }
         />
