@@ -14,6 +14,9 @@ export class PortfolioStack extends cdk.Stack {
 
     const restApi = new apiGateway.RestApi(this, "PortfolioApi", {
       restApiName: `${this.stackName}Api`,
+      defaultCorsPreflightOptions: {
+        allowOrigins: apiGateway.Cors.ALL_ORIGINS,
+      },
     });
 
     const userPool = new cognito.UserPool(this, "UserPool", {
@@ -59,20 +62,43 @@ export class PortfolioStack extends cdk.Stack {
 
     const distRoot = path.join(__dirname, "../../../dist/functions");
 
-    const fn = new lambda.Function(this, "GetActivitiesFunction", {
+    const getActivitiesFn = new lambda.Function(this, "GetActivitiesFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
       handler: "bootstrap",
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "get-activities")),
     });
-    table.grantReadData(fn);
-    fn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    table.grantReadData(getActivitiesFn);
+    getActivitiesFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+
+    const getActivityFn = new lambda.Function(this, "GetActivityFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "get-activity")),
+    });
+    table.grantReadData(getActivityFn);
+    getActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
     const activities = restApi.root.addResource("activities");
-    activities.addMethod("GET", new apiGateway.LambdaIntegration(fn), {
-      authorizationType: apiGateway.AuthorizationType.COGNITO,
-      authorizer,
-    });
+    activities.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(getActivitiesFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+      },
+    );
+
+    const activityById = activities.addResource("{id}");
+    activityById.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(getActivityFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+      },
+    );
 
     new cdk.CfnOutput(this, "UserPoolId", {
       value: userPool.userPoolId,
