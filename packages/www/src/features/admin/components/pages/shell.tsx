@@ -6,8 +6,8 @@ import { FetchTokenButton } from "../fetch-token-button";
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: "ap-northeast-1_RCyxtw3pe",
-      userPoolClientId: "4a5qefkpusbktpamn4p8i5vj1a",
+      userPoolId: "ap-northeast-1_ao0flv9ZB",
+      userPoolClientId: "2mlsu3u2jebcirli2sk75pt48f",
       loginWith: {
         oauth: {
           domain:
@@ -15,7 +15,7 @@ Amplify.configure({
           redirectSignIn: ["http://localhost:3000/admin"],
           redirectSignOut: ["http://localhost:3000/admin"],
           responseType: "code",
-          scopes: ["email", "openid", "portfolio-api/api"],
+          scopes: ["email", "openid"],
         },
       },
     },
