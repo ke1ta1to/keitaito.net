@@ -89,6 +89,24 @@ export class PortfolioStack extends cdk.Stack {
     table.grantWriteData(createActivityFn);
     createActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
+    const updateActivityFn = new lambda.Function(this, "UpdateActivityFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "update-activity")),
+    });
+    table.grantReadWriteData(updateActivityFn);
+    updateActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+
+    const deleteActivityFn = new lambda.Function(this, "DeleteActivityFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "delete-activity")),
+    });
+    table.grantWriteData(deleteActivityFn);
+    deleteActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+
     const activities = restApi.root.addResource("activities");
     activities.addMethod(
       "GET",
@@ -103,6 +121,22 @@ export class PortfolioStack extends cdk.Stack {
     activityById.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(getActivityFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+      },
+    );
+    activityById.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(updateActivityFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+      },
+    );
+    activityById.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(deleteActivityFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,

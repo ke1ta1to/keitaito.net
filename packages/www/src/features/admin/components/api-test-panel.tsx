@@ -24,6 +24,9 @@ export function ApiTestPanel() {
   const [isLoading, setIsLoading] = useState(true);
   const [activityId, setActivityId] = useState("");
   const [newTitle, setNewTitle] = useState("");
+  const [updateId, setUpdateId] = useState("");
+  const [updateTitle, setUpdateTitle] = useState("");
+  const [deleteId, setDeleteId] = useState("");
   const [response, setResponse] = useState<ResponseState>({
     status: "idle",
     data: null,
@@ -70,6 +73,10 @@ export function ApiTestPanel() {
       },
       body: body ? JSON.stringify(body) : undefined,
     });
+
+    if (res.status === 204) {
+      return { message: "Deleted successfully" };
+    }
     return res.json();
   };
 
@@ -101,6 +108,18 @@ export function ApiTestPanel() {
   const handleCreateActivity = () => {
     executeApiCall("POST", "/activities", { title: newTitle.trim() });
     setNewTitle("");
+  };
+
+  const handleUpdateActivity = () => {
+    executeApiCall("PUT", `/activities/${updateId.trim()}`, {
+      title: updateTitle.trim(),
+    });
+    setUpdateTitle("");
+  };
+
+  const handleDeleteActivity = () => {
+    executeApiCall("DELETE", `/activities/${deleteId.trim()}`);
+    setDeleteId("");
   };
 
   if (isLoading) {
@@ -184,6 +203,48 @@ export function ApiTestPanel() {
             />
             <Button variant="outline" size="sm" onClick={handleCreateActivity}>
               POST /activities
+            </Button>
+          </div>
+
+          {/* PUT /activities/{id} */}
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="ID"
+              value={updateId}
+              onChange={(e) => setUpdateId(e.target.value)}
+              className="max-w-30"
+            />
+            <Input
+              placeholder="Title"
+              value={updateTitle}
+              onChange={(e) => setUpdateTitle(e.target.value)}
+              className="max-w-40"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleUpdateActivity}
+              disabled={!updateId.trim() || !updateTitle.trim()}
+            >
+              PUT /activities/&#123;id&#125;
+            </Button>
+          </div>
+
+          {/* DELETE /activities/{id} */}
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="ID"
+              value={deleteId}
+              onChange={(e) => setDeleteId(e.target.value)}
+              className="max-w-50"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDeleteActivity}
+              disabled={!deleteId.trim()}
+            >
+              DELETE /activities/&#123;id&#125;
             </Button>
           </div>
         </div>
