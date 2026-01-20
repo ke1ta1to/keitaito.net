@@ -33,12 +33,16 @@ func init() {
 }
 
 type UpdateActivityRequest struct {
-	Title string `json:"title" validate:"required"`
+	Title       string `json:"title" validate:"required"`
+	Date        string `json:"date" validate:"required"`
+	Description string `json:"description" validate:"required"`
 }
 
 type Activity struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Date        string `json:"date"`
+	Description string `json:"description"`
 }
 
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -50,7 +54,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	if err := validate.Struct(updateReq); err != nil {
-		return apigw.BadRequest("title is required")
+		return apigw.BadRequest("title, date and description are required")
 	}
 
 	out, err := ddb.UpdateItem(ctx, &dynamodb.UpdateItemInput{
@@ -59,10 +63,15 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 			"pk": &types.AttributeValueMemberS{Value: "ACTIVITY"},
 			"sk": &types.AttributeValueMemberS{Value: id},
 		},
-		UpdateExpression:    aws.String("SET title = :title"),
+		UpdateExpression:    aws.String("SET title = :title, #date = :date, description = :description"),
 		ConditionExpression: aws.String("attribute_exists(pk)"),
+		ExpressionAttributeNames: map[string]string{
+			"#date": "date",
+		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":title": &types.AttributeValueMemberS{Value: updateReq.Title},
+			":title":       &types.AttributeValueMemberS{Value: updateReq.Title},
+			":date":        &types.AttributeValueMemberS{Value: updateReq.Date},
+			":description": &types.AttributeValueMemberS{Value: updateReq.Description},
 		},
 		ReturnValues: types.ReturnValueAllNew,
 	})
@@ -75,8 +84,10 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	activity := Activity{
-		ID:    id,
-		Title: out.Attributes["title"].(*types.AttributeValueMemberS).Value,
+		ID:          id,
+		Title:       out.Attributes["title"].(*types.AttributeValueMemberS).Value,
+		Date:        out.Attributes["date"].(*types.AttributeValueMemberS).Value,
+		Description: out.Attributes["description"].(*types.AttributeValueMemberS).Value,
 	}
 
 	body, err := json.Marshal(activity)

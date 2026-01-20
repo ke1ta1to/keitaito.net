@@ -18,14 +18,18 @@ import (
 )
 
 type Activity struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Date        string `json:"date"`
+	Description string `json:"description"`
 }
 
 type ActivityItem struct {
-	PK    string `dynamodbav:"pk"`
-	SK    string `dynamodbav:"sk"`
-	Title string `dynamodbav:"title"`
+	PK          string `dynamodbav:"pk"`
+	SK          string `dynamodbav:"sk"`
+	Title       string `dynamodbav:"title"`
+	Date        string `dynamodbav:"date"`
+	Description string `dynamodbav:"description"`
 }
 
 var (
@@ -66,8 +70,10 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	activity := Activity{
-		ID:    item.SK,
-		Title: item.Title,
+		ID:          item.SK,
+		Title:       item.Title,
+		Date:        item.Date,
+		Description: item.Description,
 	}
 
 	body, err := json.Marshal(activity)

@@ -24,8 +24,12 @@ export function ApiTestPanel() {
   const [isLoading, setIsLoading] = useState(true);
   const [activityId, setActivityId] = useState("");
   const [newTitle, setNewTitle] = useState("");
+  const [newDate, setNewDate] = useState("");
+  const [newDescription, setNewDescription] = useState("");
   const [updateId, setUpdateId] = useState("");
   const [updateTitle, setUpdateTitle] = useState("");
+  const [updateDate, setUpdateDate] = useState("");
+  const [updateDescription, setUpdateDescription] = useState("");
   const [deleteId, setDeleteId] = useState("");
   const [response, setResponse] = useState<ResponseState>({
     status: "idle",
@@ -106,15 +110,25 @@ export function ApiTestPanel() {
   };
 
   const handleCreateActivity = () => {
-    executeApiCall("POST", "/activities", { title: newTitle.trim() });
+    executeApiCall("POST", "/activities", {
+      title: newTitle.trim(),
+      date: newDate.trim(),
+      description: newDescription.trim(),
+    });
     setNewTitle("");
+    setNewDate("");
+    setNewDescription("");
   };
 
   const handleUpdateActivity = () => {
     executeApiCall("PUT", `/activities/${updateId.trim()}`, {
       title: updateTitle.trim(),
+      date: updateDate.trim(),
+      description: updateDescription.trim(),
     });
     setUpdateTitle("");
+    setUpdateDate("");
+    setUpdateDescription("");
   };
 
   const handleDeleteActivity = () => {
@@ -194,37 +208,68 @@ export function ApiTestPanel() {
           </div>
 
           {/* POST /activities */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Input
               placeholder="Title"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="max-w-50"
+              className="max-w-30"
             />
-            <Button variant="outline" size="sm" onClick={handleCreateActivity}>
+            <Input
+              type="month"
+              placeholder="YYYY-MM"
+              value={newDate}
+              onChange={(e) => setNewDate(e.target.value)}
+              className="max-w-35"
+            />
+            <Input
+              placeholder="Description"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              className="max-w-40"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCreateActivity}
+              disabled={!newTitle.trim() || !newDate.trim() || !newDescription.trim()}
+            >
               POST /activities
             </Button>
           </div>
 
           {/* PUT /activities/{id} */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Input
               placeholder="ID"
               value={updateId}
               onChange={(e) => setUpdateId(e.target.value)}
-              className="max-w-30"
+              className="max-w-50"
             />
             <Input
               placeholder="Title"
               value={updateTitle}
               onChange={(e) => setUpdateTitle(e.target.value)}
+              className="max-w-30"
+            />
+            <Input
+              type="month"
+              placeholder="YYYY-MM"
+              value={updateDate}
+              onChange={(e) => setUpdateDate(e.target.value)}
+              className="max-w-35"
+            />
+            <Input
+              placeholder="Description"
+              value={updateDescription}
+              onChange={(e) => setUpdateDescription(e.target.value)}
               className="max-w-40"
             />
             <Button
               variant="outline"
               size="sm"
               onClick={handleUpdateActivity}
-              disabled={!updateId.trim() || !updateTitle.trim()}
+              disabled={!updateId.trim() || !updateTitle.trim() || !updateDate.trim() || !updateDescription.trim()}
             >
               PUT /activities/&#123;id&#125;
             </Button>

@@ -32,18 +32,24 @@ func init() {
 }
 
 type CreateActivityRequest struct {
-	Title string `json:"title" validate:"required"`
+	Title       string `json:"title" validate:"required"`
+	Date        string `json:"date" validate:"required"`
+	Description string `json:"description" validate:"required"`
 }
 
 type ActivityItem struct {
-	PK    string `dynamodbav:"pk"`
-	SK    string `dynamodbav:"sk"`
-	Title string `dynamodbav:"title"`
+	PK          string `dynamodbav:"pk"`
+	SK          string `dynamodbav:"sk"`
+	Title       string `dynamodbav:"title"`
+	Date        string `dynamodbav:"date"`
+	Description string `dynamodbav:"description"`
 }
 
 type Activity struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Date        string `json:"date"`
+	Description string `json:"description"`
 }
 
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -53,14 +59,16 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	if err := validate.Struct(createReq); err != nil {
-		return apigw.BadRequest("title is required")
+		return apigw.BadRequest("title, date and description are required")
 	}
 
 	id := uuid.New().String()
 	item := ActivityItem{
-		PK:    "ACTIVITY",
-		SK:    id,
-		Title: createReq.Title,
+		PK:          "ACTIVITY",
+		SK:          id,
+		Title:       createReq.Title,
+		Date:        createReq.Date,
+		Description: createReq.Description,
 	}
 
 	av, err := attributevalue.MarshalMap(item)
@@ -77,8 +85,10 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	activity := Activity{
-		ID:    id,
-		Title: item.Title,
+		ID:          id,
+		Title:       item.Title,
+		Date:        item.Date,
+		Description: item.Description,
 	}
 
 	body, err := json.Marshal(activity)

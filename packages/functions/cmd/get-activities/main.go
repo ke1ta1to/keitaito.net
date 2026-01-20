@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"sort"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -17,14 +18,18 @@ import (
 )
 
 type Activity struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Date        string `json:"date"`
+	Description string `json:"description"`
 }
 
 type ActivityItem struct {
-	PK    string `dynamodbav:"pk"`
-	SK    string `dynamodbav:"sk"`
-	Title string `dynamodbav:"title"`
+	PK          string `dynamodbav:"pk"`
+	SK          string `dynamodbav:"sk"`
+	Title       string `dynamodbav:"title"`
+	Date        string `dynamodbav:"date"`
+	Description string `dynamodbav:"description"`
 }
 
 var (
@@ -60,10 +65,17 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	activities := make([]Activity, len(items))
 	for i, item := range items {
 		activities[i] = Activity{
-			ID:    item.SK,
-			Title: item.Title,
+			ID:          item.SK,
+			Title:       item.Title,
+			Date:        item.Date,
+			Description: item.Description,
 		}
 	}
+
+	// Sort by date descending
+	sort.Slice(activities, func(i, j int) bool {
+		return activities[i].Date > activities[j].Date
+	})
 
 	body, err := json.Marshal(activities)
 	if err != nil {

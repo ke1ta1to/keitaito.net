@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -36,8 +38,13 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 			"pk": &types.AttributeValueMemberS{Value: "ACTIVITY"},
 			"sk": &types.AttributeValueMemberS{Value: id},
 		},
+		ConditionExpression: aws.String("attribute_exists(pk)"),
 	})
 	if err != nil {
+		var conditionErr *types.ConditionalCheckFailedException
+		if errors.As(err, &conditionErr) {
+			return apigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
+		}
 		return apigw.InternalServerError()
 	}
 
