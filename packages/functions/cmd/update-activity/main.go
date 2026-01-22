@@ -16,7 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/go-playground/validator/v10"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 )
 
 var (
@@ -44,11 +44,11 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 
 	var updateReq UpdateActivityRequest
 	if err := json.Unmarshal([]byte(req.Body), &updateReq); err != nil {
-		return apigw.BadRequest("invalid JSON")
+		return awsapigw.BadRequest("invalid JSON")
 	}
 
 	if err := validate.Struct(updateReq); err != nil {
-		return apigw.BadRequest("title, date and description are required")
+		return awsapigw.BadRequest("title, date and description are required")
 	}
 
 	out, err := ddb.UpdateItem(ctx, &dynamodb.UpdateItemInput{
@@ -72,9 +72,9 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	if err != nil {
 		var conditionErr *types.ConditionalCheckFailedException
 		if errors.As(err, &conditionErr) {
-			return apigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
+			return awsapigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
 		}
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	a := activities.Activity{
@@ -86,7 +86,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 
 	body, err := json.Marshal(a)
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	return events.APIGatewayProxyResponse{

@@ -15,7 +15,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 )
 
 var (
@@ -41,11 +41,11 @@ type CreateActivityRequest struct {
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var createReq CreateActivityRequest
 	if err := json.Unmarshal([]byte(req.Body), &createReq); err != nil {
-		return apigw.BadRequest("invalid JSON")
+		return awsapigw.BadRequest("invalid JSON")
 	}
 
 	if err := validate.Struct(createReq); err != nil {
-		return apigw.BadRequest("title, date and description are required")
+		return awsapigw.BadRequest("title, date and description are required")
 	}
 
 	id := uuid.New().String()
@@ -59,7 +59,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 
 	av, err := attributevalue.MarshalMap(item)
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	_, err = ddb.PutItem(ctx, &dynamodb.PutItemInput{
@@ -67,7 +67,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		Item:      av,
 	})
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	a := activities.Activity{
@@ -79,7 +79,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 
 	body, err := json.Marshal(a)
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	return events.APIGatewayProxyResponse{

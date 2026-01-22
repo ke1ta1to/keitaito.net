@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 )
 
 var (
@@ -43,9 +43,9 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	if err != nil {
 		var conditionErr *types.ConditionalCheckFailedException
 		if errors.As(err, &conditionErr) {
-			return apigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
+			return awsapigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
 		}
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	return events.APIGatewayProxyResponse{

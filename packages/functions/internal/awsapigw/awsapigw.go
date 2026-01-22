@@ -1,4 +1,4 @@
-package apigw
+package awsapigw
 
 import (
 	"encoding/json"

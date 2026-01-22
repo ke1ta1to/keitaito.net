@@ -15,7 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 )
 
 var (
@@ -40,12 +40,12 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		},
 	})
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	var items []activities.Record
 	if err := attributevalue.UnmarshalListOfMaps(out.Items, &items); err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	result := make([]activities.Activity, len(items))
@@ -65,7 +65,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 
 	body, err := json.Marshal(result)
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	return events.APIGatewayProxyResponse{

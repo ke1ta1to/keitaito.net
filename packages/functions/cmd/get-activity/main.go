@@ -13,7 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsdynamodb"
 )
 
 type Handler struct {
@@ -25,15 +26,15 @@ func (h *Handler) Handle(ctx context.Context, req events.APIGatewayProxyRequest)
 
 	a, err := h.svc.GetActivity(ctx, id)
 	if err != nil {
-		if errors.Is(err, activities.ErrNotFound) {
-			return apigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
+		if errors.Is(err, awsdynamodb.ErrNotFound) {
+			return awsapigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
 		}
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	body, err := json.Marshal(a)
 	if err != nil {
-		return apigw.InternalServerError()
+		return awsapigw.InternalServerError()
 	}
 
 	return events.APIGatewayProxyResponse{

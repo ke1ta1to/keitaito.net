@@ -2,30 +2,24 @@ package activities
 
 import (
 	"context"
-	"errors"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsdynamodb"
 )
-
-var ErrNotFound = errors.New("activity not found")
 
 type Repository interface {
 	Get(ctx context.Context, id string) (*Activity, error)
 }
 
-type DynamoDBClient interface {
-	Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error)
-}
-
 type DynamoDBRepository struct {
-	client    DynamoDBClient
+	client    awsdynamodb.Client
 	tableName string
 }
 
-func NewDynamoDBRepository(client DynamoDBClient, tableName string) *DynamoDBRepository {
+func NewDynamoDBRepository(client awsdynamodb.Client, tableName string) *DynamoDBRepository {
 	return &DynamoDBRepository{
 		client:    client,
 		tableName: tableName,
@@ -46,7 +40,7 @@ func (r *DynamoDBRepository) Get(ctx context.Context, id string) (*Activity, err
 	}
 
 	if len(out.Items) == 0 {
-		return nil, ErrNotFound
+		return nil, awsdynamodb.ErrNotFound
 	}
 
 	var rec Record
