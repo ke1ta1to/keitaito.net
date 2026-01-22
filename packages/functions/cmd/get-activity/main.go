@@ -16,22 +16,14 @@ import (
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
 
-var svc *activities.Service
-
-func init() {
-	cfg, err := config.LoadDefaultConfig(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	ddb := dynamodb.NewFromConfig(cfg)
-	repo := activities.NewDynamoDBRepository(ddb, os.Getenv("ACTIVITIES_TABLE_NAME"))
-	svc = activities.NewService(repo)
+type Handler struct {
+	svc *activities.Service
 }
 
-func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func (h *Handler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	id := req.PathParameters["id"]
 
-	a, err := svc.GetActivity(ctx, id)
+	a, err := h.svc.GetActivity(ctx, id)
 	if err != nil {
 		if errors.Is(err, activities.ErrNotFound) {
 			return apigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
@@ -55,5 +47,15 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 }
 
 func main() {
-	lambda.Start(handler)
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	ddb := dynamodb.NewFromConfig(cfg)
+
+	repo := activities.NewDynamoDBRepository(ddb, os.Getenv("ACTIVITIES_TABLE_NAME"))
+	svc := activities.NewService(repo)
+	handler := &Handler{svc: svc}
+
+	lambda.Start(handler.Handle)
 }
