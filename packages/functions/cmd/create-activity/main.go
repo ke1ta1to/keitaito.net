@@ -8,28 +8,16 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 )
 
-var (
-	ddb       *dynamodb.Client
-	tableName = os.Getenv("ACTIVITIES_TABLE_NAME")
-	validate  = validator.New()
-)
-
-func init() {
-	cfg, err := config.LoadDefaultConfig(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	ddb = dynamodb.NewFromConfig(cfg)
+type Handler struct {
+	svc      *activities.Service
+	validate *validator.Validate
 }
 
 type CreateActivityRequest struct {
@@ -38,43 +26,19 @@ type CreateActivityRequest struct {
 	Description string `json:"description" validate:"required"`
 }
 
-func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func (h *Handler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var createReq CreateActivityRequest
 	if err := json.Unmarshal([]byte(req.Body), &createReq); err != nil {
 		return awsapigw.BadRequest("invalid JSON")
 	}
 
-	if err := validate.Struct(createReq); err != nil {
+	if err := h.validate.Struct(createReq); err != nil {
 		return awsapigw.BadRequest("title, date and description are required")
 	}
 
-	id := uuid.New().String()
-	item := activities.Record{
-		PK:          "ACTIVITY",
-		SK:          id,
-		Title:       createReq.Title,
-		Date:        createReq.Date,
-		Description: createReq.Description,
-	}
-
-	av, err := attributevalue.MarshalMap(item)
+	a, err := h.svc.CreateActivity(ctx, createReq.Title, createReq.Date, createReq.Description)
 	if err != nil {
 		return awsapigw.InternalServerError()
-	}
-
-	_, err = ddb.PutItem(ctx, &dynamodb.PutItemInput{
-		TableName: aws.String(tableName),
-		Item:      av,
-	})
-	if err != nil {
-		return awsapigw.InternalServerError()
-	}
-
-	a := activities.Activity{
-		ID:          id,
-		Title:       item.Title,
-		Date:        item.Date,
-		Description: item.Description,
 	}
 
 	body, err := json.Marshal(a)
@@ -93,5 +57,18 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 }
 
 func main() {
-	lambda.Start(handler)
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	ddb := dynamodb.NewFromConfig(cfg)
+
+	repo := activities.NewDynamoDBRepository(ddb, os.Getenv("ACTIVITIES_TABLE_NAME"))
+	svc := activities.NewService(repo)
+	handler := &Handler{
+		svc:      svc,
+		validate: validator.New(),
+	}
+
+	lambda.Start(handler.Handle)
 }
