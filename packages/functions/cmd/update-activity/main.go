@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/go-playground/validator/v10"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activity"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
 
@@ -36,13 +37,6 @@ type UpdateActivityRequest struct {
 	Title       string `json:"title" validate:"required"`
 	Date        string `json:"date" validate:"required"`
 	Description string `json:"description" validate:"required"`
-}
-
-type Activity struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Date        string `json:"date"`
-	Description string `json:"description"`
 }
 
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -83,14 +77,14 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return apigw.InternalServerError()
 	}
 
-	activity := Activity{
+	a := activity.Activity{
 		ID:          id,
 		Title:       out.Attributes["title"].(*types.AttributeValueMemberS).Value,
 		Date:        out.Attributes["date"].(*types.AttributeValueMemberS).Value,
 		Description: out.Attributes["description"].(*types.AttributeValueMemberS).Value,
 	}
 
-	body, err := json.Marshal(activity)
+	body, err := json.Marshal(a)
 	if err != nil {
 		return apigw.InternalServerError()
 	}

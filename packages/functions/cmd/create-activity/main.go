@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activity"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
 
@@ -37,21 +38,6 @@ type CreateActivityRequest struct {
 	Description string `json:"description" validate:"required"`
 }
 
-type ActivityItem struct {
-	PK          string `dynamodbav:"pk"`
-	SK          string `dynamodbav:"sk"`
-	Title       string `dynamodbav:"title"`
-	Date        string `dynamodbav:"date"`
-	Description string `dynamodbav:"description"`
-}
-
-type Activity struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Date        string `json:"date"`
-	Description string `json:"description"`
-}
-
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var createReq CreateActivityRequest
 	if err := json.Unmarshal([]byte(req.Body), &createReq); err != nil {
@@ -63,7 +49,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	id := uuid.New().String()
-	item := ActivityItem{
+	item := activity.Item{
 		PK:          "ACTIVITY",
 		SK:          id,
 		Title:       createReq.Title,
@@ -84,14 +70,14 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return apigw.InternalServerError()
 	}
 
-	activity := Activity{
+	a := activity.Activity{
 		ID:          id,
 		Title:       item.Title,
 		Date:        item.Date,
 		Description: item.Description,
 	}
 
-	body, err := json.Marshal(activity)
+	body, err := json.Marshal(a)
 	if err != nil {
 		return apigw.InternalServerError()
 	}

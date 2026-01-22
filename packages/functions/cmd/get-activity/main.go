@@ -14,23 +14,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activity"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
-
-type Activity struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Date        string `json:"date"`
-	Description string `json:"description"`
-}
-
-type ActivityItem struct {
-	PK          string `dynamodbav:"pk"`
-	SK          string `dynamodbav:"sk"`
-	Title       string `dynamodbav:"title"`
-	Date        string `dynamodbav:"date"`
-	Description string `dynamodbav:"description"`
-}
 
 var (
 	ddb       *dynamodb.Client
@@ -64,19 +50,19 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return apigw.NotFound(fmt.Sprintf("Activity not found (id: %s)", id))
 	}
 
-	var item ActivityItem
+	var item activity.Item
 	if err := attributevalue.UnmarshalMap(out.Items[0], &item); err != nil {
 		return apigw.InternalServerError()
 	}
 
-	activity := Activity{
+	a := activity.Activity{
 		ID:          item.SK,
 		Title:       item.Title,
 		Date:        item.Date,
 		Description: item.Description,
 	}
 
-	body, err := json.Marshal(activity)
+	body, err := json.Marshal(a)
 	if err != nil {
 		return apigw.InternalServerError()
 	}
