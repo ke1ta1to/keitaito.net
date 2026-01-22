@@ -15,7 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/go-playground/validator/v10"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/activity"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
 
@@ -77,7 +77,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return apigw.InternalServerError()
 	}
 
-	a := activity.Activity{
+	a := activities.Activity{
 		ID:          id,
 		Title:       out.Attributes["title"].(*types.AttributeValueMemberS).Value,
 		Date:        out.Attributes["date"].(*types.AttributeValueMemberS).Value,

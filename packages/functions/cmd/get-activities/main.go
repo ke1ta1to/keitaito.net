@@ -14,7 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/activity"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
 
@@ -43,14 +43,14 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return apigw.InternalServerError()
 	}
 
-	var items []activity.Item
+	var items []activities.Record
 	if err := attributevalue.UnmarshalListOfMaps(out.Items, &items); err != nil {
 		return apigw.InternalServerError()
 	}
 
-	activities := make([]activity.Activity, len(items))
+	result := make([]activities.Activity, len(items))
 	for i, item := range items {
-		activities[i] = activity.Activity{
+		result[i] = activities.Activity{
 			ID:          item.SK,
 			Title:       item.Title,
 			Date:        item.Date,
@@ -59,11 +59,11 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	// Sort by date descending
-	sort.Slice(activities, func(i, j int) bool {
-		return activities[i].Date > activities[j].Date
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Date > result[j].Date
 	})
 
-	body, err := json.Marshal(activities)
+	body, err := json.Marshal(result)
 	if err != nil {
 		return apigw.InternalServerError()
 	}

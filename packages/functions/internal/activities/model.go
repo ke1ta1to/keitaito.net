@@ -1,6 +1,6 @@
-package activity
+package activities
 
-// Activity はAPIレスポンス用のstruct
+// API
 type Activity struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
@@ -8,8 +8,8 @@ type Activity struct {
 	Description string `json:"description"`
 }
 
-// Item はDynamoDB用のstruct
-type Item struct {
+// DynamoDB
+type Record struct {
 	PK          string `dynamodbav:"pk"`
 	SK          string `dynamodbav:"sk"`
 	Title       string `dynamodbav:"title"`

@@ -14,7 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/ke1ta1to/keitaito.net/functions/internal/activity"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/apigw"
 )
 
@@ -49,7 +49,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	}
 
 	id := uuid.New().String()
-	item := activity.Item{
+	item := activities.Record{
 		PK:          "ACTIVITY",
 		SK:          id,
 		Title:       createReq.Title,
@@ -70,7 +70,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return apigw.InternalServerError()
 	}
 
-	a := activity.Activity{
+	a := activities.Activity{
 		ID:          id,
 		Title:       item.Title,
 		Date:        item.Date,
