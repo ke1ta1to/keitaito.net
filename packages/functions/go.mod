@@ -6,7 +6,9 @@ require (
 	github.com/aws/aws-lambda-go v1.52.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
 	github.com/go-playground/validator/v10 v10.30.1
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
+	go.uber.org/mock v0.6.0
 )
 
 require (

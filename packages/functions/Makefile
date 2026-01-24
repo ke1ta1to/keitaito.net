@@ -5,7 +5,7 @@ DIST_DIR := ../../dist/functions
 
 FUNCTIONS := get-activities get-activity create-activity update-activity delete-activity
 
-.PHONY: all clean $(FUNCTIONS)
+.PHONY: all clean $(FUNCTIONS) generate test
 
 all: $(FUNCTIONS)
 
@@ -15,3 +15,9 @@ $(FUNCTIONS):
 
 clean:
 	rm -rf $(DIST_DIR)
+
+generate:
+	go generate ./...
+
+test:
+	go test -v ./...
