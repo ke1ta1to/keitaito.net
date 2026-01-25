@@ -14,7 +14,13 @@ Amplify.configure({
           redirectSignIn: ["http://localhost:3000/admin"],
           redirectSignOut: ["http://localhost:3000/admin"],
           responseType: "code",
-          scopes: ["email", "openid"],
+          scopes: [
+            "email",
+            "openid",
+            "profile",
+            "api/activities.read",
+            "api/activities.write",
+          ],
         },
       },
     },
@@ -31,10 +37,16 @@ export default function AdminShell() {
             <div className="min-h-screen bg-background p-8">
               <ApiTestPanel />
               <div className="max-w-2xl mx-auto mt-6 flex gap-4">
-                <Link to="/users" className="text-sm text-muted-foreground hover:underline">
+                <Link
+                  to="/users"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
                   Go to User Management
                 </Link>
-                <Link to="/settings" className="text-sm text-muted-foreground hover:underline">
+                <Link
+                  to="/settings"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
                   Go to Settings
                 </Link>
               </div>
@@ -46,7 +58,10 @@ export default function AdminShell() {
           element={
             <div className="min-h-screen bg-background p-8">
               <p className="text-xl font-semibold">User Management</p>
-              <Link to="/" className="text-sm text-muted-foreground hover:underline">
+              <Link
+                to="/"
+                className="text-sm text-muted-foreground hover:underline"
+              >
                 Back to Dashboard
               </Link>
             </div>
@@ -57,7 +72,10 @@ export default function AdminShell() {
           element={
             <div className="min-h-screen bg-background p-8">
               <p className="text-xl font-semibold">Settings</p>
-              <Link to="/" className="text-sm text-muted-foreground hover:underline">
+              <Link
+                to="/"
+                className="text-sm text-muted-foreground hover:underline"
+              >
                 Back to Dashboard
               </Link>
             </div>

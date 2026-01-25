@@ -24,11 +24,46 @@ export class PortfolioStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    const activitiesReadScope: cognito.ResourceServerScope = {
+      scopeName: "activities.read",
+      scopeDescription: "Read access to activities",
+    };
+
+    const activitiesWriteScope: cognito.ResourceServerScope = {
+      scopeName: "activities.write",
+      scopeDescription: "Write access to activities",
+    };
+
+    const resourceServer = userPool.addResourceServer("ResourceServer", {
+      identifier: "api",
+      scopes: [activitiesReadScope, activitiesWriteScope],
+    });
+
+    const oauthActivitiesRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      activitiesReadScope,
+    );
+
+    const oauthActivitiesWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      activitiesWriteScope,
+    );
+
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
         callbackUrls: ["http://localhost:3000/admin"],
         logoutUrls: ["http://localhost:3000/admin"],
+        flows: {
+          authorizationCodeGrant: true,
+        },
+        scopes: [
+          cognito.OAuthScope.OPENID,
+          cognito.OAuthScope.EMAIL,
+          cognito.OAuthScope.PROFILE,
+          oauthActivitiesRead,
+          oauthActivitiesWrite,
+        ],
       },
     });
 
@@ -80,30 +115,42 @@ export class PortfolioStack extends cdk.Stack {
     table.grantReadData(getActivityFn);
     getActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
-    const createActivityFn = new lambda.Function(this, "CreateActivityFunction", {
-      runtime: lambda.Runtime.PROVIDED_AL2023,
-      handler: "bootstrap",
-      architecture: lambda.Architecture.ARM_64,
-      code: lambda.Code.fromAsset(path.join(distRoot, "create-activity")),
-    });
+    const createActivityFn = new lambda.Function(
+      this,
+      "CreateActivityFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "create-activity")),
+      },
+    );
     table.grantWriteData(createActivityFn);
     createActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
-    const updateActivityFn = new lambda.Function(this, "UpdateActivityFunction", {
-      runtime: lambda.Runtime.PROVIDED_AL2023,
-      handler: "bootstrap",
-      architecture: lambda.Architecture.ARM_64,
-      code: lambda.Code.fromAsset(path.join(distRoot, "update-activity")),
-    });
+    const updateActivityFn = new lambda.Function(
+      this,
+      "UpdateActivityFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "update-activity")),
+      },
+    );
     table.grantReadWriteData(updateActivityFn);
     updateActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
-    const deleteActivityFn = new lambda.Function(this, "DeleteActivityFunction", {
-      runtime: lambda.Runtime.PROVIDED_AL2023,
-      handler: "bootstrap",
-      architecture: lambda.Architecture.ARM_64,
-      code: lambda.Code.fromAsset(path.join(distRoot, "delete-activity")),
-    });
+    const deleteActivityFn = new lambda.Function(
+      this,
+      "DeleteActivityFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "delete-activity")),
+      },
+    );
     table.grantWriteData(deleteActivityFn);
     deleteActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
@@ -114,6 +161,7 @@ export class PortfolioStack extends cdk.Stack {
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
+        authorizationScopes: [oauthActivitiesRead.scopeName],
       },
     );
 
@@ -124,6 +172,7 @@ export class PortfolioStack extends cdk.Stack {
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
+        authorizationScopes: [oauthActivitiesRead.scopeName],
       },
     );
     activityById.addMethod(
@@ -132,6 +181,7 @@ export class PortfolioStack extends cdk.Stack {
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
+        authorizationScopes: [oauthActivitiesWrite.scopeName],
       },
     );
     activityById.addMethod(
@@ -140,6 +190,7 @@ export class PortfolioStack extends cdk.Stack {
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
+        authorizationScopes: [oauthActivitiesWrite.scopeName],
       },
     );
 
@@ -149,6 +200,7 @@ export class PortfolioStack extends cdk.Stack {
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
+        authorizationScopes: [oauthActivitiesWrite.scopeName],
       },
     );
 

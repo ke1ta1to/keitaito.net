@@ -63,7 +63,8 @@ export function ApiTestPanel() {
 
   const getToken = async () => {
     const session = await fetchAuthSession();
-    return session.tokens?.idToken?.toString();
+    console.log(session.tokens?.accessToken.toString());
+    return session.tokens?.accessToken?.toString();
   };
 
   const apiCall = async (method: string, path: string, body?: object) => {
