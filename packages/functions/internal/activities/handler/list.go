@@ -1,24 +1,24 @@
-package main
+package handler
 
 import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"os"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 )
 
-type Handler struct {
+type ListHandler struct {
 	svc *activities.Service
 }
 
-func (h *Handler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func NewListHandler(svc *activities.Service) *ListHandler {
+	return &ListHandler{svc: svc}
+}
+
+func (h *ListHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	list, err := h.svc.ListActivities(ctx)
 	if err != nil {
 		return awsapigw.InternalServerError()
@@ -37,18 +37,4 @@ func (h *Handler) Handle(ctx context.Context, req events.APIGatewayProxyRequest)
 		},
 		Body: string(body),
 	}, nil
-}
-
-func main() {
-	cfg, err := config.LoadDefaultConfig(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	ddb := dynamodb.NewFromConfig(cfg)
-
-	repo := activities.NewDynamoDBRepository(ddb, os.Getenv("ACTIVITIES_TABLE_NAME"))
-	svc := activities.NewService(repo)
-	handler := &Handler{svc: svc}
-
-	lambda.Start(handler.Handle)
 }

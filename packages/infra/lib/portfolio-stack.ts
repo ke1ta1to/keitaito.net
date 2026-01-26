@@ -108,67 +108,71 @@ export class PortfolioStack extends cdk.Stack {
 
     const distRoot = path.join(__dirname, "../../../dist/functions");
 
-    const getActivitiesFn = new lambda.Function(this, "GetActivitiesFunction", {
+    const activitiesListFn = new lambda.Function(
+      this,
+      "ActivitiesListFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_list")),
+      },
+    );
+    table.grantReadData(activitiesListFn);
+    activitiesListFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+
+    const activitiesGetFn = new lambda.Function(this, "ActivitiesGetFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
       handler: "bootstrap",
       architecture: lambda.Architecture.ARM_64,
-      code: lambda.Code.fromAsset(path.join(distRoot, "get-activities")),
+      code: lambda.Code.fromAsset(path.join(distRoot, "activities_get")),
     });
-    table.grantReadData(getActivitiesFn);
-    getActivitiesFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    table.grantReadData(activitiesGetFn);
+    activitiesGetFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
-    const getActivityFn = new lambda.Function(this, "GetActivityFunction", {
-      runtime: lambda.Runtime.PROVIDED_AL2023,
-      handler: "bootstrap",
-      architecture: lambda.Architecture.ARM_64,
-      code: lambda.Code.fromAsset(path.join(distRoot, "get-activity")),
-    });
-    table.grantReadData(getActivityFn);
-    getActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
-
-    const createActivityFn = new lambda.Function(
+    const activitiesCreateFn = new lambda.Function(
       this,
-      "CreateActivityFunction",
+      "ActivitiesCreateFunction",
       {
         runtime: lambda.Runtime.PROVIDED_AL2023,
         handler: "bootstrap",
         architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(path.join(distRoot, "create-activity")),
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_create")),
       },
     );
-    table.grantWriteData(createActivityFn);
-    createActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    table.grantWriteData(activitiesCreateFn);
+    activitiesCreateFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
-    const updateActivityFn = new lambda.Function(
+    const activitiesUpdateFn = new lambda.Function(
       this,
-      "UpdateActivityFunction",
+      "ActivitiesUpdateFunction",
       {
         runtime: lambda.Runtime.PROVIDED_AL2023,
         handler: "bootstrap",
         architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(path.join(distRoot, "update-activity")),
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_update")),
       },
     );
-    table.grantReadWriteData(updateActivityFn);
-    updateActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    table.grantReadWriteData(activitiesUpdateFn);
+    activitiesUpdateFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
-    const deleteActivityFn = new lambda.Function(
+    const activitiesDeleteFn = new lambda.Function(
       this,
-      "DeleteActivityFunction",
+      "ActivitiesDeleteFunction",
       {
         runtime: lambda.Runtime.PROVIDED_AL2023,
         handler: "bootstrap",
         architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(path.join(distRoot, "delete-activity")),
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_delete")),
       },
     );
-    table.grantWriteData(deleteActivityFn);
-    deleteActivityFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    table.grantWriteData(activitiesDeleteFn);
+    activitiesDeleteFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
 
     const activities = restApi.root.addResource("activities");
     activities.addMethod(
       "GET",
-      new apiGateway.LambdaIntegration(getActivitiesFn),
+      new apiGateway.LambdaIntegration(activitiesListFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
@@ -179,7 +183,7 @@ export class PortfolioStack extends cdk.Stack {
     const activityById = activities.addResource("{id}");
     activityById.addMethod(
       "GET",
-      new apiGateway.LambdaIntegration(getActivityFn),
+      new apiGateway.LambdaIntegration(activitiesGetFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
@@ -188,7 +192,7 @@ export class PortfolioStack extends cdk.Stack {
     );
     activityById.addMethod(
       "PUT",
-      new apiGateway.LambdaIntegration(updateActivityFn),
+      new apiGateway.LambdaIntegration(activitiesUpdateFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
@@ -197,7 +201,7 @@ export class PortfolioStack extends cdk.Stack {
     );
     activityById.addMethod(
       "DELETE",
-      new apiGateway.LambdaIntegration(deleteActivityFn),
+      new apiGateway.LambdaIntegration(activitiesDeleteFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
@@ -207,7 +211,7 @@ export class PortfolioStack extends cdk.Stack {
 
     activities.addMethod(
       "POST",
-      new apiGateway.LambdaIntegration(createActivityFn),
+      new apiGateway.LambdaIntegration(activitiesCreateFn),
       {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
