@@ -1,0 +1,110 @@
+package handler
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"net/http"
+	"testing"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/google/go-cmp/cmp"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsdynamodb"
+	"go.uber.org/mock/gomock"
+)
+
+func TestNewGetHandler(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	mockSvc := activities.NewMockServiceInterface(ctrl)
+
+	h := NewGetHandler(mockSvc)
+
+	if h == nil {
+		t.Fatal("NewGetHandler() returned nil")
+	}
+	if h.svc == nil {
+		t.Error("NewGetHandler() did not set svc")
+	}
+}
+
+func TestGetHandler_Handle(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mockSvc := activities.NewMockServiceInterface(ctrl)
+		mockSvc.EXPECT().GetActivity(gomock.Any(), "test-id").Return(&activities.Activity{
+			ID:          "test-id",
+			Title:       "Test Activity",
+			Date:        "2024-01-01",
+			Description: "Test Description",
+		}, nil)
+
+		h := NewGetHandler(mockSvc)
+		resp, err := h.Handle(context.Background(), events.APIGatewayProxyRequest{
+			PathParameters: map[string]string{"id": "test-id"},
+		})
+
+		if err != nil {
+			t.Errorf("Handle() error = %v, want nil", err)
+		}
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusOK)
+		}
+		if resp.Headers["Content-Type"] != "application/json" {
+			t.Errorf("Handle() Content-Type = %v, want application/json", resp.Headers["Content-Type"])
+		}
+		if resp.Headers["Access-Control-Allow-Origin"] != "*" {
+			t.Errorf("Handle() Access-Control-Allow-Origin = %v, want *", resp.Headers["Access-Control-Allow-Origin"])
+		}
+
+		var got activities.Activity
+		if err := json.Unmarshal([]byte(resp.Body), &got); err != nil {
+			t.Fatalf("Handle() failed to unmarshal response body: %v", err)
+		}
+		want := activities.Activity{
+			ID:          "test-id",
+			Title:       "Test Activity",
+			Date:        "2024-01-01",
+			Description: "Test Description",
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Handle() body mismatch (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mockSvc := activities.NewMockServiceInterface(ctrl)
+		mockSvc.EXPECT().GetActivity(gomock.Any(), "not-found-id").Return(nil, awsdynamodb.ErrNotFound)
+
+		h := NewGetHandler(mockSvc)
+		resp, err := h.Handle(context.Background(), events.APIGatewayProxyRequest{
+			PathParameters: map[string]string{"id": "not-found-id"},
+		})
+
+		if err != nil {
+			t.Errorf("Handle() error = %v, want nil", err)
+		}
+		if resp.StatusCode != http.StatusNotFound {
+			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusNotFound)
+		}
+	})
+
+	t.Run("service error", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mockSvc := activities.NewMockServiceInterface(ctrl)
+		mockSvc.EXPECT().GetActivity(gomock.Any(), "test-id").Return(nil, errors.New("service error"))
+
+		h := NewGetHandler(mockSvc)
+		resp, err := h.Handle(context.Background(), events.APIGatewayProxyRequest{
+			PathParameters: map[string]string{"id": "test-id"},
+		})
+
+		if err != nil {
+			t.Errorf("Handle() error = %v, want nil", err)
+		}
+		if resp.StatusCode != http.StatusInternalServerError {
+			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusInternalServerError)
+		}
+	})
+}
