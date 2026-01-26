@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/google/go-cmp/cmp"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/awsapigw"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/awsdynamodb"
 	"go.uber.org/mock/gomock"
 )
@@ -43,6 +44,14 @@ func TestGetHandler_Handle(t *testing.T) {
 		}
 		if resp.StatusCode != http.StatusBadRequest {
 			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusBadRequest)
+		}
+
+		var errResp awsapigw.ErrorResponse
+		if err := json.Unmarshal([]byte(resp.Body), &errResp); err != nil {
+			t.Fatalf("Handle() failed to unmarshal error response: %v", err)
+		}
+		if errResp.Message == "" {
+			t.Error("Handle() error response message is empty")
 		}
 	})
 
@@ -106,6 +115,14 @@ func TestGetHandler_Handle(t *testing.T) {
 		if resp.StatusCode != http.StatusNotFound {
 			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusNotFound)
 		}
+
+		var errResp awsapigw.ErrorResponse
+		if err := json.Unmarshal([]byte(resp.Body), &errResp); err != nil {
+			t.Fatalf("Handle() failed to unmarshal error response: %v", err)
+		}
+		if errResp.Message == "" {
+			t.Error("Handle() error response message is empty")
+		}
 	})
 
 	t.Run("service error", func(t *testing.T) {
@@ -123,6 +140,14 @@ func TestGetHandler_Handle(t *testing.T) {
 		}
 		if resp.StatusCode != http.StatusInternalServerError {
 			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusInternalServerError)
+		}
+
+		var errResp awsapigw.ErrorResponse
+		if err := json.Unmarshal([]byte(resp.Body), &errResp); err != nil {
+			t.Fatalf("Handle() failed to unmarshal error response: %v", err)
+		}
+		if errResp.Message != "Internal Server Error" {
+			t.Errorf("Handle() error message = %v, want Internal Server Error", errResp.Message)
 		}
 	})
 }
