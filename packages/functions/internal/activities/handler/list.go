@@ -11,10 +11,10 @@ import (
 )
 
 type ListHandler struct {
-	svc *activities.Service
+	svc activities.ServiceInterface
 }
 
-func NewListHandler(svc *activities.Service) *ListHandler {
+func NewListHandler(svc activities.ServiceInterface) *ListHandler {
 	return &ListHandler{svc: svc}
 }
 

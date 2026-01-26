@@ -13,10 +13,10 @@ import (
 )
 
 type DeleteHandler struct {
-	svc *activities.Service
+	svc activities.ServiceInterface
 }
 
-func NewDeleteHandler(svc *activities.Service) *DeleteHandler {
+func NewDeleteHandler(svc activities.ServiceInterface) *DeleteHandler {
 	return &DeleteHandler{svc: svc}
 }
 

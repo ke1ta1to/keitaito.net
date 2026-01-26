@@ -6,6 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -source=service.go -destination=service_mock.go -package=activities
+
+type ServiceInterface interface {
+	GetActivity(ctx context.Context, id string) (*Activity, error)
+	ListActivities(ctx context.Context) ([]Activity, error)
+	CreateActivity(ctx context.Context, title, date, description string) (*Activity, error)
+	UpdateActivity(ctx context.Context, id, title, date, description string) (*Activity, error)
+	DeleteActivity(ctx context.Context, id string) error
+}
+
 type Service struct {
 	repo Repository
 }

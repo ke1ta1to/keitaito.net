@@ -15,7 +15,7 @@ import (
 )
 
 type UpdateHandler struct {
-	svc      *activities.Service
+	svc      activities.ServiceInterface
 	validate *validator.Validate
 }
 
@@ -25,7 +25,7 @@ type UpdateRequest struct {
 	Description string `json:"description" validate:"required"`
 }
 
-func NewUpdateHandler(svc *activities.Service, validate *validator.Validate) *UpdateHandler {
+func NewUpdateHandler(svc activities.ServiceInterface, validate *validator.Validate) *UpdateHandler {
 	return &UpdateHandler{svc: svc, validate: validate}
 }
 

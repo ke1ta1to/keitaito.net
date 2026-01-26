@@ -12,7 +12,7 @@ import (
 )
 
 type CreateHandler struct {
-	svc      *activities.Service
+	svc      activities.ServiceInterface
 	validate *validator.Validate
 }
 
@@ -22,7 +22,7 @@ type CreateRequest struct {
 	Description string `json:"description" validate:"required"`
 }
 
-func NewCreateHandler(svc *activities.Service, validate *validator.Validate) *CreateHandler {
+func NewCreateHandler(svc activities.ServiceInterface, validate *validator.Validate) *CreateHandler {
 	return &CreateHandler{svc: svc, validate: validate}
 }
 

@@ -14,10 +14,10 @@ import (
 )
 
 type GetHandler struct {
-	svc *activities.Service
+	svc activities.ServiceInterface
 }
 
-func NewGetHandler(svc *activities.Service) *GetHandler {
+func NewGetHandler(svc activities.ServiceInterface) *GetHandler {
 	return &GetHandler{svc: svc}
 }
 
