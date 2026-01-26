@@ -54,11 +54,12 @@ func TestCreateHandler_Handle(t *testing.T) {
 		if resp.StatusCode != http.StatusCreated {
 			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusCreated)
 		}
-		if resp.Headers["Content-Type"] != "application/json" {
-			t.Errorf("Handle() Content-Type = %v, want application/json", resp.Headers["Content-Type"])
+		wantHeaders := map[string]string{
+			"Content-Type":                "application/json",
+			"Access-Control-Allow-Origin": "*",
 		}
-		if resp.Headers["Access-Control-Allow-Origin"] != "*" {
-			t.Errorf("Handle() Access-Control-Allow-Origin = %v, want *", resp.Headers["Access-Control-Allow-Origin"])
+		if diff := cmp.Diff(wantHeaders, resp.Headers); diff != "" {
+			t.Errorf("Handle() headers mismatch (-want +got):\n%s", diff)
 		}
 
 		var got activities.Activity

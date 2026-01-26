@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/google/go-cmp/cmp"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/awsdynamodb"
 	"go.uber.org/mock/gomock"
@@ -60,8 +61,11 @@ func TestDeleteHandler_Handle(t *testing.T) {
 		if resp.StatusCode != http.StatusNoContent {
 			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusNoContent)
 		}
-		if resp.Headers["Access-Control-Allow-Origin"] != "*" {
-			t.Errorf("Handle() Access-Control-Allow-Origin = %v, want *", resp.Headers["Access-Control-Allow-Origin"])
+		wantHeaders := map[string]string{
+			"Access-Control-Allow-Origin": "*",
+		}
+		if diff := cmp.Diff(wantHeaders, resp.Headers); diff != "" {
+			t.Errorf("Handle() headers mismatch (-want +got):\n%s", diff)
 		}
 		if resp.Body != "" {
 			t.Errorf("Handle() Body = %v, want empty", resp.Body)
