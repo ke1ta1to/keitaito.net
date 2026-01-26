@@ -7,7 +7,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "cdk:deploy": "cdk deploy --all --require-approval never --hotswap-fallback true -c env=dev"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.235.1",

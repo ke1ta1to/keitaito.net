@@ -10,8 +10,7 @@ import {
   getCurrentUser,
 } from "aws-amplify/auth";
 
-const API_BASE =
-  "https://kylwpt10s5.execute-api.ap-northeast-1.amazonaws.com/prod";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 type ResponseState = {
   status: "idle" | "loading" | "success" | "error";
@@ -63,7 +62,6 @@ export function ApiTestPanel() {
 
   const getToken = async () => {
     const session = await fetchAuthSession();
-    console.log(session.tokens?.accessToken.toString());
     return session.tokens?.accessToken?.toString();
   };
 
@@ -88,7 +86,7 @@ export function ApiTestPanel() {
   const executeApiCall = async (
     method: string,
     path: string,
-    body?: object
+    body?: object,
   ) => {
     setResponse({ status: "loading", data: null });
     try {
@@ -179,121 +177,128 @@ export function ApiTestPanel() {
 
       {/* API Test Section */}
       <div className="p-4 border rounded-lg space-y-4">
-          <h2 className="text-sm font-medium text-muted-foreground">
-            API Endpoints
-          </h2>
+        <h2 className="text-sm font-medium text-muted-foreground">
+          API Endpoints
+        </h2>
 
-          {/* GET /activities */}
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetActivities}>
-              GET /activities
-            </Button>
-          </div>
-
-          {/* GET /activities/{id} */}
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Activity ID"
-              value={activityId}
-              onChange={(e) => setActivityId(e.target.value)}
-              className="max-w-50"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleGetActivityById}
-              disabled={!activityId.trim()}
-            >
-              GET /activities/&#123;id&#125;
-            </Button>
-          </div>
-
-          {/* POST /activities */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Input
-              placeholder="Title"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              className="max-w-30"
-            />
-            <Input
-              type="month"
-              placeholder="YYYY-MM"
-              value={newDate}
-              onChange={(e) => setNewDate(e.target.value)}
-              className="max-w-35"
-            />
-            <Input
-              placeholder="Description"
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              className="max-w-40"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCreateActivity}
-              disabled={!newTitle.trim() || !newDate.trim() || !newDescription.trim()}
-            >
-              POST /activities
-            </Button>
-          </div>
-
-          {/* PUT /activities/{id} */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Input
-              placeholder="ID"
-              value={updateId}
-              onChange={(e) => setUpdateId(e.target.value)}
-              className="max-w-50"
-            />
-            <Input
-              placeholder="Title"
-              value={updateTitle}
-              onChange={(e) => setUpdateTitle(e.target.value)}
-              className="max-w-30"
-            />
-            <Input
-              type="month"
-              placeholder="YYYY-MM"
-              value={updateDate}
-              onChange={(e) => setUpdateDate(e.target.value)}
-              className="max-w-35"
-            />
-            <Input
-              placeholder="Description"
-              value={updateDescription}
-              onChange={(e) => setUpdateDescription(e.target.value)}
-              className="max-w-40"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleUpdateActivity}
-              disabled={!updateId.trim() || !updateTitle.trim() || !updateDate.trim() || !updateDescription.trim()}
-            >
-              PUT /activities/&#123;id&#125;
-            </Button>
-          </div>
-
-          {/* DELETE /activities/{id} */}
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="ID"
-              value={deleteId}
-              onChange={(e) => setDeleteId(e.target.value)}
-              className="max-w-50"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDeleteActivity}
-              disabled={!deleteId.trim()}
-            >
-              DELETE /activities/&#123;id&#125;
-            </Button>
-          </div>
+        {/* GET /activities */}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleGetActivities}>
+            GET /activities
+          </Button>
         </div>
+
+        {/* GET /activities/{id} */}
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder="Activity ID"
+            value={activityId}
+            onChange={(e) => setActivityId(e.target.value)}
+            className="max-w-50"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleGetActivityById}
+            disabled={!activityId.trim()}
+          >
+            GET /activities/&#123;id&#125;
+          </Button>
+        </div>
+
+        {/* POST /activities */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Input
+            placeholder="Title"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            className="max-w-30"
+          />
+          <Input
+            type="month"
+            placeholder="YYYY-MM"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            className="max-w-35"
+          />
+          <Input
+            placeholder="Description"
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
+            className="max-w-40"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCreateActivity}
+            disabled={
+              !newTitle.trim() || !newDate.trim() || !newDescription.trim()
+            }
+          >
+            POST /activities
+          </Button>
+        </div>
+
+        {/* PUT /activities/{id} */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Input
+            placeholder="ID"
+            value={updateId}
+            onChange={(e) => setUpdateId(e.target.value)}
+            className="max-w-50"
+          />
+          <Input
+            placeholder="Title"
+            value={updateTitle}
+            onChange={(e) => setUpdateTitle(e.target.value)}
+            className="max-w-30"
+          />
+          <Input
+            type="month"
+            placeholder="YYYY-MM"
+            value={updateDate}
+            onChange={(e) => setUpdateDate(e.target.value)}
+            className="max-w-35"
+          />
+          <Input
+            placeholder="Description"
+            value={updateDescription}
+            onChange={(e) => setUpdateDescription(e.target.value)}
+            className="max-w-40"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleUpdateActivity}
+            disabled={
+              !updateId.trim() ||
+              !updateTitle.trim() ||
+              !updateDate.trim() ||
+              !updateDescription.trim()
+            }
+          >
+            PUT /activities/&#123;id&#125;
+          </Button>
+        </div>
+
+        {/* DELETE /activities/{id} */}
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder="ID"
+            value={deleteId}
+            onChange={(e) => setDeleteId(e.target.value)}
+            className="max-w-50"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDeleteActivity}
+            disabled={!deleteId.trim()}
+          >
+            DELETE /activities/&#123;id&#125;
+          </Button>
+        </div>
+      </div>
 
       {/* Response Display */}
       {response.status !== "idle" && (

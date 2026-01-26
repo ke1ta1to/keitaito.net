@@ -67,6 +67,17 @@ export class PortfolioStack extends cdk.Stack {
       },
     });
 
+    new cognito.UserPoolClient(this, "InternalUserPoolClient", {
+      userPool,
+      generateSecret: true,
+      oAuth: {
+        flows: {
+          clientCredentials: true,
+        },
+        scopes: [oauthActivitiesRead],
+      },
+    });
+
     new cognito.CfnManagedLoginBranding(this, "ManagedLoginBranding", {
       userPoolId: userPool.userPoolId,
       clientId: userPoolClient.userPoolClientId,

@@ -5,14 +5,19 @@ import { ApiTestPanel } from "../api-test-panel";
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: "ap-northeast-1_ao0flv9ZB",
-      userPoolClientId: "2mlsu3u2jebcirli2sk75pt48f",
+      userPoolId: process.env.NEXT_PUBLIC_AWS_COGNITO_USER_POOL_ID,
+      userPoolClientId: process.env.NEXT_PUBLIC_AWS_COGNITO_USER_POOL_CLIENT_ID,
       loginWith: {
         oauth: {
-          domain:
-            "portfoliodevelopment-183295441800.auth.ap-northeast-1.amazoncognito.com",
-          redirectSignIn: ["http://localhost:3000/admin"],
-          redirectSignOut: ["http://localhost:3000/admin"],
+          domain: process.env.NEXT_PUBLIC_AWS_COGNITO_OAUTH_DOMAIN,
+          redirectSignIn:
+            process.env.NEXT_PUBLIC_AWS_COGNITO_OAUTH_REDIRECT_SIGNIN?.split(
+              ",",
+            ),
+          redirectSignOut:
+            process.env.NEXT_PUBLIC_AWS_COGNITO_OAUTH_REDIRECT_SIGNOUT?.split(
+              ",",
+            ),
           responseType: "code",
           scopes: [
             "email",
