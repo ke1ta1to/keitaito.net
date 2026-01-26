@@ -31,6 +31,9 @@ func NewUpdateHandler(svc activities.ServiceInterface, validate *validator.Valid
 
 func (h *UpdateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	id := req.PathParameters["id"]
+	if id == "" {
+		return awsapigw.BadRequest("id is required")
+	}
 
 	var updateReq UpdateRequest
 	if err := json.Unmarshal([]byte(req.Body), &updateReq); err != nil {

@@ -22,6 +22,9 @@ func NewDeleteHandler(svc activities.ServiceInterface) *DeleteHandler {
 
 func (h *DeleteHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	id := req.PathParameters["id"]
+	if id == "" {
+		return awsapigw.BadRequest("id is required")
+	}
 
 	err := h.svc.DeleteActivity(ctx, id)
 	if err != nil {

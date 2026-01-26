@@ -29,6 +29,23 @@ func TestNewGetHandler(t *testing.T) {
 }
 
 func TestGetHandler_Handle(t *testing.T) {
+	t.Run("empty id", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mockSvc := activities.NewMockServiceInterface(ctrl)
+
+		h := NewGetHandler(mockSvc)
+		resp, err := h.Handle(context.Background(), events.APIGatewayProxyRequest{
+			PathParameters: map[string]string{},
+		})
+
+		if err != nil {
+			t.Errorf("Handle() error = %v, want nil", err)
+		}
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusBadRequest)
+		}
+	})
+
 	t.Run("success", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockSvc := activities.NewMockServiceInterface(ctrl)

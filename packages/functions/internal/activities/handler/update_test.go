@@ -34,6 +34,24 @@ func TestNewUpdateHandler(t *testing.T) {
 }
 
 func TestUpdateHandler_Handle(t *testing.T) {
+	t.Run("empty id", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mockSvc := activities.NewMockServiceInterface(ctrl)
+
+		h := NewUpdateHandler(mockSvc, validator.New())
+		resp, err := h.Handle(context.Background(), events.APIGatewayProxyRequest{
+			PathParameters: map[string]string{},
+			Body:           `{"title":"Title","date":"2024-01-01","description":"Description"}`,
+		})
+
+		if err != nil {
+			t.Errorf("Handle() error = %v, want nil", err)
+		}
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusBadRequest)
+		}
+	})
+
 	t.Run("success", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockSvc := activities.NewMockServiceInterface(ctrl)
