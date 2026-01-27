@@ -1,0 +1,273 @@
+openapi: 3.0.4
+info:
+  title: keitaito.net Activities API
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://keitaito.net/api
+
+security:
+  - BearerAuth: []
+
+paths:
+  /activities:
+    get:
+      summary: List all activities
+      description: Retrieve a list of all activities
+      operationId: activities_list
+      tags:
+        - Activities
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Create a new activity
+      description: Create a new activity with the provided details
+      operationId: activities_create
+      tags:
+        - Activities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - date
+                - description
+              properties:
+                title:
+                  type: string
+                  description: Title of the activity
+                  example: "New Project Launch"
+                date:
+                  type: string
+                  description: Date of the activity
+                  example: "2024-01-15"
+                description:
+                  type: string
+                  description: Detailed description of the activity
+                  example: "Launched a new portfolio website using Next.js and AWS"
+      responses:
+        "201":
+          description: Activity created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /activities/{id}:
+    get:
+      summary: Get an activity
+      description: Retrieve a single activity by ID
+      operationId: activities_get
+      tags:
+        - Activities
+      parameters:
+        - $ref: "#/components/parameters/ActivityId"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      summary: Update an activity
+      description: Update an existing activity by ID
+      operationId: activities_update
+      tags:
+        - Activities
+      parameters:
+        - $ref: "#/components/parameters/ActivityId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - date
+                - description
+              properties:
+                title:
+                  type: string
+                  description: Title of the activity
+                  example: "Updated Project Launch"
+                date:
+                  type: string
+                  description: Date of the activity
+                  example: "2024-01-16"
+                description:
+                  type: string
+                  description: Detailed description of the activity
+                  example: "Updated the portfolio website with new features"
+      responses:
+        "200":
+          description: Activity updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      summary: Delete an activity
+      description: Delete an existing activity by ID
+      operationId: activities_delete
+      tags:
+        - Activities
+      parameters:
+        - $ref: "#/components/parameters/ActivityId"
+      responses:
+        "204":
+          description: Activity deleted successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ActivityId:
+      name: id
+      in: path
+      required: true
+      description: Activity UUID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    Activity:
+      type: object
+      required:
+        - id
+        - title
+        - date
+        - description
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the activity
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        title:
+          type: string
+          description: Title of the activity
+          example: "New Project Launch"
+        date:
+          type: string
+          description: Date of the activity
+          example: "2024-01-15"
+        description:
+          type: string
+          description: Detailed description of the activity
+          example: "Launched a new portfolio website using Next.js and AWS"
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: "Activity not found (id: 550e8400-e29b-41d4-a716-446655440000)"
