@@ -9,7 +9,7 @@ AXIOS_INSTANCE.interceptors.request.use(
   async (config) => {
     const session = await fetchAuthSession();
     const token = session.tokens?.accessToken?.toString();
-    if (token) {
+    if (token && config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

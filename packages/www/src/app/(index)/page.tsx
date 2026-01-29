@@ -1,23 +1,14 @@
+import { activitiesList } from "@/gen/api/endpoints/activities/activities";
 import { getServiceAccessToken } from "@/lib/cognito-client-credentials";
 
 export default async function IndexPage() {
   const token = await getServiceAccessToken();
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const apiUrl = `${apiBaseUrl}/activities`;
 
-  const res = await fetch(apiUrl, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
+  const activities = await activitiesList({
+    headers: { Authorization: `Bearer ${token})` },
+    baseURL: apiBaseUrl,
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch activities");
-  }
-
-  const activities = await res.json();
 
   return (
     <div>
