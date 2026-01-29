@@ -1,4 +1,4 @@
-import { getServiceAccessToken } from "@/lib/cognitoClientCredentials";
+import { getServiceAccessToken } from "@/lib/cognito-client-credentials";
 
 export default async function IndexPage() {
   const token = await getServiceAccessToken();
