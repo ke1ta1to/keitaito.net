@@ -1,6 +1,13 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   useActivitiesCreate,
@@ -11,42 +18,111 @@ import {
 } from "@/orval/client";
 import { getCurrentUser, signInWithRedirect, signOut } from "aws-amplify/auth";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-type ActiveOperation =
-  | { type: "list" }
-  | { type: "get"; id: string }
-  | { type: "create" }
-  | { type: "update" }
-  | { type: "delete" };
+// Zod Schemas
+const getByIdSchema = z.object({
+  activityId: z.string().min(1),
+});
+
+const createActivitySchema = z.object({
+  title: z.string().min(1),
+  date: z.string().min(1),
+  description: z.string().min(1),
+});
+
+const updateActivitySchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  date: z.string().min(1),
+  description: z.string().min(1),
+});
+
+const deleteActivitySchema = z.object({
+  id: z.string().min(1),
+});
+
+type GetByIdFormData = z.infer<typeof getByIdSchema>;
+type CreateActivityFormData = z.infer<typeof createActivitySchema>;
+type UpdateActivityFormData = z.infer<typeof updateActivitySchema>;
+type DeleteActivityFormData = z.infer<typeof deleteActivitySchema>;
+
+function ResponseDisplay({
+  isLoading,
+  isError,
+  data,
+  error,
+}: {
+  isLoading: boolean;
+  isError: boolean;
+  data: unknown;
+  error: Error | null;
+}) {
+  if (!isLoading && !isError && !data) return null;
+
+  const content: string = isError
+    ? error instanceof Error
+      ? error.message
+      : "Unknown error"
+    : (JSON.stringify(data, null, 2) ?? "");
+
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex items-center gap-2">
+        {isLoading && (
+          <span className="text-xs text-muted-foreground">Loading...</span>
+        )}
+        {!isLoading && !isError && !!data && (
+          <span className="text-xs text-green-600 dark:text-green-400">
+            Success
+          </span>
+        )}
+        {isError && (
+          <span className="text-xs text-red-600 dark:text-red-400">Error</span>
+        )}
+      </div>
+      <pre className="p-3 bg-muted rounded text-sm font-mono overflow-auto max-h-60">
+        {content}
+      </pre>
+    </div>
+  );
+}
 
 export function ApiTestPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [activityId, setActivityId] = useState("");
-  const [newTitle, setNewTitle] = useState("");
-  const [newDate, setNewDate] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [updateId, setUpdateId] = useState("");
-  const [updateTitle, setUpdateTitle] = useState("");
-  const [updateDate, setUpdateDate] = useState("");
-  const [updateDescription, setUpdateDescription] = useState("");
-  const [deleteId, setDeleteId] = useState("");
-  const [activeOperation, setActiveOperation] =
-    useState<ActiveOperation | null>(null);
+  const [getByIdTarget, setGetByIdTarget] = useState("");
+
+  // React Hook Form instances
+  const getByIdForm = useForm<GetByIdFormData>({
+    resolver: zodResolver(getByIdSchema),
+    defaultValues: { activityId: "" },
+  });
+
+  const createForm = useForm<CreateActivityFormData>({
+    resolver: zodResolver(createActivitySchema),
+    defaultValues: { title: "", date: "", description: "" },
+  });
+
+  const updateForm = useForm<UpdateActivityFormData>({
+    resolver: zodResolver(updateActivitySchema),
+    defaultValues: { id: "", title: "", date: "", description: "" },
+  });
+
+  const deleteForm = useForm<DeleteActivityFormData>({
+    resolver: zodResolver(deleteActivitySchema),
+    defaultValues: { id: "" },
+  });
 
   // React Query hooks
   const listQuery = useActivitiesList({
     query: { enabled: false },
   });
 
-  const getQuery = useActivitiesGet(
-    activeOperation?.type === "get" ? activeOperation.id : "",
-    {
-      query: {
-        enabled: activeOperation?.type === "get" && !!activeOperation.id,
-      },
-    },
-  );
+  const getQuery = useActivitiesGet(getByIdTarget, {
+    query: { enabled: !!getByIdTarget },
+  });
 
   const createMutation = useActivitiesCreate();
   const updateMutation = useActivitiesUpdate();
@@ -74,119 +150,61 @@ export function ApiTestPanel() {
   const handleSignOut = async () => {
     await signOut();
     setIsAuthenticated(false);
-    setActiveOperation(null);
   };
 
   const handleGetActivities = () => {
-    setActiveOperation({ type: "list" });
     listQuery.refetch();
   };
 
-  const handleGetActivityById = () => {
-    if (!activityId.trim()) return;
-    setActiveOperation({ type: "get", id: activityId.trim() });
+  const handleGetActivityById = (data: GetByIdFormData) => {
+    setGetByIdTarget(data.activityId);
   };
 
-  const handleCreateActivity = () => {
-    setActiveOperation({ type: "create" });
+  const handleCreateActivity = (data: CreateActivityFormData) => {
     createMutation.mutate(
       {
         data: {
-          title: newTitle.trim(),
-          date: newDate.trim(),
-          description: newDescription.trim(),
+          title: data.title,
+          date: data.date,
+          description: data.description,
         },
       },
       {
         onSuccess: () => {
-          setNewTitle("");
-          setNewDate("");
-          setNewDescription("");
+          createForm.reset();
         },
       },
     );
   };
 
-  const handleUpdateActivity = () => {
-    setActiveOperation({ type: "update" });
+  const handleUpdateActivity = (data: UpdateActivityFormData) => {
     updateMutation.mutate(
       {
-        id: updateId.trim(),
+        id: data.id,
         data: {
-          title: updateTitle.trim(),
-          date: updateDate.trim(),
-          description: updateDescription.trim(),
+          title: data.title,
+          date: data.date,
+          description: data.description,
         },
       },
       {
         onSuccess: () => {
-          setUpdateId("");
-          setUpdateTitle("");
-          setUpdateDate("");
-          setUpdateDescription("");
+          updateForm.reset();
         },
       },
     );
   };
 
-  const handleDeleteActivity = () => {
-    setActiveOperation({ type: "delete" });
+  const handleDeleteActivity = (data: DeleteActivityFormData) => {
     deleteMutation.mutate(
-      { id: deleteId.trim() },
+      { id: data.id },
       {
         onSuccess: () => {
-          setDeleteId("");
+          deleteForm.reset();
         },
       },
     );
   };
-
-  // Get current response state based on active operation
-  const getResponseState = () => {
-    if (!activeOperation) return null;
-
-    switch (activeOperation.type) {
-      case "list":
-        return {
-          isLoading: listQuery.isFetching,
-          isError: listQuery.isError,
-          data: listQuery.data,
-          error: listQuery.error,
-        };
-      case "get":
-        return {
-          isLoading: getQuery.isFetching,
-          isError: getQuery.isError,
-          data: getQuery.data,
-          error: getQuery.error,
-        };
-      case "create":
-        return {
-          isLoading: createMutation.isPending,
-          isError: createMutation.isError,
-          data: createMutation.data,
-          error: createMutation.error,
-        };
-      case "update":
-        return {
-          isLoading: updateMutation.isPending,
-          isError: updateMutation.isError,
-          data: updateMutation.data,
-          error: updateMutation.error,
-        };
-      case "delete":
-        return {
-          isLoading: deleteMutation.isPending,
-          isError: deleteMutation.isError,
-          data: deleteMutation.isSuccess
-            ? { message: "Deleted successfully" }
-            : null,
-          error: deleteMutation.error,
-        };
-    }
-  };
-
-  const responseState = getResponseState();
 
   if (isLoading) {
     return (
@@ -229,162 +247,267 @@ export function ApiTestPanel() {
       </div>
 
       {/* API Test Section */}
-      <div className="p-4 border rounded-lg space-y-4">
+      <div className="p-4 border rounded-lg space-y-6">
         <h2 className="text-sm font-medium text-muted-foreground">
           API Endpoints
         </h2>
 
         {/* GET /activities */}
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleGetActivities}>
-            GET /activities
-          </Button>
+        <div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleGetActivities}>
+              GET /activities
+            </Button>
+          </div>
+          <ResponseDisplay
+            isLoading={listQuery.isFetching}
+            isError={listQuery.isError}
+            data={listQuery.data}
+            error={listQuery.error}
+          />
         </div>
 
         {/* GET /activities/{id} */}
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder="Activity ID"
-            value={activityId}
-            onChange={(e) => setActivityId(e.target.value)}
-            className="max-w-50"
+        <div>
+          <Form {...getByIdForm}>
+            <form
+              onSubmit={getByIdForm.handleSubmit(handleGetActivityById)}
+              className="flex items-center gap-2"
+            >
+              <FormField
+                control={getByIdForm.control}
+                name="activityId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Activity ID"
+                        className="max-w-50"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                type="submit"
+                disabled={!getByIdForm.formState.isValid}
+              >
+                GET /activities/&#123;id&#125;
+              </Button>
+            </form>
+          </Form>
+          <ResponseDisplay
+            isLoading={getQuery.isFetching}
+            isError={getQuery.isError}
+            data={getQuery.data}
+            error={getQuery.error}
           />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleGetActivityById}
-            disabled={!activityId.trim()}
-          >
-            GET /activities/&#123;id&#125;
-          </Button>
         </div>
 
         {/* POST /activities */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <Input
-            placeholder="Title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="max-w-30"
+        <div>
+          <Form {...createForm}>
+            <form
+              onSubmit={createForm.handleSubmit(handleCreateActivity)}
+              className="flex items-center gap-2 flex-wrap"
+            >
+              <FormField
+                control={createForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Title"
+                        className="max-w-30"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createForm.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="month"
+                        placeholder="YYYY-MM"
+                        className="max-w-35"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Description"
+                        className="max-w-40"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                type="submit"
+                disabled={!createForm.formState.isValid}
+              >
+                POST /activities
+              </Button>
+            </form>
+          </Form>
+          <ResponseDisplay
+            isLoading={createMutation.isPending}
+            isError={createMutation.isError}
+            data={createMutation.data}
+            error={createMutation.error}
           />
-          <Input
-            type="month"
-            placeholder="YYYY-MM"
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            className="max-w-35"
-          />
-          <Input
-            placeholder="Description"
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            className="max-w-40"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCreateActivity}
-            disabled={
-              !newTitle.trim() || !newDate.trim() || !newDescription.trim()
-            }
-          >
-            POST /activities
-          </Button>
         </div>
 
         {/* PUT /activities/{id} */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <Input
-            placeholder="ID"
-            value={updateId}
-            onChange={(e) => setUpdateId(e.target.value)}
-            className="max-w-50"
+        <div>
+          <Form {...updateForm}>
+            <form
+              onSubmit={updateForm.handleSubmit(handleUpdateActivity)}
+              className="flex items-center gap-2 flex-wrap"
+            >
+              <FormField
+                control={updateForm.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="ID"
+                        className="max-w-50"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={updateForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Title"
+                        className="max-w-30"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={updateForm.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="month"
+                        placeholder="YYYY-MM"
+                        className="max-w-35"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={updateForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Description"
+                        className="max-w-40"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                type="submit"
+                disabled={!updateForm.formState.isValid}
+              >
+                PUT /activities/&#123;id&#125;
+              </Button>
+            </form>
+          </Form>
+          <ResponseDisplay
+            isLoading={updateMutation.isPending}
+            isError={updateMutation.isError}
+            data={updateMutation.data}
+            error={updateMutation.error}
           />
-          <Input
-            placeholder="Title"
-            value={updateTitle}
-            onChange={(e) => setUpdateTitle(e.target.value)}
-            className="max-w-30"
-          />
-          <Input
-            type="month"
-            placeholder="YYYY-MM"
-            value={updateDate}
-            onChange={(e) => setUpdateDate(e.target.value)}
-            className="max-w-35"
-          />
-          <Input
-            placeholder="Description"
-            value={updateDescription}
-            onChange={(e) => setUpdateDescription(e.target.value)}
-            className="max-w-40"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleUpdateActivity}
-            disabled={
-              !updateId.trim() ||
-              !updateTitle.trim() ||
-              !updateDate.trim() ||
-              !updateDescription.trim()
-            }
-          >
-            PUT /activities/&#123;id&#125;
-          </Button>
         </div>
 
         {/* DELETE /activities/{id} */}
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder="ID"
-            value={deleteId}
-            onChange={(e) => setDeleteId(e.target.value)}
-            className="max-w-50"
+        <div>
+          <Form {...deleteForm}>
+            <form
+              onSubmit={deleteForm.handleSubmit(handleDeleteActivity)}
+              className="flex items-center gap-2"
+            >
+              <FormField
+                control={deleteForm.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="ID"
+                        className="max-w-50"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                type="submit"
+                disabled={!deleteForm.formState.isValid}
+              >
+                DELETE /activities/&#123;id&#125;
+              </Button>
+            </form>
+          </Form>
+          <ResponseDisplay
+            isLoading={deleteMutation.isPending}
+            isError={deleteMutation.isError}
+            data={
+              deleteMutation.isSuccess
+                ? { message: "Deleted successfully" }
+                : null
+            }
+            error={deleteMutation.error}
           />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDeleteActivity}
-            disabled={!deleteId.trim()}
-          >
-            DELETE /activities/&#123;id&#125;
-          </Button>
         </div>
       </div>
-
-      {/* Response Display */}
-      {responseState && (
-        <div className="p-4 border rounded-lg space-y-2">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              Response
-            </h2>
-            {responseState.isLoading && (
-              <span className="text-xs text-muted-foreground">Loading...</span>
-            )}
-            {!responseState.isLoading &&
-              !responseState.isError &&
-              responseState.data && (
-                <span className="text-xs text-green-600 dark:text-green-400">
-                  Success
-                </span>
-              )}
-            {responseState.isError && (
-              <span className="text-xs text-red-600 dark:text-red-400">
-                Error
-              </span>
-            )}
-          </div>
-          <pre className="p-3 bg-muted rounded text-sm font-mono overflow-auto max-h-100">
-            {responseState.isError
-              ? responseState.error instanceof Error
-                ? responseState.error.message
-                : "Unknown error"
-              : JSON.stringify(responseState.data, null, 2)}
-          </pre>
-        </div>
-      )}
     </div>
   );
 }
