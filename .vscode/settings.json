@@ -1,0 +1,10 @@
+{
+  "javascript.preferences.autoImportFileExcludePatterns": [
+    "**/orval/client/models",
+    "**/orval/server/models"
+  ],
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "**/orval/client/models",
+    "**/orval/server/models"
+  ]
+}

@@ -6,6 +6,16 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   // Override default ignores of eslint-config-next.
+  {
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/orval/server/models", "@/orval/client/models"],
+        },
+      ],
+    },
+  },
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
