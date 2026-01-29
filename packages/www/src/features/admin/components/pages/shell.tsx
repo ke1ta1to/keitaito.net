@@ -62,7 +62,6 @@ export default function AdminShell() {
           path="users"
           element={
             <div className="min-h-screen bg-background p-8">
-              <p className="text-xl font-semibold">User Management</p>
               <Link
                 to="/"
                 className="text-sm text-muted-foreground hover:underline"

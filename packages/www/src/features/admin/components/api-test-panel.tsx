@@ -3,20 +3,21 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { signInWithRedirect, signOut, getCurrentUser } from "aws-amplify/auth";
 import {
-  signInWithRedirect,
-  signOut,
-  fetchAuthSession,
-  getCurrentUser,
-} from "aws-amplify/auth";
+  useActivitiesList,
+  useActivitiesGet,
+  useActivitiesCreate,
+  useActivitiesUpdate,
+  useActivitiesDelete,
+} from "@/gen/api/endpoints/activities/activities";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-type ResponseState = {
-  status: "idle" | "loading" | "success" | "error";
-  data: unknown;
-  error?: string;
-};
+type ActiveOperation =
+  | { type: "list" }
+  | { type: "get"; id: string }
+  | { type: "create" }
+  | { type: "update" }
+  | { type: "delete" };
 
 export function ApiTestPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,10 +31,26 @@ export function ApiTestPanel() {
   const [updateDate, setUpdateDate] = useState("");
   const [updateDescription, setUpdateDescription] = useState("");
   const [deleteId, setDeleteId] = useState("");
-  const [response, setResponse] = useState<ResponseState>({
-    status: "idle",
-    data: null,
+  const [activeOperation, setActiveOperation] =
+    useState<ActiveOperation | null>(null);
+
+  // React Query hooks
+  const listQuery = useActivitiesList({
+    query: { enabled: false },
   });
+
+  const getQuery = useActivitiesGet(
+    activeOperation?.type === "get" ? activeOperation.id : "",
+    {
+      query: {
+        enabled: activeOperation?.type === "get" && !!activeOperation.id,
+      },
+    },
+  );
+
+  const createMutation = useActivitiesCreate();
+  const updateMutation = useActivitiesUpdate();
+  const deleteMutation = useActivitiesDelete();
 
   useEffect(() => {
     checkAuthStatus();
@@ -57,83 +74,119 @@ export function ApiTestPanel() {
   const handleSignOut = async () => {
     await signOut();
     setIsAuthenticated(false);
-    setResponse({ status: "idle", data: null });
+    setActiveOperation(null);
   };
 
-  const getToken = async () => {
-    const session = await fetchAuthSession();
-    return session.tokens?.accessToken?.toString();
+  const handleGetActivities = () => {
+    setActiveOperation({ type: "list" });
+    listQuery.refetch();
   };
-
-  const apiCall = async (method: string, path: string, body?: object) => {
-    const token = await getToken();
-
-    const res = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-        "Content-Type": "application/json",
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-
-    if (res.status === 204) {
-      return { message: "Deleted successfully" };
-    }
-    return res.json();
-  };
-
-  const executeApiCall = async (
-    method: string,
-    path: string,
-    body?: object,
-  ) => {
-    setResponse({ status: "loading", data: null });
-    try {
-      const data = await apiCall(method, path, body);
-      setResponse({ status: "success", data });
-    } catch (err) {
-      setResponse({
-        status: "error",
-        data: null,
-        error: err instanceof Error ? err.message : "Unknown error",
-      });
-    }
-  };
-
-  const handleGetActivities = () => executeApiCall("GET", "/activities");
 
   const handleGetActivityById = () => {
     if (!activityId.trim()) return;
-    executeApiCall("GET", `/activities/${activityId.trim()}`);
+    setActiveOperation({ type: "get", id: activityId.trim() });
   };
 
   const handleCreateActivity = () => {
-    executeApiCall("POST", "/activities", {
-      title: newTitle.trim(),
-      date: newDate.trim(),
-      description: newDescription.trim(),
-    });
-    setNewTitle("");
-    setNewDate("");
-    setNewDescription("");
+    setActiveOperation({ type: "create" });
+    createMutation.mutate(
+      {
+        data: {
+          title: newTitle.trim(),
+          date: newDate.trim(),
+          description: newDescription.trim(),
+        },
+      },
+      {
+        onSuccess: () => {
+          setNewTitle("");
+          setNewDate("");
+          setNewDescription("");
+        },
+      },
+    );
   };
 
   const handleUpdateActivity = () => {
-    executeApiCall("PUT", `/activities/${updateId.trim()}`, {
-      title: updateTitle.trim(),
-      date: updateDate.trim(),
-      description: updateDescription.trim(),
-    });
-    setUpdateTitle("");
-    setUpdateDate("");
-    setUpdateDescription("");
+    setActiveOperation({ type: "update" });
+    updateMutation.mutate(
+      {
+        id: updateId.trim(),
+        data: {
+          title: updateTitle.trim(),
+          date: updateDate.trim(),
+          description: updateDescription.trim(),
+        },
+      },
+      {
+        onSuccess: () => {
+          setUpdateId("");
+          setUpdateTitle("");
+          setUpdateDate("");
+          setUpdateDescription("");
+        },
+      },
+    );
   };
 
   const handleDeleteActivity = () => {
-    executeApiCall("DELETE", `/activities/${deleteId.trim()}`);
-    setDeleteId("");
+    setActiveOperation({ type: "delete" });
+    deleteMutation.mutate(
+      { id: deleteId.trim() },
+      {
+        onSuccess: () => {
+          setDeleteId("");
+        },
+      },
+    );
   };
+
+  // Get current response state based on active operation
+  const getResponseState = () => {
+    if (!activeOperation) return null;
+
+    switch (activeOperation.type) {
+      case "list":
+        return {
+          isLoading: listQuery.isFetching,
+          isError: listQuery.isError,
+          data: listQuery.data,
+          error: listQuery.error,
+        };
+      case "get":
+        return {
+          isLoading: getQuery.isFetching,
+          isError: getQuery.isError,
+          data: getQuery.data,
+          error: getQuery.error,
+        };
+      case "create":
+        return {
+          isLoading: createMutation.isPending,
+          isError: createMutation.isError,
+          data: createMutation.data,
+          error: createMutation.error,
+        };
+      case "update":
+        return {
+          isLoading: updateMutation.isPending,
+          isError: updateMutation.isError,
+          data: updateMutation.data,
+          error: updateMutation.error,
+        };
+      case "delete":
+        return {
+          isLoading: deleteMutation.isPending,
+          isError: deleteMutation.isError,
+          data: deleteMutation.isSuccess
+            ? { message: "Deleted successfully" }
+            : null,
+          error: deleteMutation.error,
+        };
+    }
+  };
+
+  const responseState = getResponseState();
 
   if (isLoading) {
     return (
@@ -301,30 +354,34 @@ export function ApiTestPanel() {
       </div>
 
       {/* Response Display */}
-      {response.status !== "idle" && (
+      {responseState && (
         <div className="p-4 border rounded-lg space-y-2">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-medium text-muted-foreground">
               Response
             </h2>
-            {response.status === "loading" && (
+            {responseState.isLoading && (
               <span className="text-xs text-muted-foreground">Loading...</span>
             )}
-            {response.status === "success" && (
-              <span className="text-xs text-green-600 dark:text-green-400">
-                Success
-              </span>
-            )}
-            {response.status === "error" && (
+            {!responseState.isLoading &&
+              !responseState.isError &&
+              responseState.data && (
+                <span className="text-xs text-green-600 dark:text-green-400">
+                  Success
+                </span>
+              )}
+            {responseState.isError && (
               <span className="text-xs text-red-600 dark:text-red-400">
                 Error
               </span>
             )}
           </div>
           <pre className="p-3 bg-muted rounded text-sm font-mono overflow-auto max-h-100">
-            {response.status === "error"
-              ? response.error
-              : JSON.stringify(response.data, null, 2)}
+            {responseState.isError
+              ? responseState.error instanceof Error
+                ? responseState.error.message
+                : "Unknown error"
+              : JSON.stringify(responseState.data, null, 2)}
           </pre>
         </div>
       )}
