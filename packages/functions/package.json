@@ -1,0 +1,11 @@
+{
+  "name": "@repo/functions",
+  "files": ["openapi"],
+  "scripts": {
+    "lint": "redocly lint ./openapi/openapi.yaml",
+    "preview": "redocly preview --project-dir=./openapi"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.14.9"
+  }
+}
