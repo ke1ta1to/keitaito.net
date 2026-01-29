@@ -1,6 +1,6 @@
 openapi: 3.0.4
 info:
-  title: keitaito.net Activities API
+  title: keitaito.net API
   version: 1.0.0
   license:
     name: MIT
@@ -8,9 +8,6 @@ info:
 
 servers:
   - url: https://keitaito.net/api
-
-security:
-  - BearerAuth: []
 
 paths:
   /activities:
@@ -20,6 +17,9 @@ paths:
       operationId: activities_list
       tags:
         - Activities
+      security:
+        - OAuth2:
+            - api/activities.read
       responses:
         "200":
           description: Successful response
@@ -44,6 +44,9 @@ paths:
       operationId: activities_create
       tags:
         - Activities
+      security:
+        - OAuth2:
+            - api/activities.write
       requestBody:
         required: true
         content:
@@ -96,6 +99,9 @@ paths:
       operationId: activities_get
       tags:
         - Activities
+      security:
+        - OAuth2:
+            - api/activities.read
       parameters:
         - $ref: "#/components/parameters/ActivityId"
       responses:
@@ -132,6 +138,9 @@ paths:
       operationId: activities_update
       tags:
         - Activities
+      security:
+        - OAuth2:
+            - api/activities.write
       parameters:
         - $ref: "#/components/parameters/ActivityId"
       requestBody:
@@ -191,6 +200,9 @@ paths:
       operationId: activities_delete
       tags:
         - Activities
+      security:
+        - OAuth2:
+            - api/activities.write
       parameters:
         - $ref: "#/components/parameters/ActivityId"
       responses:
@@ -223,6 +235,20 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    OAuth2:
+      type: oauth2
+      description: Cognito OAuth2 認証。authorizationCode フローはクライアント用、clientCredentials フローはサーバーサイド用。
+      flows:
+        authorizationCode:
+          authorizationUrl: "https://example.com/oauth2/authorize"
+          tokenUrl: "https://example.com/oauth2/token"
+          scopes:
+            api/activities.read: アクティビティの読み取りアクセス
+            api/activities.write: アクティビティの書き込みアクセス
+        clientCredentials:
+          tokenUrl: "https://example.com/oauth2/token"
+          scopes:
+            api/activities.read: アクティビティの読み取りアクセス（サーバーサイド用）
 
   parameters:
     ActivityId:

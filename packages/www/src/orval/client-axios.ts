@@ -21,9 +21,10 @@ export const customInstance = async <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig,
 ): Promise<T> =>
-  await AXIOS_INSTANCE({
+  AXIOS_INSTANCE({
     ...config,
     ...options,
   }).then(({ data }) => data);
+
 export type ErrorType<Error> = AxiosError<Error>;
 export type BodyType<BodyData> = BodyData;

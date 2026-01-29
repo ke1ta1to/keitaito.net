@@ -1,15 +1,7 @@
-import { activitiesList } from "@/gen/api/endpoints/activities/activities";
-import { getServiceAccessToken } from "@/lib/cognito-client-credentials";
+import { activitiesList } from "@/orval/server";
 
 export default async function IndexPage() {
-  const token = await getServiceAccessToken();
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  const activities = await activitiesList({
-    headers: { Authorization: `Bearer ${token})` },
-    baseURL: apiBaseUrl,
-  });
-
+  const activities = await activitiesList();
   return (
     <div>
       <h1 className="text-3xl font-bold underline">Hello world</h1>

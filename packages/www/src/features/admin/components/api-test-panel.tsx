@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signInWithRedirect, signOut, getCurrentUser } from "aws-amplify/auth";
 import {
-  useActivitiesList,
-  useActivitiesGet,
   useActivitiesCreate,
-  useActivitiesUpdate,
   useActivitiesDelete,
-} from "@/gen/api/endpoints/activities/activities";
+  useActivitiesGet,
+  useActivitiesList,
+  useActivitiesUpdate,
+} from "@/orval/client";
+import { getCurrentUser, signInWithRedirect, signOut } from "aws-amplify/auth";
+import { useEffect, useState } from "react";
 
 type ActiveOperation =
   | { type: "list" }
