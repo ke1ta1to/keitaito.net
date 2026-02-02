@@ -106,7 +106,7 @@ export class PortfolioStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const distRoot = path.join(__dirname, "../../../dist/functions");
+    const distRoot = path.join(__dirname, "../../dist/functions");
 
     const activitiesListFn = new lambda.Function(
       this,

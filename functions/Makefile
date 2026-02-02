@@ -1,7 +1,7 @@
 GOOS := linux
 GOARCH := arm64
 CGO_ENABLED := 0
-DIST_DIR := ../../dist/functions
+DIST_DIR := ../dist/functions
 
 FUNCTIONS := activities_list activities_get activities_create activities_update activities_delete
 
