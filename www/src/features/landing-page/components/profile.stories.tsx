@@ -16,7 +16,7 @@ export const Default: Story = {
       birthday: "1990-01-01",
       location: "New York, USA",
       school: "University of Example",
-      image_url: "https://example.com/image.jpg",
+      image_url: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=1760&auto=format&fit=crop",
       x: "https://x.com/johndoe",
       github: "https://github.com/johndoe",
       zenn: "https://zenn.dev/johndoe",

@@ -23,7 +23,7 @@ export function SkillsList(props: SkillsListProps) {
                 src={skill.icon_url}
                 width={128}
                 height={128}
-                className="h-8 w-8"
+                className="size-8"
               />
             </CardContent>
           </Card>
