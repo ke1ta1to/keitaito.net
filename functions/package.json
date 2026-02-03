@@ -8,6 +8,6 @@
     "preview": "redocly preview --project-dir=./openapi"
   },
   "devDependencies": {
-    "@redocly/cli": "^2.15.0"
+    "@redocly/cli": "^2.15.1"
   }
 }

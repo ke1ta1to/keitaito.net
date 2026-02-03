@@ -11,7 +11,7 @@
     "cdk:deploy": "cdk deploy --all --require-approval never --hotswap-fallback true -c env=dev"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.236.0",
+    "aws-cdk-lib": "^2.237.0",
     "constructs": "^10.4.5",
     "zod": "^4.3.6"
   },
