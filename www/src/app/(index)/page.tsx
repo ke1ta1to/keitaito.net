@@ -1,4 +1,5 @@
 import { ActivitiesList } from "@/features/landing-page/components/activities-list";
+import { SkillsList } from "@/features/landing-page/components/skills-list";
 import { activitiesList, skillsList } from "@/orval/server";
 
 export default async function IndexPage() {
@@ -9,7 +10,7 @@ export default async function IndexPage() {
     <div>
       <h1 className="text-3xl font-bold underline">Hello world</h1>
       <ActivitiesList activities={activities} />
-      <pre>{JSON.stringify(skills, null, 2)}</pre>
+      <SkillsList skills={skills} />
     </div>
   );
 }
