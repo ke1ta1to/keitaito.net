@@ -3,11 +3,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity } from "@/orval";
 
-export interface ActivityListProps {
+export interface ActivitiesListProps {
   activities?: Activity[];
 }
 
-export function ActivityList(props: ActivityListProps) {
+export function ActivitiesList(props: ActivitiesListProps) {
   const { activities = [] } = props;
   return (
     <>

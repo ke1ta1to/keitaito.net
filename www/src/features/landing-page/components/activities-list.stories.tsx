@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { ActivityList } from "./activity-list";
+import { ActivitiesList } from "./activities-list";
 
 const meta = {
-  title: "landing-page/ActivityList",
-  component: ActivityList,
-} satisfies Meta<typeof ActivityList>;
+  title: "landing-page/ActivitiesList",
+  component: ActivitiesList,
+} satisfies Meta<typeof ActivitiesList>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
