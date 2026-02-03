@@ -34,9 +34,24 @@ export class PortfolioStack extends cdk.Stack {
       scopeDescription: "Write access to activities",
     };
 
+    const skillsReadScope: cognito.ResourceServerScope = {
+      scopeName: "skills.read",
+      scopeDescription: "Read access to skills",
+    };
+
+    const skillsWriteScope: cognito.ResourceServerScope = {
+      scopeName: "skills.write",
+      scopeDescription: "Write access to skills",
+    };
+
     const resourceServer = userPool.addResourceServer("ResourceServer", {
       identifier: "api",
-      scopes: [activitiesReadScope, activitiesWriteScope],
+      scopes: [
+        activitiesReadScope,
+        activitiesWriteScope,
+        skillsReadScope,
+        skillsWriteScope,
+      ],
     });
 
     const oauthActivitiesRead = cognito.OAuthScope.resourceServer(
@@ -47,6 +62,16 @@ export class PortfolioStack extends cdk.Stack {
     const oauthActivitiesWrite = cognito.OAuthScope.resourceServer(
       resourceServer,
       activitiesWriteScope,
+    );
+
+    const oauthSkillsRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      skillsReadScope,
+    );
+
+    const oauthSkillsWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      skillsWriteScope,
     );
 
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
@@ -63,6 +88,8 @@ export class PortfolioStack extends cdk.Stack {
           cognito.OAuthScope.PROFILE,
           oauthActivitiesRead,
           oauthActivitiesWrite,
+          oauthSkillsRead,
+          oauthSkillsWrite,
         ],
       },
     });
@@ -74,7 +101,7 @@ export class PortfolioStack extends cdk.Stack {
         flows: {
           clientCredentials: true,
         },
-        scopes: [oauthActivitiesRead],
+        scopes: [oauthActivitiesRead, oauthSkillsRead],
       },
     });
 
@@ -216,6 +243,102 @@ export class PortfolioStack extends cdk.Stack {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
         authorizationScopes: [oauthActivitiesWrite.scopeName],
+      },
+    );
+
+    // Skills Lambda functions
+    const skillsListFn = new lambda.Function(this, "SkillsListFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_list")),
+    });
+    table.grantReadData(skillsListFn);
+    skillsListFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+
+    const skillsGetFn = new lambda.Function(this, "SkillsGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_get")),
+    });
+    table.grantReadData(skillsGetFn);
+    skillsGetFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+
+    const skillsCreateFn = new lambda.Function(this, "SkillsCreateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_create")),
+    });
+    table.grantWriteData(skillsCreateFn);
+    skillsCreateFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+
+    const skillsUpdateFn = new lambda.Function(this, "SkillsUpdateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_update")),
+    });
+    table.grantReadWriteData(skillsUpdateFn);
+    skillsUpdateFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+
+    const skillsDeleteFn = new lambda.Function(this, "SkillsDeleteFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_delete")),
+    });
+    table.grantWriteData(skillsDeleteFn);
+    skillsDeleteFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+
+    // Skills API Gateway resources
+    const skillsResource = restApi.root.addResource("skills");
+    skillsResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(skillsListFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsRead.scopeName],
+      },
+    );
+    skillsResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(skillsCreateFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
+    );
+
+    const skillById = skillsResource.addResource("{id}");
+    skillById.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(skillsGetFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsRead.scopeName],
+      },
+    );
+    skillById.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(skillsUpdateFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
+    );
+    skillById.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(skillsDeleteFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsWrite.scopeName],
       },
     );
 

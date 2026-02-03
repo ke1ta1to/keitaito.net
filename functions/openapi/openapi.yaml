@@ -229,6 +229,215 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /skills:
+    get:
+      summary: List all skills
+      description: Retrieve a list of all skills
+      operationId: skills_list
+      tags:
+        - Skills
+      security:
+        - OAuth2:
+            - api/skills.read
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Create a new skill
+      description: Create a new skill with the provided details
+      operationId: skills_create
+      tags:
+        - Skills
+      security:
+        - OAuth2:
+            - api/skills.write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - icon_url
+              properties:
+                name:
+                  type: string
+                  description: Name of the skill
+                  example: "Go"
+                icon_url:
+                  type: string
+                  description: URL to the skill icon
+                  example: "https://example.com/icons/go.png"
+      responses:
+        "201":
+          description: Skill created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /skills/{id}:
+    get:
+      summary: Get a skill
+      description: Retrieve a single skill by ID
+      operationId: skills_get
+      tags:
+        - Skills
+      security:
+        - OAuth2:
+            - api/skills.read
+      parameters:
+        - $ref: "#/components/parameters/SkillId"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      summary: Update a skill
+      description: Update an existing skill by ID
+      operationId: skills_update
+      tags:
+        - Skills
+      security:
+        - OAuth2:
+            - api/skills.write
+      parameters:
+        - $ref: "#/components/parameters/SkillId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - icon_url
+              properties:
+                name:
+                  type: string
+                  description: Name of the skill
+                  example: "Go"
+                icon_url:
+                  type: string
+                  description: URL to the skill icon
+                  example: "https://example.com/icons/go-updated.png"
+      responses:
+        "200":
+          description: Skill updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      summary: Delete a skill
+      description: Delete an existing skill by ID
+      operationId: skills_delete
+      tags:
+        - Skills
+      security:
+        - OAuth2:
+            - api/skills.write
+      parameters:
+        - $ref: "#/components/parameters/SkillId"
+      responses:
+        "204":
+          description: Skill deleted successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -245,10 +454,13 @@ components:
           scopes:
             api/activities.read: アクティビティの読み取りアクセス
             api/activities.write: アクティビティの書き込みアクセス
+            api/skills.read: スキルの読み取りアクセス
+            api/skills.write: スキルの書き込みアクセス
         clientCredentials:
           tokenUrl: "https://example.com/oauth2/token"
           scopes:
             api/activities.read: アクティビティの読み取りアクセス（サーバーサイド用）
+            api/skills.read: スキルの読み取りアクセス（サーバーサイド用）
 
   parameters:
     ActivityId:
@@ -260,6 +472,16 @@ components:
         type: string
         format: uuid
         example: "550e8400-e29b-41d4-a716-446655440000"
+
+    SkillId:
+      name: id
+      in: path
+      required: true
+      description: Skill UUID
+      schema:
+        type: string
+        format: uuid
+        example: "660e8400-e29b-41d4-a716-446655440000"
 
   schemas:
     Activity:
@@ -287,6 +509,27 @@ components:
           type: string
           description: Detailed description of the activity
           example: "Launched a new portfolio website using Next.js and AWS"
+
+    Skill:
+      type: object
+      required:
+        - id
+        - name
+        - icon_url
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the skill
+          example: "660e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          description: Name of the skill
+          example: "Go"
+        icon_url:
+          type: string
+          description: URL to the skill icon
+          example: "https://example.com/icons/go.png"
 
     ErrorResponse:
       type: object

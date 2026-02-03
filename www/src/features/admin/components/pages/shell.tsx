@@ -1,6 +1,7 @@
 import { Amplify } from "aws-amplify";
 import { HashRouter, Link, Route, Routes } from "react-router";
 import { ApiTestPanel } from "../api-test-panel";
+import { SkillsTestPanel } from "../skills-test-panel";
 
 Amplify.configure({
   Auth: {
@@ -25,6 +26,8 @@ Amplify.configure({
             "profile",
             "api/activities.read",
             "api/activities.write",
+            "api/skills.read",
+            "api/skills.write",
           ],
         },
       },
@@ -41,6 +44,7 @@ export default function AdminShell() {
           element={
             <div className="min-h-screen bg-background p-8">
               <ApiTestPanel />
+              <SkillsTestPanel />
               <div className="max-w-2xl mx-auto mt-6 flex gap-4">
                 <Link
                   to="/users"
