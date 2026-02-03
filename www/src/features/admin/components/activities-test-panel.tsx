@@ -16,10 +16,10 @@ import {
   useActivitiesList,
   useActivitiesUpdate,
 } from "@/orval/client";
-import { getCurrentUser, signInWithRedirect, signOut } from "aws-amplify/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ResponseDisplay } from "./response-display";
 
 // Zod Schemas
 const getByIdSchema = z.object({
@@ -48,50 +48,7 @@ type CreateActivityFormData = z.infer<typeof createActivitySchema>;
 type UpdateActivityFormData = z.infer<typeof updateActivitySchema>;
 type DeleteActivityFormData = z.infer<typeof deleteActivitySchema>;
 
-function ResponseDisplay({
-  isLoading,
-  isError,
-  data,
-  error,
-}: {
-  isLoading: boolean;
-  isError: boolean;
-  data: unknown;
-  error: Error | null;
-}) {
-  if (!isLoading && !isError && !data) return null;
-
-  const content: string = isError
-    ? error instanceof Error
-      ? error.message
-      : "Unknown error"
-    : (JSON.stringify(data, null, 2) ?? "");
-
-  return (
-    <div className="mt-2 space-y-1">
-      <div className="flex items-center gap-2">
-        {isLoading && (
-          <span className="text-xs text-muted-foreground">Loading...</span>
-        )}
-        {!isLoading && !isError && !!data && (
-          <span className="text-xs text-green-600 dark:text-green-400">
-            Success
-          </span>
-        )}
-        {isError && (
-          <span className="text-xs text-red-600 dark:text-red-400">Error</span>
-        )}
-      </div>
-      <pre className="p-3 bg-muted rounded text-sm font-mono overflow-auto max-h-60">
-        {content}
-      </pre>
-    </div>
-  );
-}
-
-export function ApiTestPanel() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+export function ActivitiesTestPanel() {
   const [getByIdTarget, setGetByIdTarget] = useState("");
 
   // React Hook Form instances
@@ -127,30 +84,6 @@ export function ApiTestPanel() {
   const createMutation = useActivitiesCreate();
   const updateMutation = useActivitiesUpdate();
   const deleteMutation = useActivitiesDelete();
-
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      await getCurrentUser();
-      setIsAuthenticated(true);
-    } catch {
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSignIn = async () => {
-    await signInWithRedirect();
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    setIsAuthenticated(false);
-  };
 
   const handleGetActivities = () => {
     listQuery.refetch();
@@ -206,45 +139,10 @@ export function ApiTestPanel() {
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">API Test Panel</h1>
-        <span
-          className={`px-2 py-1 text-xs rounded ${
-            isAuthenticated
-              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-              : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-          }`}
-        >
-          {isAuthenticated ? "Authenticated" : "Not Authenticated"}
-        </span>
-      </div>
-
-      {/* Auth Section */}
-      <div className="p-4 border rounded-lg space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Authentication
-        </h2>
-        {isAuthenticated ? (
-          <Button variant="outline" onClick={handleSignOut}>
-            Sign Out
-          </Button>
-        ) : (
-          <Button variant="outline" onClick={handleSignIn}>
-            Sign In
-          </Button>
-        )}
-      </div>
+      <h1 className="text-xl font-semibold">Activities API Test Panel</h1>
 
       {/* API Test Section */}
       <div className="p-4 border rounded-lg space-y-6">
