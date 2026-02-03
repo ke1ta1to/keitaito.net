@@ -9,6 +9,8 @@ export * from './activities-create-body';
 export * from './activities-update-body';
 export * from './activity';
 export * from './error-response';
+export * from './profile-update-body';
+export * from './profile';
 export * from './skill';
 export * from './skills-create-body';
 export * from './skills-update-body';

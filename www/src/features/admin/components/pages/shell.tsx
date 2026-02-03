@@ -2,6 +2,7 @@ import { Amplify } from "aws-amplify";
 import { HashRouter, Link, Route, Routes } from "react-router";
 import { ActivitiesTestPanel } from "../activities-test-panel";
 import { AuthTestPanel } from "../auth-test-panel";
+import { ProfileTestPanel } from "../profile-test-panel";
 import { SkillsTestPanel } from "../skills-test-panel";
 
 Amplify.configure({
@@ -29,6 +30,8 @@ Amplify.configure({
             "api/activities.write",
             "api/skills.read",
             "api/skills.write",
+            "api/profile.read",
+            "api/profile.write",
           ],
         },
       },
@@ -43,10 +46,11 @@ export default function AdminShell() {
         <Route
           index
           element={
-            <div className="min-h-screen bg-background p-8">
+            <div className="min-h-screen bg-background p-8 space-y-8">
               <AuthTestPanel />
               <ActivitiesTestPanel />
               <SkillsTestPanel />
+              <ProfileTestPanel />
               <div className="max-w-2xl mx-auto mt-6 flex gap-4">
                 <Link
                   to="/users"

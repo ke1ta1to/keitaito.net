@@ -44,6 +44,16 @@ export class PortfolioStack extends cdk.Stack {
       scopeDescription: "Write access to skills",
     };
 
+    const profileReadScope: cognito.ResourceServerScope = {
+      scopeName: "profile.read",
+      scopeDescription: "Read access to profile",
+    };
+
+    const profileWriteScope: cognito.ResourceServerScope = {
+      scopeName: "profile.write",
+      scopeDescription: "Write access to profile",
+    };
+
     const resourceServer = userPool.addResourceServer("ResourceServer", {
       identifier: "api",
       scopes: [
@@ -51,6 +61,8 @@ export class PortfolioStack extends cdk.Stack {
         activitiesWriteScope,
         skillsReadScope,
         skillsWriteScope,
+        profileReadScope,
+        profileWriteScope,
       ],
     });
 
@@ -74,6 +86,16 @@ export class PortfolioStack extends cdk.Stack {
       skillsWriteScope,
     );
 
+    const oauthProfileRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      profileReadScope,
+    );
+
+    const oauthProfileWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      profileWriteScope,
+    );
+
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
@@ -90,6 +112,8 @@ export class PortfolioStack extends cdk.Stack {
           oauthActivitiesWrite,
           oauthSkillsRead,
           oauthSkillsWrite,
+          oauthProfileRead,
+          oauthProfileWrite,
         ],
       },
     });
@@ -101,7 +125,7 @@ export class PortfolioStack extends cdk.Stack {
         flows: {
           clientCredentials: true,
         },
-        scopes: [oauthActivitiesRead, oauthSkillsRead],
+        scopes: [oauthActivitiesRead, oauthSkillsRead, oauthProfileRead],
       },
     });
 
@@ -339,6 +363,50 @@ export class PortfolioStack extends cdk.Stack {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
         authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
+    );
+
+    // Profile Lambda functions
+    const profileGetFn = new lambda.Function(this, "ProfileGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "profile_get")),
+    });
+    table.grantReadData(profileGetFn);
+    profileGetFn.addEnvironment("PROFILE_TABLE_NAME", table.tableName);
+
+    const profileUpdateFn = new lambda.Function(
+      this,
+      "ProfileUpdateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "profile_update")),
+      },
+    );
+    table.grantReadWriteData(profileUpdateFn);
+    profileUpdateFn.addEnvironment("PROFILE_TABLE_NAME", table.tableName);
+
+    // Profile API Gateway resources
+    const profileResource = restApi.root.addResource("profile");
+    profileResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(profileGetFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthProfileRead.scopeName],
+      },
+    );
+    profileResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(profileUpdateFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthProfileWrite.scopeName],
       },
     );
 

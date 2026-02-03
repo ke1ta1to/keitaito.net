@@ -8,6 +8,8 @@ import type {
   ActivitiesCreateBody,
   ActivitiesUpdateBody,
   Activity,
+  Profile,
+  ProfileUpdateBody,
   Skill,
   SkillsCreateBody,
   SkillsUpdateBody
@@ -158,6 +160,34 @@ export const skillsDelete = (
       options);
     }
   
+/**
+ * Retrieve the profile
+ * @summary Get profile
+ */
+export const profileGet = (
+    
+ options?: SecondParameter<typeof customInstance<Profile>>,) => {
+      return customInstance<Profile>(
+      {url: `/profile`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * Create or update the profile (upsert)
+ * @summary Update profile
+ */
+export const profileUpdate = (
+    profileUpdateBody: BodyType<ProfileUpdateBody>,
+ options?: SecondParameter<typeof customInstance<Profile>>,) => {
+      return customInstance<Profile>(
+      {url: `/profile`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: profileUpdateBody
+    },
+      options);
+    }
+  
 export type ActivitiesListResult = NonNullable<Awaited<ReturnType<typeof activitiesList>>>
 export type ActivitiesCreateResult = NonNullable<Awaited<ReturnType<typeof activitiesCreate>>>
 export type ActivitiesGetResult = NonNullable<Awaited<ReturnType<typeof activitiesGet>>>
@@ -168,3 +198,5 @@ export type SkillsCreateResult = NonNullable<Awaited<ReturnType<typeof skillsCre
 export type SkillsGetResult = NonNullable<Awaited<ReturnType<typeof skillsGet>>>
 export type SkillsUpdateResult = NonNullable<Awaited<ReturnType<typeof skillsUpdate>>>
 export type SkillsDeleteResult = NonNullable<Awaited<ReturnType<typeof skillsDelete>>>
+export type ProfileGetResult = NonNullable<Awaited<ReturnType<typeof profileGet>>>
+export type ProfileUpdateResult = NonNullable<Awaited<ReturnType<typeof profileUpdate>>>

@@ -28,6 +28,8 @@ import type {
   ActivitiesUpdateBody,
   Activity,
   ErrorResponse,
+  Profile,
+  ProfileUpdateBody,
   Skill,
   SkillsCreateBody,
   SkillsUpdateBody
@@ -793,4 +795,161 @@ export const useSkillsDelete = <TError = ErrorType<ErrorResponse | void>,
         TContext
       > => {
       return useMutation(getSkillsDeleteMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Retrieve the profile
+ * @summary Get profile
+ */
+export const profileGet = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Profile>(
+      {url: `/profile`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getProfileGetQueryKey = () => {
+    return [
+    `/profile`
+    ] as const;
+    }
+
+    
+export const getProfileGetQueryOptions = <TData = Awaited<ReturnType<typeof profileGet>>, TError = ErrorType<void | ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getProfileGetQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof profileGet>>> = ({ signal }) => profileGet(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof profileGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ProfileGetQueryResult = NonNullable<Awaited<ReturnType<typeof profileGet>>>
+export type ProfileGetQueryError = ErrorType<void | ErrorResponse>
+
+
+export function useProfileGet<TData = Awaited<ReturnType<typeof profileGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileGet>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileGet>>,
+          TError,
+          Awaited<ReturnType<typeof profileGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProfileGet<TData = Awaited<ReturnType<typeof profileGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileGet>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileGet>>,
+          TError,
+          Awaited<ReturnType<typeof profileGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProfileGet<TData = Awaited<ReturnType<typeof profileGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get profile
+ */
+
+export function useProfileGet<TData = Awaited<ReturnType<typeof profileGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getProfileGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * Create or update the profile (upsert)
+ * @summary Update profile
+ */
+export const profileUpdate = (
+    profileUpdateBody: BodyType<ProfileUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Profile>(
+      {url: `/profile`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: profileUpdateBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getProfileUpdateMutationOptions = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileUpdate>>, TError,{data: BodyType<ProfileUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof profileUpdate>>, TError,{data: BodyType<ProfileUpdateBody>}, TContext> => {
+
+const mutationKey = ['profileUpdate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileUpdate>>, {data: BodyType<ProfileUpdateBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  profileUpdate(data,requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ProfileUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof profileUpdate>>>
+    export type ProfileUpdateMutationBody = BodyType<ProfileUpdateBody>
+    export type ProfileUpdateMutationError = ErrorType<ErrorResponse | void>
+
+    /**
+ * @summary Update profile
+ */
+export const useProfileUpdate = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileUpdate>>, TError,{data: BodyType<ProfileUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof profileUpdate>>,
+        TError,
+        {data: BodyType<ProfileUpdateBody>},
+        TContext
+      > => {
+      return useMutation(getProfileUpdateMutationOptions(options), queryClient);
     }
