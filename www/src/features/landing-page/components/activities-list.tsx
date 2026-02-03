@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity } from "@/orval";
+import { format, parse } from "date-fns";
 
 export interface ActivitiesListProps {
   activities?: Activity[];
@@ -15,10 +16,12 @@ export function ActivitiesList(props: ActivitiesListProps) {
         <CardTitle>Activities</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="relative space-y-4 before:absolute before:left-24 before:h-full before:border-l-8 before:border-gray-100">
+        <ul className="relative space-y-4 before:absolute before:left-18 before:h-full before:border-l-8 before:border-gray-100">
           {activities.map((item) => (
             <li key={item.id} className="flex items-start">
-              <div className="w-28 shrink-0">{item.date}</div>
+              <div className="w-22 shrink-0">
+                {format(parse(item.date, "yyyy-MM", new Date()), "MMM yyyy")}
+              </div>
               <div className="flex flex-col space-y-1">
                 <div className="relative before:absolute before:-left-4 before:h-full before:border-l-8 before:border-teal-300">
                   {item.title}

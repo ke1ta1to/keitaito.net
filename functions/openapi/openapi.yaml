@@ -65,7 +65,7 @@ paths:
                 date:
                   type: string
                   description: Date of the activity
-                  example: "2024-01-15"
+                  example: "2024-01"
                 description:
                   type: string
                   description: Detailed description of the activity
@@ -161,7 +161,7 @@ paths:
                 date:
                   type: string
                   description: Date of the activity
-                  example: "2024-01-16"
+                  example: "2024-01"
                 description:
                   type: string
                   description: Detailed description of the activity
@@ -504,7 +504,7 @@ components:
         date:
           type: string
           description: Date of the activity
-          example: "2024-01-15"
+          example: "2024-01"
         description:
           type: string
           description: Detailed description of the activity
