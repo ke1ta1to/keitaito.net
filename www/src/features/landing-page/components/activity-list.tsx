@@ -11,7 +11,7 @@ export function ActivityList(props: ActivityListProps) {
   const { activities = [] } = props;
   return (
     <>
-      <Card className="w-95 m-8">
+      <Card>
         <CardHeader>
           <CardTitle>Activities</CardTitle>
         </CardHeader>
