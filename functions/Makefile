@@ -3,7 +3,7 @@ GOARCH := arm64
 CGO_ENABLED := 0
 DIST_DIR := ../dist/functions
 
-FUNCTIONS := $(notdir $(wildcard cmd/*))
+FUNCTIONS := $(filter-out seed,$(notdir $(wildcard cmd/*)))
 
 .PHONY: all
 all: $(FUNCTIONS)
@@ -24,3 +24,7 @@ generate:
 .PHONY: test
 test:
 	go test -v ./...
+
+.PHONY: seed
+seed:
+	go run ./cmd/seed
