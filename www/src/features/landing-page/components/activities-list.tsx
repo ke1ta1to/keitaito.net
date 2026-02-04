@@ -23,7 +23,7 @@ export function ActivitiesList(props: ActivitiesListProps) {
                 {format(parse(item.date, "yyyy-MM", new Date()), "MMM yyyy")}
               </div>
               <div className="flex flex-col space-y-1">
-                <div className="relative before:absolute before:-left-4 before:h-full before:border-l-8 before:border-teal-300">
+                <div className="relative before:absolute before:-left-4 before:h-full before:border-l-8 before:border-teal-500">
                   {item.title}
                 </div>
                 <div>{item.description}</div>

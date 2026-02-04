@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/google/uuid"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/activities"
+	"github.com/ke1ta1to/keitaito.net/functions/internal/contact"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/profile"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/skills"
 	"github.com/ke1ta1to/keitaito.net/functions/internal/works"
@@ -33,6 +34,7 @@ func main() {
 	skillsRepo := skills.NewDynamoDBRepository(ddb, tableName)
 	profileRepo := profile.NewDynamoDBRepository(ddb, tableName)
 	worksRepo := works.NewDynamoDBRepository(ddb, tableName)
+	contactRepo := contact.NewDynamoDBRepository(ddb, tableName)
 
 	// Seed Activities
 	seedActivities := []*activities.Activity{
@@ -131,6 +133,18 @@ func main() {
 		}
 		fmt.Printf("  Created work: %s\n", w.Title)
 	}
+
+	// Seed Contact
+	seedContact := &contact.Contact{
+		Email: "johndoe@example.com",
+		X:     "https://x.com/johndoe",
+	}
+
+	fmt.Println("Seeding contact...")
+	if err := contactRepo.Update(ctx, seedContact); err != nil {
+		log.Fatalf("failed to update contact: %v", err)
+	}
+	fmt.Printf("  Created contact: %s\n", seedContact.Email)
 
 	fmt.Println("Seed completed successfully!")
 }

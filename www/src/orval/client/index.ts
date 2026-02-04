@@ -27,6 +27,8 @@ import type {
   ActivitiesCreateBody,
   ActivitiesUpdateBody,
   Activity,
+  Contact,
+  ContactUpdateBody,
   ErrorResponse,
   Profile,
   ProfileUpdateBody,
@@ -1333,4 +1335,161 @@ export const useProfileUpdate = <TError = ErrorType<ErrorResponse | void>,
         TContext
       > => {
       return useMutation(getProfileUpdateMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Retrieve the contact information
+ * @summary Get contact
+ */
+export const contactGet = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Contact>(
+      {url: `/contact`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getContactGetQueryKey = () => {
+    return [
+    `/contact`
+    ] as const;
+    }
+
+    
+export const getContactGetQueryOptions = <TData = Awaited<ReturnType<typeof contactGet>>, TError = ErrorType<void | ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof contactGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getContactGetQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof contactGet>>> = ({ signal }) => contactGet(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof contactGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ContactGetQueryResult = NonNullable<Awaited<ReturnType<typeof contactGet>>>
+export type ContactGetQueryError = ErrorType<void | ErrorResponse>
+
+
+export function useContactGet<TData = Awaited<ReturnType<typeof contactGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof contactGet>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof contactGet>>,
+          TError,
+          Awaited<ReturnType<typeof contactGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useContactGet<TData = Awaited<ReturnType<typeof contactGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof contactGet>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof contactGet>>,
+          TError,
+          Awaited<ReturnType<typeof contactGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useContactGet<TData = Awaited<ReturnType<typeof contactGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof contactGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get contact
+ */
+
+export function useContactGet<TData = Awaited<ReturnType<typeof contactGet>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof contactGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getContactGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * Create or update the contact information (upsert)
+ * @summary Update contact
+ */
+export const contactUpdate = (
+    contactUpdateBody: BodyType<ContactUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Contact>(
+      {url: `/contact`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: contactUpdateBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getContactUpdateMutationOptions = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof contactUpdate>>, TError,{data: BodyType<ContactUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof contactUpdate>>, TError,{data: BodyType<ContactUpdateBody>}, TContext> => {
+
+const mutationKey = ['contactUpdate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof contactUpdate>>, {data: BodyType<ContactUpdateBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  contactUpdate(data,requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ContactUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof contactUpdate>>>
+    export type ContactUpdateMutationBody = BodyType<ContactUpdateBody>
+    export type ContactUpdateMutationError = ErrorType<ErrorResponse | void>
+
+    /**
+ * @summary Update contact
+ */
+export const useContactUpdate = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof contactUpdate>>, TError,{data: BodyType<ContactUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof contactUpdate>>,
+        TError,
+        {data: BodyType<ContactUpdateBody>},
+        TContext
+      > => {
+      return useMutation(getContactUpdateMutationOptions(options), queryClient);
     }

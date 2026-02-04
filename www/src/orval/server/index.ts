@@ -8,6 +8,8 @@ import type {
   ActivitiesCreateBody,
   ActivitiesUpdateBody,
   Activity,
+  Contact,
+  ContactUpdateBody,
   Profile,
   ProfileUpdateBody,
   Skill,
@@ -261,6 +263,34 @@ export const profileUpdate = (
       options);
     }
   
+/**
+ * Retrieve the contact information
+ * @summary Get contact
+ */
+export const contactGet = (
+    
+ options?: SecondParameter<typeof customInstance<Contact>>,) => {
+      return customInstance<Contact>(
+      {url: `/contact`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * Create or update the contact information (upsert)
+ * @summary Update contact
+ */
+export const contactUpdate = (
+    contactUpdateBody: BodyType<ContactUpdateBody>,
+ options?: SecondParameter<typeof customInstance<Contact>>,) => {
+      return customInstance<Contact>(
+      {url: `/contact`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: contactUpdateBody
+    },
+      options);
+    }
+  
 export type ActivitiesListResult = NonNullable<Awaited<ReturnType<typeof activitiesList>>>
 export type ActivitiesCreateResult = NonNullable<Awaited<ReturnType<typeof activitiesCreate>>>
 export type ActivitiesGetResult = NonNullable<Awaited<ReturnType<typeof activitiesGet>>>
@@ -278,3 +308,5 @@ export type WorksUpdateResult = NonNullable<Awaited<ReturnType<typeof worksUpdat
 export type WorksDeleteResult = NonNullable<Awaited<ReturnType<typeof worksDelete>>>
 export type ProfileGetResult = NonNullable<Awaited<ReturnType<typeof profileGet>>>
 export type ProfileUpdateResult = NonNullable<Awaited<ReturnType<typeof profileUpdate>>>
+export type ContactGetResult = NonNullable<Awaited<ReturnType<typeof contactGet>>>
+export type ContactUpdateResult = NonNullable<Awaited<ReturnType<typeof contactUpdate>>>

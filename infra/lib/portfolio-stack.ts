@@ -64,6 +64,16 @@ export class PortfolioStack extends cdk.Stack {
       scopeDescription: "Write access to works",
     };
 
+    const contactReadScope: cognito.ResourceServerScope = {
+      scopeName: "contact.read",
+      scopeDescription: "Read access to contact",
+    };
+
+    const contactWriteScope: cognito.ResourceServerScope = {
+      scopeName: "contact.write",
+      scopeDescription: "Write access to contact",
+    };
+
     const resourceServer = userPool.addResourceServer("ResourceServer", {
       identifier: "api",
       scopes: [
@@ -75,6 +85,8 @@ export class PortfolioStack extends cdk.Stack {
         profileWriteScope,
         worksReadScope,
         worksWriteScope,
+        contactReadScope,
+        contactWriteScope,
       ],
     });
 
@@ -118,6 +130,16 @@ export class PortfolioStack extends cdk.Stack {
       worksWriteScope,
     );
 
+    const oauthContactRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      contactReadScope,
+    );
+
+    const oauthContactWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      contactWriteScope,
+    );
+
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
@@ -138,6 +160,8 @@ export class PortfolioStack extends cdk.Stack {
           oauthProfileWrite,
           oauthWorksRead,
           oauthWorksWrite,
+          oauthContactRead,
+          oauthContactWrite,
         ],
       },
     });
@@ -154,6 +178,7 @@ export class PortfolioStack extends cdk.Stack {
           oauthSkillsRead,
           oauthProfileRead,
           oauthWorksRead,
+          oauthContactRead,
         ],
       },
     });
@@ -532,6 +557,50 @@ export class PortfolioStack extends cdk.Stack {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
         authorizationScopes: [oauthProfileWrite.scopeName],
+      },
+    );
+
+    // Contact Lambda functions
+    const contactGetFn = new lambda.Function(this, "ContactGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "contact_get")),
+    });
+    table.grantReadData(contactGetFn);
+    contactGetFn.addEnvironment("CONTACT_TABLE_NAME", table.tableName);
+
+    const contactUpdateFn = new lambda.Function(
+      this,
+      "ContactUpdateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "contact_update")),
+      },
+    );
+    table.grantReadWriteData(contactUpdateFn);
+    contactUpdateFn.addEnvironment("CONTACT_TABLE_NAME", table.tableName);
+
+    // Contact API Gateway resources
+    const contactResource = restApi.root.addResource("contact");
+    contactResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(contactGetFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthContactRead.scopeName],
+      },
+    );
+    contactResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(contactUpdateFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthContactWrite.scopeName],
       },
     );
 

@@ -23,7 +23,7 @@ async function fetchToken(): Promise<TokenResponse> {
   const domain = process.env.NEXT_PUBLIC_AWS_COGNITO_OAUTH_DOMAIN;
   const clientId = process.env.AWS_COGNITO_INTERNAL_USER_POOL_CLIENT_ID;
   const clientSecret = process.env.AWS_COGNITO_INTERNAL_USER_POOL_CLIENT_SECRET;
-  const scope = "api/activities.read api/skills.read api/profile.read api/works.read";
+  const scope = "api/activities.read api/skills.read api/profile.read api/works.read api/contact.read";
 
   const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
