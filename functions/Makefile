@@ -3,21 +3,24 @@ GOARCH := arm64
 CGO_ENABLED := 0
 DIST_DIR := ../dist/functions
 
-FUNCTIONS := activities_list activities_get activities_create activities_update activities_delete skills_list skills_get skills_create skills_update skills_delete profile_get profile_update works_list works_get works_create works_update works_delete
+FUNCTIONS := $(notdir $(wildcard cmd/*))
 
-.PHONY: all clean $(FUNCTIONS) generate test
-
+.PHONY: all
 all: $(FUNCTIONS)
 
+.PHONY: $(FUNCTIONS)
 $(FUNCTIONS):
 	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) \
 		go build -o $(DIST_DIR)/$@/bootstrap ./cmd/$@
 
+.PHONY: clean
 clean:
 	rm -rf $(DIST_DIR)
 
+.PHONY: generate
 generate:
 	go generate ./...
 
+.PHONY: test
 test:
 	go test -v ./...
