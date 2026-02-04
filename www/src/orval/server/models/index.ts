@@ -14,3 +14,6 @@ export * from './profile';
 export * from './skill';
 export * from './skills-create-body';
 export * from './skills-update-body';
+export * from './work';
+export * from './works-create-body';
+export * from './works-update-body';

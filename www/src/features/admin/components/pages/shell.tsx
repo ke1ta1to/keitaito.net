@@ -4,6 +4,7 @@ import { ActivitiesTestPanel } from "../activities-test-panel";
 import { AuthTestPanel } from "../auth-test-panel";
 import { ProfileTestPanel } from "../profile-test-panel";
 import { SkillsTestPanel } from "../skills-test-panel";
+import { WorksTestPanel } from "../works-test-panel";
 
 Amplify.configure({
   Auth: {
@@ -32,6 +33,8 @@ Amplify.configure({
             "api/skills.write",
             "api/profile.read",
             "api/profile.write",
+            "api/works.read",
+            "api/works.write",
           ],
         },
       },
@@ -51,6 +54,7 @@ export default function AdminShell() {
               <ActivitiesTestPanel />
               <SkillsTestPanel />
               <ProfileTestPanel />
+              <WorksTestPanel />
               <div className="max-w-2xl mx-auto mt-6 flex gap-4">
                 <Link
                   to="/users"

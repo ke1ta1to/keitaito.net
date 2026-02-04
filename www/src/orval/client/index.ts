@@ -32,7 +32,10 @@ import type {
   ProfileUpdateBody,
   Skill,
   SkillsCreateBody,
-  SkillsUpdateBody
+  SkillsUpdateBody,
+  Work,
+  WorksCreateBody,
+  WorksUpdateBody
 } from './models';
 
 import { customInstance } from '../client-axios';
@@ -795,6 +798,384 @@ export const useSkillsDelete = <TError = ErrorType<ErrorResponse | void>,
         TContext
       > => {
       return useMutation(getSkillsDeleteMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Retrieve a list of all works
+ * @summary List all works
+ */
+export const worksList = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Work[]>(
+      {url: `/works`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getWorksListQueryKey = () => {
+    return [
+    `/works`
+    ] as const;
+    }
+
+    
+export const getWorksListQueryOptions = <TData = Awaited<ReturnType<typeof worksList>>, TError = ErrorType<void | ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorksListQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof worksList>>> = ({ signal }) => worksList(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof worksList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorksListQueryResult = NonNullable<Awaited<ReturnType<typeof worksList>>>
+export type WorksListQueryError = ErrorType<void | ErrorResponse>
+
+
+export function useWorksList<TData = Awaited<ReturnType<typeof worksList>>, TError = ErrorType<void | ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksList>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof worksList>>,
+          TError,
+          Awaited<ReturnType<typeof worksList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorksList<TData = Awaited<ReturnType<typeof worksList>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksList>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof worksList>>,
+          TError,
+          Awaited<ReturnType<typeof worksList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorksList<TData = Awaited<ReturnType<typeof worksList>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List all works
+ */
+
+export function useWorksList<TData = Awaited<ReturnType<typeof worksList>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorksListQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * Create a new work with the provided details
+ * @summary Create a new work
+ */
+export const worksCreate = (
+    worksCreateBody: BodyType<WorksCreateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Work>(
+      {url: `/works`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: worksCreateBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getWorksCreateMutationOptions = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof worksCreate>>, TError,{data: BodyType<WorksCreateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof worksCreate>>, TError,{data: BodyType<WorksCreateBody>}, TContext> => {
+
+const mutationKey = ['worksCreate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof worksCreate>>, {data: BodyType<WorksCreateBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  worksCreate(data,requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorksCreateMutationResult = NonNullable<Awaited<ReturnType<typeof worksCreate>>>
+    export type WorksCreateMutationBody = BodyType<WorksCreateBody>
+    export type WorksCreateMutationError = ErrorType<ErrorResponse | void>
+
+    /**
+ * @summary Create a new work
+ */
+export const useWorksCreate = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof worksCreate>>, TError,{data: BodyType<WorksCreateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof worksCreate>>,
+        TError,
+        {data: BodyType<WorksCreateBody>},
+        TContext
+      > => {
+      return useMutation(getWorksCreateMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Retrieve a single work by ID
+ * @summary Get a work
+ */
+export const worksGet = (
+    id: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Work>(
+      {url: `/works/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getWorksGetQueryKey = (id: string,) => {
+    return [
+    `/works/${id}`
+    ] as const;
+    }
+
+    
+export const getWorksGetQueryOptions = <TData = Awaited<ReturnType<typeof worksGet>>, TError = ErrorType<ErrorResponse | void>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorksGetQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof worksGet>>> = ({ signal }) => worksGet(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof worksGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorksGetQueryResult = NonNullable<Awaited<ReturnType<typeof worksGet>>>
+export type WorksGetQueryError = ErrorType<ErrorResponse | void>
+
+
+export function useWorksGet<TData = Awaited<ReturnType<typeof worksGet>>, TError = ErrorType<ErrorResponse | void>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksGet>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof worksGet>>,
+          TError,
+          Awaited<ReturnType<typeof worksGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorksGet<TData = Awaited<ReturnType<typeof worksGet>>, TError = ErrorType<ErrorResponse | void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksGet>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof worksGet>>,
+          TError,
+          Awaited<ReturnType<typeof worksGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorksGet<TData = Awaited<ReturnType<typeof worksGet>>, TError = ErrorType<ErrorResponse | void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a work
+ */
+
+export function useWorksGet<TData = Awaited<ReturnType<typeof worksGet>>, TError = ErrorType<ErrorResponse | void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof worksGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorksGetQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * Update an existing work by ID
+ * @summary Update a work
+ */
+export const worksUpdate = (
+    id: string,
+    worksUpdateBody: BodyType<WorksUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Work>(
+      {url: `/works/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: worksUpdateBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getWorksUpdateMutationOptions = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof worksUpdate>>, TError,{id: string;data: BodyType<WorksUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof worksUpdate>>, TError,{id: string;data: BodyType<WorksUpdateBody>}, TContext> => {
+
+const mutationKey = ['worksUpdate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof worksUpdate>>, {id: string;data: BodyType<WorksUpdateBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  worksUpdate(id,data,requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorksUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof worksUpdate>>>
+    export type WorksUpdateMutationBody = BodyType<WorksUpdateBody>
+    export type WorksUpdateMutationError = ErrorType<ErrorResponse | void>
+
+    /**
+ * @summary Update a work
+ */
+export const useWorksUpdate = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof worksUpdate>>, TError,{id: string;data: BodyType<WorksUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof worksUpdate>>,
+        TError,
+        {id: string;data: BodyType<WorksUpdateBody>},
+        TContext
+      > => {
+      return useMutation(getWorksUpdateMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Delete an existing work by ID
+ * @summary Delete a work
+ */
+export const worksDelete = (
+    id: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/works/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+  
+
+
+export const getWorksDeleteMutationOptions = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof worksDelete>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof worksDelete>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['worksDelete'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof worksDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  worksDelete(id,requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorksDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof worksDelete>>>
+    
+    export type WorksDeleteMutationError = ErrorType<ErrorResponse | void>
+
+    /**
+ * @summary Delete a work
+ */
+export const useWorksDelete = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof worksDelete>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof worksDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getWorksDeleteMutationOptions(options), queryClient);
     }
     
 /**

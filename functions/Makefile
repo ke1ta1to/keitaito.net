@@ -3,7 +3,7 @@ GOARCH := arm64
 CGO_ENABLED := 0
 DIST_DIR := ../dist/functions
 
-FUNCTIONS := activities_list activities_get activities_create activities_update activities_delete skills_list skills_get skills_create skills_update skills_delete profile_get profile_update
+FUNCTIONS := activities_list activities_get activities_create activities_update activities_delete skills_list skills_get skills_create skills_update skills_delete profile_get profile_update works_list works_get works_create works_update works_delete
 
 .PHONY: all clean $(FUNCTIONS) generate test
 

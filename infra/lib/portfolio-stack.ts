@@ -54,6 +54,16 @@ export class PortfolioStack extends cdk.Stack {
       scopeDescription: "Write access to profile",
     };
 
+    const worksReadScope: cognito.ResourceServerScope = {
+      scopeName: "works.read",
+      scopeDescription: "Read access to works",
+    };
+
+    const worksWriteScope: cognito.ResourceServerScope = {
+      scopeName: "works.write",
+      scopeDescription: "Write access to works",
+    };
+
     const resourceServer = userPool.addResourceServer("ResourceServer", {
       identifier: "api",
       scopes: [
@@ -63,6 +73,8 @@ export class PortfolioStack extends cdk.Stack {
         skillsWriteScope,
         profileReadScope,
         profileWriteScope,
+        worksReadScope,
+        worksWriteScope,
       ],
     });
 
@@ -96,6 +108,16 @@ export class PortfolioStack extends cdk.Stack {
       profileWriteScope,
     );
 
+    const oauthWorksRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      worksReadScope,
+    );
+
+    const oauthWorksWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      worksWriteScope,
+    );
+
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
@@ -114,6 +136,8 @@ export class PortfolioStack extends cdk.Stack {
           oauthSkillsWrite,
           oauthProfileRead,
           oauthProfileWrite,
+          oauthWorksRead,
+          oauthWorksWrite,
         ],
       },
     });
@@ -125,7 +149,12 @@ export class PortfolioStack extends cdk.Stack {
         flows: {
           clientCredentials: true,
         },
-        scopes: [oauthActivitiesRead, oauthSkillsRead, oauthProfileRead],
+        scopes: [
+          oauthActivitiesRead,
+          oauthSkillsRead,
+          oauthProfileRead,
+          oauthWorksRead,
+        ],
       },
     });
 
@@ -363,6 +392,102 @@ export class PortfolioStack extends cdk.Stack {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
         authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
+    );
+
+    // Works Lambda functions
+    const worksListFn = new lambda.Function(this, "WorksListFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_list")),
+    });
+    table.grantReadData(worksListFn);
+    worksListFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+
+    const worksGetFn = new lambda.Function(this, "WorksGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_get")),
+    });
+    table.grantReadData(worksGetFn);
+    worksGetFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+
+    const worksCreateFn = new lambda.Function(this, "WorksCreateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_create")),
+    });
+    table.grantWriteData(worksCreateFn);
+    worksCreateFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+
+    const worksUpdateFn = new lambda.Function(this, "WorksUpdateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_update")),
+    });
+    table.grantReadWriteData(worksUpdateFn);
+    worksUpdateFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+
+    const worksDeleteFn = new lambda.Function(this, "WorksDeleteFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_delete")),
+    });
+    table.grantWriteData(worksDeleteFn);
+    worksDeleteFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+
+    // Works API Gateway resources
+    const worksResource = restApi.root.addResource("works");
+    worksResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(worksListFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksRead.scopeName],
+      },
+    );
+    worksResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(worksCreateFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksWrite.scopeName],
+      },
+    );
+
+    const workById = worksResource.addResource("{id}");
+    workById.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(worksGetFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksRead.scopeName],
+      },
+    );
+    workById.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(worksUpdateFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksWrite.scopeName],
+      },
+    );
+    workById.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(worksDeleteFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksWrite.scopeName],
       },
     );
 

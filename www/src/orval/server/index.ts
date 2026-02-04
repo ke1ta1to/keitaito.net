@@ -12,7 +12,10 @@ import type {
   ProfileUpdateBody,
   Skill,
   SkillsCreateBody,
-  SkillsUpdateBody
+  SkillsUpdateBody,
+  Work,
+  WorksCreateBody,
+  WorksUpdateBody
 } from './models';
 
 import { customInstance } from '../server-axios';
@@ -161,6 +164,76 @@ export const skillsDelete = (
     }
   
 /**
+ * Retrieve a list of all works
+ * @summary List all works
+ */
+export const worksList = (
+    
+ options?: SecondParameter<typeof customInstance<Work[]>>,) => {
+      return customInstance<Work[]>(
+      {url: `/works`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * Create a new work with the provided details
+ * @summary Create a new work
+ */
+export const worksCreate = (
+    worksCreateBody: BodyType<WorksCreateBody>,
+ options?: SecondParameter<typeof customInstance<Work>>,) => {
+      return customInstance<Work>(
+      {url: `/works`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: worksCreateBody
+    },
+      options);
+    }
+  
+/**
+ * Retrieve a single work by ID
+ * @summary Get a work
+ */
+export const worksGet = (
+    id: string,
+ options?: SecondParameter<typeof customInstance<Work>>,) => {
+      return customInstance<Work>(
+      {url: `/works/${id}`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * Update an existing work by ID
+ * @summary Update a work
+ */
+export const worksUpdate = (
+    id: string,
+    worksUpdateBody: BodyType<WorksUpdateBody>,
+ options?: SecondParameter<typeof customInstance<Work>>,) => {
+      return customInstance<Work>(
+      {url: `/works/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: worksUpdateBody
+    },
+      options);
+    }
+  
+/**
+ * Delete an existing work by ID
+ * @summary Delete a work
+ */
+export const worksDelete = (
+    id: string,
+ options?: SecondParameter<typeof customInstance<void>>,) => {
+      return customInstance<void>(
+      {url: `/works/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+/**
  * Retrieve the profile
  * @summary Get profile
  */
@@ -198,5 +271,10 @@ export type SkillsCreateResult = NonNullable<Awaited<ReturnType<typeof skillsCre
 export type SkillsGetResult = NonNullable<Awaited<ReturnType<typeof skillsGet>>>
 export type SkillsUpdateResult = NonNullable<Awaited<ReturnType<typeof skillsUpdate>>>
 export type SkillsDeleteResult = NonNullable<Awaited<ReturnType<typeof skillsDelete>>>
+export type WorksListResult = NonNullable<Awaited<ReturnType<typeof worksList>>>
+export type WorksCreateResult = NonNullable<Awaited<ReturnType<typeof worksCreate>>>
+export type WorksGetResult = NonNullable<Awaited<ReturnType<typeof worksGet>>>
+export type WorksUpdateResult = NonNullable<Awaited<ReturnType<typeof worksUpdate>>>
+export type WorksDeleteResult = NonNullable<Awaited<ReturnType<typeof worksDelete>>>
 export type ProfileGetResult = NonNullable<Awaited<ReturnType<typeof profileGet>>>
 export type ProfileUpdateResult = NonNullable<Awaited<ReturnType<typeof profileUpdate>>>
