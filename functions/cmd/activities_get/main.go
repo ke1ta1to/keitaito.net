@@ -18,7 +18,7 @@ func main() {
 	}
 	ddb := dynamodb.NewFromConfig(cfg)
 
-	repo := activities.NewDynamoDBRepository(ddb, os.Getenv("ACTIVITIES_TABLE_NAME"))
+	repo := activities.NewDynamoDBRepository(ddb, os.Getenv("TABLE_NAME"))
 	svc := activities.NewService(repo)
 	h := handler.NewGetHandler(svc)
 

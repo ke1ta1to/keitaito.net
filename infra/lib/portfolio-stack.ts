@@ -204,11 +204,27 @@ export class PortfolioStack extends cdk.Stack {
       },
     );
 
-    const table = new dynamodb.Table(this, "ActivitiesTable", {
+    const tableProps: dynamodb.TableProps = {
       partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+    };
+
+    const activitiesTable = new dynamodb.Table(this, "ActivitiesTable", {
+      ...tableProps,
+    });
+    const skillsTable = new dynamodb.Table(this, "SkillsTable", {
+      ...tableProps,
+    });
+    const worksTable = new dynamodb.Table(this, "WorksTable", {
+      ...tableProps,
+    });
+    const profileTable = new dynamodb.Table(this, "ProfileTable", {
+      ...tableProps,
+    });
+    const contactTable = new dynamodb.Table(this, "ContactTable", {
+      ...tableProps,
     });
 
     const distRoot = path.join(__dirname, "../../dist/functions");
@@ -223,8 +239,8 @@ export class PortfolioStack extends cdk.Stack {
         code: lambda.Code.fromAsset(path.join(distRoot, "activities_list")),
       },
     );
-    table.grantReadData(activitiesListFn);
-    activitiesListFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    activitiesTable.grantReadData(activitiesListFn);
+    activitiesListFn.addEnvironment("TABLE_NAME", activitiesTable.tableName);
 
     const activitiesGetFn = new lambda.Function(this, "ActivitiesGetFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -232,8 +248,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "activities_get")),
     });
-    table.grantReadData(activitiesGetFn);
-    activitiesGetFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    activitiesTable.grantReadData(activitiesGetFn);
+    activitiesGetFn.addEnvironment("TABLE_NAME", activitiesTable.tableName);
 
     const activitiesCreateFn = new lambda.Function(
       this,
@@ -245,8 +261,8 @@ export class PortfolioStack extends cdk.Stack {
         code: lambda.Code.fromAsset(path.join(distRoot, "activities_create")),
       },
     );
-    table.grantWriteData(activitiesCreateFn);
-    activitiesCreateFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    activitiesTable.grantWriteData(activitiesCreateFn);
+    activitiesCreateFn.addEnvironment("TABLE_NAME", activitiesTable.tableName);
 
     const activitiesUpdateFn = new lambda.Function(
       this,
@@ -258,8 +274,8 @@ export class PortfolioStack extends cdk.Stack {
         code: lambda.Code.fromAsset(path.join(distRoot, "activities_update")),
       },
     );
-    table.grantReadWriteData(activitiesUpdateFn);
-    activitiesUpdateFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    activitiesTable.grantReadWriteData(activitiesUpdateFn);
+    activitiesUpdateFn.addEnvironment("TABLE_NAME", activitiesTable.tableName);
 
     const activitiesDeleteFn = new lambda.Function(
       this,
@@ -271,8 +287,8 @@ export class PortfolioStack extends cdk.Stack {
         code: lambda.Code.fromAsset(path.join(distRoot, "activities_delete")),
       },
     );
-    table.grantWriteData(activitiesDeleteFn);
-    activitiesDeleteFn.addEnvironment("ACTIVITIES_TABLE_NAME", table.tableName);
+    activitiesTable.grantWriteData(activitiesDeleteFn);
+    activitiesDeleteFn.addEnvironment("TABLE_NAME", activitiesTable.tableName);
 
     const activities = restApi.root.addResource("activities");
     activities.addMethod(
@@ -331,8 +347,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "skills_list")),
     });
-    table.grantReadData(skillsListFn);
-    skillsListFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+    skillsTable.grantReadData(skillsListFn);
+    skillsListFn.addEnvironment("TABLE_NAME", skillsTable.tableName);
 
     const skillsGetFn = new lambda.Function(this, "SkillsGetFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -340,8 +356,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "skills_get")),
     });
-    table.grantReadData(skillsGetFn);
-    skillsGetFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+    skillsTable.grantReadData(skillsGetFn);
+    skillsGetFn.addEnvironment("TABLE_NAME", skillsTable.tableName);
 
     const skillsCreateFn = new lambda.Function(this, "SkillsCreateFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -349,8 +365,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "skills_create")),
     });
-    table.grantWriteData(skillsCreateFn);
-    skillsCreateFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+    skillsTable.grantWriteData(skillsCreateFn);
+    skillsCreateFn.addEnvironment("TABLE_NAME", skillsTable.tableName);
 
     const skillsUpdateFn = new lambda.Function(this, "SkillsUpdateFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -358,8 +374,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "skills_update")),
     });
-    table.grantReadWriteData(skillsUpdateFn);
-    skillsUpdateFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+    skillsTable.grantReadWriteData(skillsUpdateFn);
+    skillsUpdateFn.addEnvironment("TABLE_NAME", skillsTable.tableName);
 
     const skillsDeleteFn = new lambda.Function(this, "SkillsDeleteFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -367,8 +383,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "skills_delete")),
     });
-    table.grantWriteData(skillsDeleteFn);
-    skillsDeleteFn.addEnvironment("SKILLS_TABLE_NAME", table.tableName);
+    skillsTable.grantWriteData(skillsDeleteFn);
+    skillsDeleteFn.addEnvironment("TABLE_NAME", skillsTable.tableName);
 
     // Skills API Gateway resources
     const skillsResource = restApi.root.addResource("skills");
@@ -427,8 +443,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "works_list")),
     });
-    table.grantReadData(worksListFn);
-    worksListFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+    worksTable.grantReadData(worksListFn);
+    worksListFn.addEnvironment("TABLE_NAME", worksTable.tableName);
 
     const worksGetFn = new lambda.Function(this, "WorksGetFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -436,8 +452,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "works_get")),
     });
-    table.grantReadData(worksGetFn);
-    worksGetFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+    worksTable.grantReadData(worksGetFn);
+    worksGetFn.addEnvironment("TABLE_NAME", worksTable.tableName);
 
     const worksCreateFn = new lambda.Function(this, "WorksCreateFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -445,8 +461,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "works_create")),
     });
-    table.grantWriteData(worksCreateFn);
-    worksCreateFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+    worksTable.grantWriteData(worksCreateFn);
+    worksCreateFn.addEnvironment("TABLE_NAME", worksTable.tableName);
 
     const worksUpdateFn = new lambda.Function(this, "WorksUpdateFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -454,8 +470,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "works_update")),
     });
-    table.grantReadWriteData(worksUpdateFn);
-    worksUpdateFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+    worksTable.grantReadWriteData(worksUpdateFn);
+    worksUpdateFn.addEnvironment("TABLE_NAME", worksTable.tableName);
 
     const worksDeleteFn = new lambda.Function(this, "WorksDeleteFunction", {
       runtime: lambda.Runtime.PROVIDED_AL2023,
@@ -463,8 +479,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "works_delete")),
     });
-    table.grantWriteData(worksDeleteFn);
-    worksDeleteFn.addEnvironment("WORKS_TABLE_NAME", table.tableName);
+    worksTable.grantWriteData(worksDeleteFn);
+    worksDeleteFn.addEnvironment("TABLE_NAME", worksTable.tableName);
 
     // Works API Gateway resources
     const worksResource = restApi.root.addResource("works");
@@ -523,8 +539,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "profile_get")),
     });
-    table.grantReadData(profileGetFn);
-    profileGetFn.addEnvironment("PROFILE_TABLE_NAME", table.tableName);
+    profileTable.grantReadData(profileGetFn);
+    profileGetFn.addEnvironment("TABLE_NAME", profileTable.tableName);
 
     const profileUpdateFn = new lambda.Function(
       this,
@@ -536,8 +552,8 @@ export class PortfolioStack extends cdk.Stack {
         code: lambda.Code.fromAsset(path.join(distRoot, "profile_update")),
       },
     );
-    table.grantReadWriteData(profileUpdateFn);
-    profileUpdateFn.addEnvironment("PROFILE_TABLE_NAME", table.tableName);
+    profileTable.grantReadWriteData(profileUpdateFn);
+    profileUpdateFn.addEnvironment("TABLE_NAME", profileTable.tableName);
 
     // Profile API Gateway resources
     const profileResource = restApi.root.addResource("profile");
@@ -567,8 +583,8 @@ export class PortfolioStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset(path.join(distRoot, "contact_get")),
     });
-    table.grantReadData(contactGetFn);
-    contactGetFn.addEnvironment("CONTACT_TABLE_NAME", table.tableName);
+    contactTable.grantReadData(contactGetFn);
+    contactGetFn.addEnvironment("TABLE_NAME", contactTable.tableName);
 
     const contactUpdateFn = new lambda.Function(
       this,
@@ -580,8 +596,8 @@ export class PortfolioStack extends cdk.Stack {
         code: lambda.Code.fromAsset(path.join(distRoot, "contact_update")),
       },
     );
-    table.grantReadWriteData(contactUpdateFn);
-    contactUpdateFn.addEnvironment("CONTACT_TABLE_NAME", table.tableName);
+    contactTable.grantReadWriteData(contactUpdateFn);
+    contactUpdateFn.addEnvironment("TABLE_NAME", contactTable.tableName);
 
     // Contact API Gateway resources
     const contactResource = restApi.root.addResource("contact");

@@ -18,7 +18,7 @@ func main() {
 	}
 	ddb := dynamodb.NewFromConfig(cfg)
 
-	repo := skills.NewDynamoDBRepository(ddb, os.Getenv("SKILLS_TABLE_NAME"))
+	repo := skills.NewDynamoDBRepository(ddb, os.Getenv("TABLE_NAME"))
 	svc := skills.NewService(repo)
 	h := handler.NewListHandler(svc)
 

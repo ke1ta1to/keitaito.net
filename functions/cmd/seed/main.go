@@ -17,9 +17,22 @@ import (
 )
 
 func main() {
-	tableName := os.Getenv("TABLE_NAME")
-	if tableName == "" {
-		log.Fatal("TABLE_NAME environment variable is required")
+	activitiesTableName := os.Getenv("ACTIVITIES_TABLE_NAME")
+	skillsTableName := os.Getenv("SKILLS_TABLE_NAME")
+	worksTableName := os.Getenv("WORKS_TABLE_NAME")
+	profileTableName := os.Getenv("PROFILE_TABLE_NAME")
+	contactTableName := os.Getenv("CONTACT_TABLE_NAME")
+
+	for _, env := range []struct{ name, value string }{
+		{"ACTIVITIES_TABLE_NAME", activitiesTableName},
+		{"SKILLS_TABLE_NAME", skillsTableName},
+		{"WORKS_TABLE_NAME", worksTableName},
+		{"PROFILE_TABLE_NAME", profileTableName},
+		{"CONTACT_TABLE_NAME", contactTableName},
+	} {
+		if env.value == "" {
+			log.Fatalf("%s environment variable is required", env.name)
+		}
 	}
 
 	ctx := context.Background()
@@ -30,11 +43,11 @@ func main() {
 	}
 	ddb := dynamodb.NewFromConfig(cfg)
 
-	activitiesRepo := activities.NewDynamoDBRepository(ddb, tableName)
-	skillsRepo := skills.NewDynamoDBRepository(ddb, tableName)
-	profileRepo := profile.NewDynamoDBRepository(ddb, tableName)
-	worksRepo := works.NewDynamoDBRepository(ddb, tableName)
-	contactRepo := contact.NewDynamoDBRepository(ddb, tableName)
+	activitiesRepo := activities.NewDynamoDBRepository(ddb, activitiesTableName)
+	skillsRepo := skills.NewDynamoDBRepository(ddb, skillsTableName)
+	profileRepo := profile.NewDynamoDBRepository(ddb, profileTableName)
+	worksRepo := works.NewDynamoDBRepository(ddb, worksTableName)
+	contactRepo := contact.NewDynamoDBRepository(ddb, contactTableName)
 
 	// Seed Activities
 	seedActivities := []*activities.Activity{
