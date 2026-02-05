@@ -9,6 +9,7 @@ import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as events from "aws-cdk-lib/aws-events";
 import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as s3 from "aws-cdk-lib/aws-s3";
 
 export class PortfolioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -86,6 +87,11 @@ export class PortfolioStack extends cdk.Stack {
       scopeDescription: "Write access to articles",
     };
 
+    const uploadsWriteScope: cognito.ResourceServerScope = {
+      scopeName: "uploads.write",
+      scopeDescription: "Write access to uploads",
+    };
+
     const resourceServer = userPool.addResourceServer("ResourceServer", {
       identifier: "api",
       scopes: [
@@ -101,6 +107,7 @@ export class PortfolioStack extends cdk.Stack {
         contactWriteScope,
         articlesReadScope,
         articlesWriteScope,
+        uploadsWriteScope,
       ],
     });
 
@@ -164,6 +171,11 @@ export class PortfolioStack extends cdk.Stack {
       articlesWriteScope,
     );
 
+    const oauthUploadsWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      uploadsWriteScope,
+    );
+
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
@@ -188,6 +200,7 @@ export class PortfolioStack extends cdk.Stack {
           oauthContactWrite,
           oauthArticlesRead,
           oauthArticlesWrite,
+          oauthUploadsWrite,
         ],
       },
     });
@@ -716,6 +729,49 @@ export class PortfolioStack extends cdk.Stack {
     );
     articlesCollectFn.addEnvironment("ZENN_USERNAME", "kk79it");
     articlesCollectFn.addEnvironment("QIITA_USERNAME", "ke1ta1to");
+
+    // Uploads S3 bucket
+    const uploadsBucket = new s3.Bucket(this, "UploadsBucket", {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      cors: [
+        {
+          allowedMethods: [s3.HttpMethods.PUT],
+          allowedOrigins: ["*"],
+          allowedHeaders: ["*"],
+        },
+      ],
+    });
+
+    // Uploads Lambda function
+    const uploadsPresignFn = new lambda.Function(
+      this,
+      "UploadsPresignFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(
+          path.join(distRoot, "uploads_presign"),
+        ),
+      },
+    );
+    uploadsBucket.grantPut(uploadsPresignFn);
+    uploadsPresignFn.addEnvironment("BUCKET_NAME", uploadsBucket.bucketName);
+
+    // Uploads API Gateway resources
+    const uploadsResource = restApi.root.addResource("uploads");
+    const uploadsPresignResource = uploadsResource.addResource("presign");
+    uploadsPresignResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(uploadsPresignFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthUploadsWrite.scopeName],
+      },
+    );
 
     // Articles API Gateway resources
     const articlesResource = restApi.root.addResource("articles");

@@ -11,11 +11,13 @@ import type {
   Article,
   Contact,
   ContactUpdateBody,
+  PresignResponse,
   Profile,
   ProfileUpdateBody,
   Skill,
   SkillsCreateBody,
   SkillsUpdateBody,
+  UploadsPresignBody,
   Work,
   WorksCreateBody,
   WorksUpdateBody
@@ -318,6 +320,21 @@ export const articlesCollect = (
       options);
     }
   
+/**
+ * Generate a presigned PUT URL for uploading a file directly to S3
+ * @summary Generate a presigned URL for file upload
+ */
+export const uploadsPresign = (
+    uploadsPresignBody: BodyType<UploadsPresignBody>,
+ options?: SecondParameter<typeof customInstance<PresignResponse>>,) => {
+      return customInstance<PresignResponse>(
+      {url: `/uploads/presign`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: uploadsPresignBody
+    },
+      options);
+    }
+  
 export type ActivitiesListResult = NonNullable<Awaited<ReturnType<typeof activitiesList>>>
 export type ActivitiesCreateResult = NonNullable<Awaited<ReturnType<typeof activitiesCreate>>>
 export type ActivitiesGetResult = NonNullable<Awaited<ReturnType<typeof activitiesGet>>>
@@ -339,3 +356,4 @@ export type ContactGetResult = NonNullable<Awaited<ReturnType<typeof contactGet>
 export type ContactUpdateResult = NonNullable<Awaited<ReturnType<typeof contactUpdate>>>
 export type ArticlesListResult = NonNullable<Awaited<ReturnType<typeof articlesList>>>
 export type ArticlesCollectResult = NonNullable<Awaited<ReturnType<typeof articlesCollect>>>
+export type UploadsPresignResult = NonNullable<Awaited<ReturnType<typeof uploadsPresign>>>

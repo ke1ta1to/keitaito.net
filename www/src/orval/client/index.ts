@@ -31,11 +31,13 @@ import type {
   Contact,
   ContactUpdateBody,
   ErrorResponse,
+  PresignResponse,
   Profile,
   ProfileUpdateBody,
   Skill,
   SkillsCreateBody,
   SkillsUpdateBody,
+  UploadsPresignBody,
   Work,
   WorksCreateBody,
   WorksUpdateBody
@@ -1648,4 +1650,69 @@ export const useArticlesCollect = <TError = ErrorType<void | ErrorResponse>,
         TContext
       > => {
       return useMutation(getArticlesCollectMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Generate a presigned PUT URL for uploading a file directly to S3
+ * @summary Generate a presigned URL for file upload
+ */
+export const uploadsPresign = (
+    uploadsPresignBody: BodyType<UploadsPresignBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PresignResponse>(
+      {url: `/uploads/presign`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: uploadsPresignBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getUploadsPresignMutationOptions = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadsPresign>>, TError,{data: BodyType<UploadsPresignBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadsPresign>>, TError,{data: BodyType<UploadsPresignBody>}, TContext> => {
+
+const mutationKey = ['uploadsPresign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadsPresign>>, {data: BodyType<UploadsPresignBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  uploadsPresign(data,requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadsPresignMutationResult = NonNullable<Awaited<ReturnType<typeof uploadsPresign>>>
+    export type UploadsPresignMutationBody = BodyType<UploadsPresignBody>
+    export type UploadsPresignMutationError = ErrorType<ErrorResponse | void>
+
+    /**
+ * @summary Generate a presigned URL for file upload
+ */
+export const useUploadsPresign = <TError = ErrorType<ErrorResponse | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadsPresign>>, TError,{data: BodyType<UploadsPresignBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof uploadsPresign>>,
+        TError,
+        {data: BodyType<UploadsPresignBody>},
+        TContext
+      > => {
+      return useMutation(getUploadsPresignMutationOptions(options), queryClient);
     }

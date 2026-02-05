@@ -909,6 +909,56 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /uploads/presign:
+    post:
+      summary: Generate a presigned URL for file upload
+      description: Generate a presigned PUT URL for uploading a file directly to S3
+      operationId: uploads_presign
+      tags:
+        - Uploads
+      security:
+        - OAuth2:
+            - api/uploads.write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - filename
+                - content_type
+              properties:
+                filename:
+                  type: string
+                  description: Name of the file to upload
+                  example: "photo.png"
+                content_type:
+                  type: string
+                  description: MIME type of the file
+                  example: "image/png"
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -935,6 +985,7 @@ components:
             api/contact.write: コンタクトの書き込みアクセス
             api/articles.read: 記事の読み取りアクセス
             api/articles.write: 記事の書き込みアクセス
+            api/uploads.write: アップロードの書き込みアクセス
         clientCredentials:
           tokenUrl: "https://example.com/oauth2/token"
           scopes:
@@ -1161,6 +1212,21 @@ components:
             - qiita
           description: Source platform
           example: "zenn"
+
+    PresignResponse:
+      type: object
+      required:
+        - upload_url
+        - key
+      properties:
+        upload_url:
+          type: string
+          description: Presigned PUT URL for uploading the file
+          example: "https://s3.amazonaws.com/bucket/uuid/photo.png?..."
+        key:
+          type: string
+          description: S3 object key for the uploaded file
+          example: "550e8400-e29b-41d4-a716-446655440000/photo.png"
 
     ErrorResponse:
       type: object

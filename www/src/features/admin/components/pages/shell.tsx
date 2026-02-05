@@ -6,6 +6,8 @@ import { AuthTestPanel } from "../auth-test-panel";
 import { ContactTestPanel } from "../contact-test-panel";
 import { ProfileTestPanel } from "../profile-test-panel";
 import { SkillsTestPanel } from "../skills-test-panel";
+import { UploadsS3TestPanel } from "../uploads-s3-test-panel";
+import { UploadsTestPanel } from "../uploads-test-panel";
 import { WorksTestPanel } from "../works-test-panel";
 
 Amplify.configure({
@@ -41,6 +43,7 @@ Amplify.configure({
             "api/contact.write",
             "api/articles.read",
             "api/articles.write",
+            "api/uploads.write",
           ],
         },
       },
@@ -63,6 +66,8 @@ export default function AdminShell() {
               <ContactTestPanel />
               <WorksTestPanel />
               <ArticlesTestPanel />
+              <UploadsTestPanel />
+              <UploadsS3TestPanel />
               <div className="max-w-2xl mx-auto mt-6 flex gap-4">
                 <Link
                   to="/users"
