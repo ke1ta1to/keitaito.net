@@ -12,7 +12,6 @@ type Work struct {
 // DynamoDB
 type Record struct {
 	PK        string `dynamodbav:"pk"`
-	SK        string `dynamodbav:"sk"`
 	Title     string `dynamodbav:"title"`
 	Slug      string `dynamodbav:"slug"`
 	Content   string `dynamodbav:"content"`

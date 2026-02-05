@@ -10,7 +10,6 @@ type Skill struct {
 // DynamoDB
 type Record struct {
 	PK      string `dynamodbav:"pk"`
-	SK      string `dynamodbav:"sk"`
 	Name    string `dynamodbav:"name"`
 	IconURL string `dynamodbav:"icon_url"`
 }

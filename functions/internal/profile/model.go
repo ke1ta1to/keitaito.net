@@ -16,7 +16,6 @@ type Profile struct {
 // DynamoDB
 type Record struct {
 	PK       string `dynamodbav:"pk"`
-	SK       string `dynamodbav:"sk"`
 	Name     string `dynamodbav:"name"`
 	Birthday string `dynamodbav:"birthday"`
 	Location string `dynamodbav:"location"`

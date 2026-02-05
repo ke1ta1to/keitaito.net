@@ -35,29 +35,27 @@ func NewDynamoDBRepository(client awsdynamodb.Client, tableName string) *DynamoD
 }
 
 func (r *DynamoDBRepository) Get(ctx context.Context, id string) (*Activity, error) {
-	out, err := r.client.Query(ctx, &dynamodb.QueryInput{
-		TableName:              aws.String(r.tableName),
-		KeyConditionExpression: aws.String("pk = :pk AND sk = :sk"),
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":pk": &types.AttributeValueMemberS{Value: "ACTIVITY"},
-			":sk": &types.AttributeValueMemberS{Value: id},
+	out, err := r.client.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: aws.String(r.tableName),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{Value: id},
 		},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	if len(out.Items) == 0 {
+	if out.Item == nil {
 		return nil, awsdynamodb.ErrNotFound
 	}
 
 	var rec Record
-	if err := attributevalue.UnmarshalMap(out.Items[0], &rec); err != nil {
+	if err := attributevalue.UnmarshalMap(out.Item, &rec); err != nil {
 		return nil, err
 	}
 
 	return &Activity{
-		ID:          rec.SK,
+		ID:          rec.PK,
 		Title:       rec.Title,
 		Date:        rec.Date,
 		Description: rec.Description,
@@ -65,12 +63,8 @@ func (r *DynamoDBRepository) Get(ctx context.Context, id string) (*Activity, err
 }
 
 func (r *DynamoDBRepository) List(ctx context.Context) ([]Activity, error) {
-	out, err := r.client.Query(ctx, &dynamodb.QueryInput{
-		TableName:              aws.String(r.tableName),
-		KeyConditionExpression: aws.String("pk = :pk"),
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":pk": &types.AttributeValueMemberS{Value: "ACTIVITY"},
-		},
+	out, err := r.client.Scan(ctx, &dynamodb.ScanInput{
+		TableName: aws.String(r.tableName),
 	})
 	if err != nil {
 		return nil, err
@@ -84,7 +78,7 @@ func (r *DynamoDBRepository) List(ctx context.Context) ([]Activity, error) {
 	result := make([]Activity, len(records))
 	for i, rec := range records {
 		result[i] = Activity{
-			ID:          rec.SK,
+			ID:          rec.PK,
 			Title:       rec.Title,
 			Date:        rec.Date,
 			Description: rec.Description,
@@ -101,8 +95,7 @@ func (r *DynamoDBRepository) List(ctx context.Context) ([]Activity, error) {
 
 func (r *DynamoDBRepository) Create(ctx context.Context, a *Activity) error {
 	rec := Record{
-		PK:          "ACTIVITY",
-		SK:          a.ID,
+		PK:          a.ID,
 		Title:       a.Title,
 		Date:        a.Date,
 		Description: a.Description,
@@ -124,8 +117,7 @@ func (r *DynamoDBRepository) Update(ctx context.Context, a *Activity) error {
 	_, err := r.client.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		TableName: aws.String(r.tableName),
 		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "ACTIVITY"},
-			"sk": &types.AttributeValueMemberS{Value: a.ID},
+			"pk": &types.AttributeValueMemberS{Value: a.ID},
 		},
 		UpdateExpression:    aws.String("SET title = :title, #date = :date, description = :description"),
 		ConditionExpression: aws.String("attribute_exists(pk)"),
@@ -152,8 +144,7 @@ func (r *DynamoDBRepository) Delete(ctx context.Context, id string) error {
 	_, err := r.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 		TableName: aws.String(r.tableName),
 		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "ACTIVITY"},
-			"sk": &types.AttributeValueMemberS{Value: id},
+			"pk": &types.AttributeValueMemberS{Value: id},
 		},
 		ConditionExpression: aws.String("attribute_exists(pk)"),
 	})

@@ -30,24 +30,22 @@ func NewDynamoDBRepository(client awsdynamodb.Client, tableName string) *DynamoD
 }
 
 func (r *DynamoDBRepository) Get(ctx context.Context) (*Contact, error) {
-	out, err := r.client.Query(ctx, &dynamodb.QueryInput{
-		TableName:              aws.String(r.tableName),
-		KeyConditionExpression: aws.String("pk = :pk AND sk = :sk"),
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":pk": &types.AttributeValueMemberS{Value: "CONTACT"},
-			":sk": &types.AttributeValueMemberS{Value: "default"},
+	out, err := r.client.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: aws.String(r.tableName),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{Value: "default"},
 		},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	if len(out.Items) == 0 {
+	if out.Item == nil {
 		return nil, awsdynamodb.ErrNotFound
 	}
 
 	var rec Record
-	if err := attributevalue.UnmarshalMap(out.Items[0], &rec); err != nil {
+	if err := attributevalue.UnmarshalMap(out.Item, &rec); err != nil {
 		return nil, err
 	}
 
@@ -59,8 +57,7 @@ func (r *DynamoDBRepository) Get(ctx context.Context) (*Contact, error) {
 
 func (r *DynamoDBRepository) Update(ctx context.Context, c *Contact) error {
 	rec := Record{
-		PK:    "CONTACT",
-		SK:    "default",
+		PK:    "default",
 		Email: c.Email,
 		X:     c.X,
 	}

@@ -9,7 +9,6 @@ type Contact struct {
 // DynamoDB
 type Record struct {
 	PK    string `dynamodbav:"pk"`
-	SK    string `dynamodbav:"sk"`
 	Email string `dynamodbav:"email"`
 	X     string `dynamodbav:"x"`
 }

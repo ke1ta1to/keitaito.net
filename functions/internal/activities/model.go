@@ -11,7 +11,6 @@ type Activity struct {
 // DynamoDB
 type Record struct {
 	PK          string `dynamodbav:"pk"`
-	SK          string `dynamodbav:"sk"`
 	Title       string `dynamodbav:"title"`
 	Date        string `dynamodbav:"date"`
 	Description string `dynamodbav:"description"`

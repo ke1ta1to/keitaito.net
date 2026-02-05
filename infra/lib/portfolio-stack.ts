@@ -206,7 +206,6 @@ export class PortfolioStack extends cdk.Stack {
 
     const tableProps: dynamodb.TableProps = {
       partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
-      sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     };
