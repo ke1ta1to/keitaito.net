@@ -6,6 +6,8 @@ import { Construct } from "constructs";
 import * as apiGateway from "aws-cdk-lib/aws-apigateway";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as cognito from "aws-cdk-lib/aws-cognito";
+import * as events from "aws-cdk-lib/aws-events";
+import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 
 export class PortfolioStack extends cdk.Stack {
@@ -74,6 +76,16 @@ export class PortfolioStack extends cdk.Stack {
       scopeDescription: "Write access to contact",
     };
 
+    const articlesReadScope: cognito.ResourceServerScope = {
+      scopeName: "articles.read",
+      scopeDescription: "Read access to articles",
+    };
+
+    const articlesWriteScope: cognito.ResourceServerScope = {
+      scopeName: "articles.write",
+      scopeDescription: "Write access to articles",
+    };
+
     const resourceServer = userPool.addResourceServer("ResourceServer", {
       identifier: "api",
       scopes: [
@@ -87,6 +99,8 @@ export class PortfolioStack extends cdk.Stack {
         worksWriteScope,
         contactReadScope,
         contactWriteScope,
+        articlesReadScope,
+        articlesWriteScope,
       ],
     });
 
@@ -140,6 +154,16 @@ export class PortfolioStack extends cdk.Stack {
       contactWriteScope,
     );
 
+    const oauthArticlesRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      articlesReadScope,
+    );
+
+    const oauthArticlesWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      articlesWriteScope,
+    );
+
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
@@ -162,6 +186,8 @@ export class PortfolioStack extends cdk.Stack {
           oauthWorksWrite,
           oauthContactRead,
           oauthContactWrite,
+          oauthArticlesRead,
+          oauthArticlesWrite,
         ],
       },
     });
@@ -179,6 +205,7 @@ export class PortfolioStack extends cdk.Stack {
           oauthProfileRead,
           oauthWorksRead,
           oauthContactRead,
+          oauthArticlesRead,
         ],
       },
     });
@@ -225,6 +252,13 @@ export class PortfolioStack extends cdk.Stack {
     const contactTable = new dynamodb.Table(this, "ContactTable", {
       ...tableProps,
     });
+    const articlesCacheTable = new dynamodb.Table(
+      this,
+      "ArticlesCacheTable",
+      {
+        ...tableProps,
+      },
+    );
 
     const distRoot = path.join(__dirname, "../../dist/functions");
 
@@ -616,6 +650,93 @@ export class PortfolioStack extends cdk.Stack {
         authorizationType: apiGateway.AuthorizationType.COGNITO,
         authorizer,
         authorizationScopes: [oauthContactWrite.scopeName],
+      },
+    );
+
+    // Articles Lambda functions
+    const articlesListFn = new lambda.Function(
+      this,
+      "ArticlesListFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(path.join(distRoot, "articles_list")),
+      },
+    );
+    articlesCacheTable.grantReadData(articlesListFn);
+    articlesListFn.addEnvironment(
+      "TABLE_NAME",
+      articlesCacheTable.tableName,
+    );
+
+    const articlesCollectorFn = new lambda.Function(
+      this,
+      "ArticlesCollectorFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(
+          path.join(distRoot, "articles_collector"),
+        ),
+        timeout: cdk.Duration.seconds(30),
+      },
+    );
+    articlesCacheTable.grantWriteData(articlesCollectorFn);
+    articlesCollectorFn.addEnvironment(
+      "TABLE_NAME",
+      articlesCacheTable.tableName,
+    );
+    articlesCollectorFn.addEnvironment("ZENN_USERNAME", "kk79it");
+    articlesCollectorFn.addEnvironment("QIITA_USERNAME", "ke1ta1to");
+
+    new events.Rule(this, "ArticlesCollectorSchedule", {
+      schedule: events.Schedule.cron({ hour: "0", minute: "0" }),
+      targets: [new targets.LambdaFunction(articlesCollectorFn)],
+    });
+
+    const articlesCollectFn = new lambda.Function(
+      this,
+      "ArticlesCollectFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        handler: "bootstrap",
+        architecture: lambda.Architecture.ARM_64,
+        code: lambda.Code.fromAsset(
+          path.join(distRoot, "articles_collect"),
+        ),
+        timeout: cdk.Duration.seconds(30),
+      },
+    );
+    articlesCacheTable.grantWriteData(articlesCollectFn);
+    articlesCollectFn.addEnvironment(
+      "TABLE_NAME",
+      articlesCacheTable.tableName,
+    );
+    articlesCollectFn.addEnvironment("ZENN_USERNAME", "kk79it");
+    articlesCollectFn.addEnvironment("QIITA_USERNAME", "ke1ta1to");
+
+    // Articles API Gateway resources
+    const articlesResource = restApi.root.addResource("articles");
+    articlesResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(articlesListFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesRead.scopeName],
+      },
+    );
+
+    const articlesCollectResource = articlesResource.addResource("collect");
+    articlesCollectResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(articlesCollectFn),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesWrite.scopeName],
       },
     );
 

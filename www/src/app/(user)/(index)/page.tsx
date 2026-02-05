@@ -1,10 +1,12 @@
 import { ActivitiesList } from "@/features/landing-page/components/activities-list";
+import { ArticlesList } from "@/features/landing-page/components/articles-list";
 import { Contact } from "@/features/landing-page/components/contact";
 import { Profile } from "@/features/landing-page/components/profile";
 import { SkillsList } from "@/features/landing-page/components/skills-list";
 import { WorksList } from "@/features/landing-page/components/works-list";
 import {
   activitiesList,
+  articlesList,
   contactGet,
   profileGet,
   skillsList,
@@ -17,6 +19,7 @@ export default async function IndexPage() {
   const profile = await profileGet();
   const works = await worksList();
   const contact = await contactGet();
+  const articles = await articlesList();
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -27,7 +30,7 @@ export default async function IndexPage() {
         <div className="order-2 md:order-0">
           <ActivitiesList activities={activities} />
         </div>
-        <div className="order-5 md:order-0">
+        <div className="order-6 md:order-0">
           <Contact contact={contact} />
         </div>
       </div>
@@ -36,6 +39,9 @@ export default async function IndexPage() {
           <WorksList works={works} />
         </div>
         <div className="order-4 md:order-0">
+          <ArticlesList articles={articles} />
+        </div>
+        <div className="order-5 md:order-0">
           <SkillsList skills={skills} />
         </div>
       </div>

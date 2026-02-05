@@ -8,6 +8,7 @@ import type {
   ActivitiesCreateBody,
   ActivitiesUpdateBody,
   Activity,
+  Article,
   Contact,
   ContactUpdateBody,
   Profile,
@@ -291,6 +292,32 @@ export const contactUpdate = (
       options);
     }
   
+/**
+ * Retrieve a list of cached articles from Zenn and Qiita
+ * @summary List cached articles
+ */
+export const articlesList = (
+    
+ options?: SecondParameter<typeof customInstance<Article[]>>,) => {
+      return customInstance<Article[]>(
+      {url: `/articles`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * Fetch latest articles from Zenn and Qiita and update the cache
+ * @summary Manually trigger articles collection
+ */
+export const articlesCollect = (
+    
+ options?: SecondParameter<typeof customInstance<void>>,) => {
+      return customInstance<void>(
+      {url: `/articles/collect`, method: 'POST'
+    },
+      options);
+    }
+  
 export type ActivitiesListResult = NonNullable<Awaited<ReturnType<typeof activitiesList>>>
 export type ActivitiesCreateResult = NonNullable<Awaited<ReturnType<typeof activitiesCreate>>>
 export type ActivitiesGetResult = NonNullable<Awaited<ReturnType<typeof activitiesGet>>>
@@ -310,3 +337,5 @@ export type ProfileGetResult = NonNullable<Awaited<ReturnType<typeof profileGet>
 export type ProfileUpdateResult = NonNullable<Awaited<ReturnType<typeof profileUpdate>>>
 export type ContactGetResult = NonNullable<Awaited<ReturnType<typeof contactGet>>>
 export type ContactUpdateResult = NonNullable<Awaited<ReturnType<typeof contactUpdate>>>
+export type ArticlesListResult = NonNullable<Awaited<ReturnType<typeof articlesList>>>
+export type ArticlesCollectResult = NonNullable<Awaited<ReturnType<typeof articlesCollect>>>

@@ -27,6 +27,7 @@ import type {
   ActivitiesCreateBody,
   ActivitiesUpdateBody,
   Activity,
+  Article,
   Contact,
   ContactUpdateBody,
   ErrorResponse,
@@ -1492,4 +1493,159 @@ export const useContactUpdate = <TError = ErrorType<ErrorResponse | void>,
         TContext
       > => {
       return useMutation(getContactUpdateMutationOptions(options), queryClient);
+    }
+    
+/**
+ * Retrieve a list of cached articles from Zenn and Qiita
+ * @summary List cached articles
+ */
+export const articlesList = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Article[]>(
+      {url: `/articles`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getArticlesListQueryKey = () => {
+    return [
+    `/articles`
+    ] as const;
+    }
+
+    
+export const getArticlesListQueryOptions = <TData = Awaited<ReturnType<typeof articlesList>>, TError = ErrorType<void | ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getArticlesListQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesList>>> = ({ signal }) => articlesList(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ArticlesListQueryResult = NonNullable<Awaited<ReturnType<typeof articlesList>>>
+export type ArticlesListQueryError = ErrorType<void | ErrorResponse>
+
+
+export function useArticlesList<TData = Awaited<ReturnType<typeof articlesList>>, TError = ErrorType<void | ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesList>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof articlesList>>,
+          TError,
+          Awaited<ReturnType<typeof articlesList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useArticlesList<TData = Awaited<ReturnType<typeof articlesList>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesList>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof articlesList>>,
+          TError,
+          Awaited<ReturnType<typeof articlesList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useArticlesList<TData = Awaited<ReturnType<typeof articlesList>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List cached articles
+ */
+
+export function useArticlesList<TData = Awaited<ReturnType<typeof articlesList>>, TError = ErrorType<void | ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getArticlesListQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * Fetch latest articles from Zenn and Qiita and update the cache
+ * @summary Manually trigger articles collection
+ */
+export const articlesCollect = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/articles/collect`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getArticlesCollectMutationOptions = <TError = ErrorType<void | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesCollect>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesCollect>>, TError,void, TContext> => {
+
+const mutationKey = ['articlesCollect'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesCollect>>, void> = () => {
+          
+
+          return  articlesCollect(requestOptions)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesCollectMutationResult = NonNullable<Awaited<ReturnType<typeof articlesCollect>>>
+    
+    export type ArticlesCollectMutationError = ErrorType<void | ErrorResponse>
+
+    /**
+ * @summary Manually trigger articles collection
+ */
+export const useArticlesCollect = <TError = ErrorType<void | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesCollect>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof articlesCollect>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getArticlesCollectMutationOptions(options), queryClient);
     }

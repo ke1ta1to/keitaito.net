@@ -1,6 +1,7 @@
 import { Amplify } from "aws-amplify";
 import { HashRouter, Link, Route, Routes } from "react-router";
 import { ActivitiesTestPanel } from "../activities-test-panel";
+import { ArticlesTestPanel } from "../articles-test-panel";
 import { AuthTestPanel } from "../auth-test-panel";
 import { ContactTestPanel } from "../contact-test-panel";
 import { ProfileTestPanel } from "../profile-test-panel";
@@ -38,6 +39,8 @@ Amplify.configure({
             "api/works.write",
             "api/contact.read",
             "api/contact.write",
+            "api/articles.read",
+            "api/articles.write",
           ],
         },
       },
@@ -59,6 +62,7 @@ export default function AdminShell() {
               <ProfileTestPanel />
               <ContactTestPanel />
               <WorksTestPanel />
+              <ArticlesTestPanel />
               <div className="max-w-2xl mx-auto mt-6 flex gap-4">
                 <Link
                   to="/users"
