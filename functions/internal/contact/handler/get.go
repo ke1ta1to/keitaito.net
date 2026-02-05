@@ -24,9 +24,10 @@ func (h *GetHandler) Handle(ctx context.Context, req events.APIGatewayProxyReque
 	c, err := h.svc.GetContact(ctx)
 	if err != nil {
 		if errors.Is(err, awsdynamodb.ErrNotFound) {
-			return awsapigw.NotFound("Contact not found")
+			c = &contact.Contact{}
+		} else {
+			return awsapigw.InternalServerError()
 		}
-		return awsapigw.InternalServerError()
 	}
 
 	body, err := json.Marshal(c)

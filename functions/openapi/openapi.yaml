@@ -686,12 +686,6 @@ paths:
                 $ref: "#/components/schemas/Profile"
         "401":
           description: Unauthorized
-        "404":
-          description: Profile not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -808,12 +802,6 @@ paths:
                 $ref: "#/components/schemas/Contact"
         "401":
           description: Unauthorized
-        "404":
-          description: Contact not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:

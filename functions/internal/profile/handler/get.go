@@ -24,9 +24,10 @@ func (h *GetHandler) Handle(ctx context.Context, req events.APIGatewayProxyReque
 	p, err := h.svc.GetProfile(ctx)
 	if err != nil {
 		if errors.Is(err, awsdynamodb.ErrNotFound) {
-			return awsapigw.NotFound("Profile not found")
+			p = &profile.Profile{}
+		} else {
+			return awsapigw.InternalServerError()
 		}
-		return awsapigw.InternalServerError()
 	}
 
 	body, err := json.Marshal(p)

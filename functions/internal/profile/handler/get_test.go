@@ -82,7 +82,7 @@ func TestGetHandler_Handle(t *testing.T) {
 		}
 	})
 
-	t.Run("not found", func(t *testing.T) {
+	t.Run("not found returns empty default", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockSvc := profile.NewMockServiceInterface(ctrl)
 		mockSvc.EXPECT().GetProfile(gomock.Any()).Return(nil, awsdynamodb.ErrNotFound)
@@ -93,16 +93,17 @@ func TestGetHandler_Handle(t *testing.T) {
 		if err != nil {
 			t.Errorf("Handle() error = %v, want nil", err)
 		}
-		if resp.StatusCode != http.StatusNotFound {
-			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusNotFound)
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Handle() StatusCode = %v, want %v", resp.StatusCode, http.StatusOK)
 		}
 
-		var errResp awsapigw.ErrorResponse
-		if err := json.Unmarshal([]byte(resp.Body), &errResp); err != nil {
-			t.Fatalf("Handle() failed to unmarshal error response: %v", err)
+		var got profile.Profile
+		if err := json.Unmarshal([]byte(resp.Body), &got); err != nil {
+			t.Fatalf("Handle() failed to unmarshal response body: %v", err)
 		}
-		if errResp.Message == "" {
-			t.Error("Handle() error response message is empty")
+		want := profile.Profile{}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Handle() body mismatch (-want +got):\n%s", diff)
 		}
 	})
 
