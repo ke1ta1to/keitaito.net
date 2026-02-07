@@ -1,21 +1,16 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { apiClient } from "@/lib/api-client";
 import {
   useActivitiesCreate,
   useActivitiesDelete,
-  useActivitiesGet,
-  useActivitiesList,
   useActivitiesUpdate,
 } from "@/orval/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -73,12 +68,19 @@ export function ActivitiesTestPanel() {
   });
 
   // React Query hooks
-  const listQuery = useActivitiesList({
-    query: { enabled: false },
+  const listQuery = useQuery({
+    queryKey: ["/activities"],
+    queryFn: () => apiClient.GET("/activities"),
+    enabled: false,
   });
 
-  const getQuery = useActivitiesGet(getByIdTarget, {
-    query: { enabled: !!getByIdTarget },
+  const getQuery = useQuery({
+    queryKey: ["/activities", getByIdTarget],
+    queryFn: () =>
+      apiClient.GET("/activities/{id}", {
+        params: { path: { id: getByIdTarget } },
+      }),
+    enabled: !!getByIdTarget,
   });
 
   const createMutation = useActivitiesCreate();
@@ -289,11 +291,7 @@ export function ActivitiesTestPanel() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        placeholder="ID"
-                        className="max-w-50"
-                        {...field}
-                      />
+                      <Input placeholder="ID" className="max-w-50" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -375,11 +373,7 @@ export function ActivitiesTestPanel() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        placeholder="ID"
-                        className="max-w-50"
-                        {...field}
-                      />
+                      <Input placeholder="ID" className="max-w-50" {...field} />
                     </FormControl>
                   </FormItem>
                 )}

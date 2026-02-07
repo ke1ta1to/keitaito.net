@@ -19,6 +19,12 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: ["src/schema.d.ts"],
+    rules: {
+      "@typescript-eslint/no-duplicate-enum-values": "off",
+    },
+  },
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",

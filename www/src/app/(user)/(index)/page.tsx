@@ -4,8 +4,8 @@ import { Contact } from "@/features/landing-page/components/contact";
 import { Profile } from "@/features/landing-page/components/profile";
 import { SkillsList } from "@/features/landing-page/components/skills-list";
 import { WorksList } from "@/features/landing-page/components/works-list";
+import { apiClient } from "@/lib/api-server";
 import {
-  activitiesList,
   articlesList,
   contactGet,
   profileGet,
@@ -14,7 +14,7 @@ import {
 } from "@/orval/server";
 
 export default async function IndexPage() {
-  const activities = await activitiesList();
+  const { data: activities } = await apiClient.GET("/activities");
   const skills = await skillsList();
   const profile = await profileGet();
   const works = await worksList();
