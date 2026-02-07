@@ -31,6 +31,10 @@ paths:
                   $ref: "#/components/schemas/Activity"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -61,15 +65,15 @@ paths:
                 title:
                   type: string
                   description: Title of the activity
-                  example: "New Project Launch"
+                  example: New Project Launch
                 date:
                   type: string
                   description: Date of the activity
-                  example: "2024-01"
+                  example: 2024-01
                 description:
                   type: string
                   description: Detailed description of the activity
-                  example: "Launched a new portfolio website using Next.js and AWS"
+                  example: Launched a new portfolio website using Next.js and AWS
       responses:
         "201":
           description: Activity created successfully
@@ -85,6 +89,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -119,6 +127,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Activity not found
           content:
@@ -157,15 +169,15 @@ paths:
                 title:
                   type: string
                   description: Title of the activity
-                  example: "Updated Project Launch"
+                  example: Updated Project Launch
                 date:
                   type: string
                   description: Date of the activity
-                  example: "2024-01"
+                  example: 2024-01
                 description:
                   type: string
                   description: Detailed description of the activity
-                  example: "Updated the portfolio website with new features"
+                  example: Updated the portfolio website with new features
       responses:
         "200":
           description: Activity updated successfully
@@ -181,6 +193,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Activity not found
           content:
@@ -216,6 +232,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Activity not found
           content:
@@ -250,6 +270,10 @@ paths:
                   $ref: "#/components/schemas/Skill"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -279,11 +303,11 @@ paths:
                 name:
                   type: string
                   description: Name of the skill
-                  example: "Go"
+                  example: Go
                 icon_url:
                   type: string
                   description: URL to the skill icon
-                  example: "https://example.com/icons/go.png"
+                  example: https://example.com/icons/go.png
       responses:
         "201":
           description: Skill created successfully
@@ -299,6 +323,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -333,6 +361,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Skill not found
           content:
@@ -370,11 +402,11 @@ paths:
                 name:
                   type: string
                   description: Name of the skill
-                  example: "Go"
+                  example: Go
                 icon_url:
                   type: string
                   description: URL to the skill icon
-                  example: "https://example.com/icons/go-updated.png"
+                  example: https://example.com/icons/go-updated.png
       responses:
         "200":
           description: Skill updated successfully
@@ -390,6 +422,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Skill not found
           content:
@@ -425,6 +461,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Skill not found
           content:
@@ -459,6 +499,10 @@ paths:
                   $ref: "#/components/schemas/Work"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -490,19 +534,19 @@ paths:
                 title:
                   type: string
                   description: Title of the work
-                  example: "Portfolio Website"
+                  example: Portfolio Website
                 slug:
                   type: string
                   description: URL-friendly slug for the work
-                  example: "portfolio-website"
+                  example: portfolio-website
                 content:
                   type: string
                   description: Content of the work
-                  example: "A personal portfolio website built with Next.js and AWS"
+                  example: A personal portfolio website built with Next.js and AWS
                 thumbnail:
                   type: string
                   description: Thumbnail URL for the work
-                  example: "https://example.com/thumbnails/portfolio.png"
+                  example: https://example.com/thumbnails/portfolio.png
       responses:
         "201":
           description: Work created successfully
@@ -518,6 +562,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -552,6 +600,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Work not found
           content:
@@ -591,19 +643,19 @@ paths:
                 title:
                   type: string
                   description: Title of the work
-                  example: "Updated Portfolio Website"
+                  example: Updated Portfolio Website
                 slug:
                   type: string
                   description: URL-friendly slug for the work
-                  example: "portfolio-website"
+                  example: portfolio-website
                 content:
                   type: string
                   description: Content of the work
-                  example: "Updated portfolio website with new features"
+                  example: Updated portfolio website with new features
                 thumbnail:
                   type: string
                   description: Thumbnail URL for the work
-                  example: "https://example.com/thumbnails/portfolio-updated.png"
+                  example: https://example.com/thumbnails/portfolio-updated.png
       responses:
         "200":
           description: Work updated successfully
@@ -619,6 +671,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Work not found
           content:
@@ -654,6 +710,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Work not found
           content:
@@ -686,6 +746,10 @@ paths:
                 $ref: "#/components/schemas/Profile"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -722,7 +786,7 @@ paths:
                 name:
                   type: string
                   description: Name
-                  example: "Keita Ito"
+                  example: Keita Ito
                 birthday:
                   type: string
                   format: date
@@ -731,36 +795,36 @@ paths:
                 location:
                   type: string
                   description: Location
-                  example: "Tokyo"
+                  example: Tokyo
                 school:
                   type: string
                   description: School
-                  example: "University of Tokyo"
+                  example: University of Tokyo
                 image_url:
                   type: string
                   format: uri
                   description: Image URL
-                  example: "https://example.com/image.png"
+                  example: https://example.com/image.png
                 x:
                   type: string
                   format: uri
                   description: X URL
-                  example: "https://x.com/keitaito"
+                  example: https://x.com/keitaito
                 github:
                   type: string
                   format: uri
                   description: GitHub URL
-                  example: "https://github.com/keitaito"
+                  example: https://github.com/keitaito
                 zenn:
                   type: string
                   format: uri
                   description: Zenn URL
-                  example: "https://zenn.dev/keitaito"
+                  example: https://zenn.dev/keitaito
                 qiita:
                   type: string
                   format: uri
                   description: Qiita URL
-                  example: "https://qiita.com/keitaito"
+                  example: https://qiita.com/keitaito
       responses:
         "200":
           description: Profile updated successfully
@@ -776,6 +840,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -802,6 +870,10 @@ paths:
                 $ref: "#/components/schemas/Contact"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -832,11 +904,11 @@ paths:
                   type: string
                   format: email
                   description: Email address
-                  example: "johndoe@example.com"
+                  example: johndoe@example.com
                 x:
                   type: string
                   description: X (Twitter) username
-                  example: "johndoe"
+                  example: johndoe
       responses:
         "200":
           description: Contact updated successfully
@@ -852,6 +924,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -880,6 +956,10 @@ paths:
                   $ref: "#/components/schemas/Article"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -902,6 +982,10 @@ paths:
           description: Articles collected successfully
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -932,11 +1016,11 @@ paths:
                 filename:
                   type: string
                   description: Name of the file to upload
-                  example: "photo.png"
+                  example: photo.png
                 content_type:
                   type: string
                   description: MIME type of the file
-                  example: "image/png"
+                  example: image/png
       responses:
         "200":
           description: Presigned URL generated successfully
@@ -952,6 +1036,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -967,11 +1055,13 @@ components:
       bearerFormat: JWT
     OAuth2:
       type: oauth2
-      description: Cognito OAuth2 認証。authorizationCode フローはクライアント用、clientCredentials フローはサーバーサイド用。
+      description:
+        Cognito OAuth2 認証。authorizationCode フローはクライアント用、clientCredentials
+        フローはサーバーサイド用。
       flows:
         authorizationCode:
-          authorizationUrl: "https://example.com/oauth2/authorize"
-          tokenUrl: "https://example.com/oauth2/token"
+          authorizationUrl: https://example.com/oauth2/authorize
+          tokenUrl: https://example.com/oauth2/token
           scopes:
             api/activities.read: アクティビティの読み取りアクセス
             api/activities.write: アクティビティの書き込みアクセス
@@ -987,7 +1077,7 @@ components:
             api/articles.write: 記事の書き込みアクセス
             api/uploads.write: アップロードの書き込みアクセス
         clientCredentials:
-          tokenUrl: "https://example.com/oauth2/token"
+          tokenUrl: https://example.com/oauth2/token
           scopes:
             api/activities.read: アクティビティの読み取りアクセス（サーバーサイド用）
             api/skills.read: スキルの読み取りアクセス（サーバーサイド用）
@@ -1005,7 +1095,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: "550e8400-e29b-41d4-a716-446655440000"
+        example: 550e8400-e29b-41d4-a716-446655440000
 
     SkillId:
       name: id
@@ -1015,7 +1105,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: "660e8400-e29b-41d4-a716-446655440000"
+        example: 660e8400-e29b-41d4-a716-446655440000
 
     WorkId:
       name: id
@@ -1025,7 +1115,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: "770e8400-e29b-41d4-a716-446655440000"
+        example: 770e8400-e29b-41d4-a716-446655440000
 
   schemas:
     Activity:
@@ -1040,19 +1130,19 @@ components:
           type: string
           format: uuid
           description: Unique identifier for the activity
-          example: "550e8400-e29b-41d4-a716-446655440000"
+          example: 550e8400-e29b-41d4-a716-446655440000
         title:
           type: string
           description: Title of the activity
-          example: "New Project Launch"
+          example: New Project Launch
         date:
           type: string
           description: Date of the activity
-          example: "2024-01"
+          example: 2024-01
         description:
           type: string
           description: Detailed description of the activity
-          example: "Launched a new portfolio website using Next.js and AWS"
+          example: Launched a new portfolio website using Next.js and AWS
 
     Skill:
       type: object
@@ -1065,15 +1155,15 @@ components:
           type: string
           format: uuid
           description: Unique identifier for the skill
-          example: "660e8400-e29b-41d4-a716-446655440000"
+          example: 660e8400-e29b-41d4-a716-446655440000
         name:
           type: string
           description: Name of the skill
-          example: "Go"
+          example: Go
         icon_url:
           type: string
           description: URL to the skill icon
-          example: "https://example.com/icons/go.png"
+          example: https://example.com/icons/go.png
 
     Work:
       type: object
@@ -1088,23 +1178,23 @@ components:
           type: string
           format: uuid
           description: Unique identifier for the work
-          example: "770e8400-e29b-41d4-a716-446655440000"
+          example: 770e8400-e29b-41d4-a716-446655440000
         title:
           type: string
           description: Title of the work
-          example: "Portfolio Website"
+          example: Portfolio Website
         slug:
           type: string
           description: URL-friendly slug for the work
-          example: "portfolio-website"
+          example: portfolio-website
         content:
           type: string
           description: Content of the work
-          example: "A personal portfolio website built with Next.js and AWS"
+          example: A personal portfolio website built with Next.js and AWS
         thumbnail:
           type: string
           description: Thumbnail URL for the work
-          example: "https://example.com/thumbnails/portfolio.png"
+          example: https://example.com/thumbnails/portfolio.png
 
     Profile:
       type: object
@@ -1122,7 +1212,7 @@ components:
         name:
           type: string
           description: Name
-          example: "Keita Ito"
+          example: Keita Ito
         birthday:
           type: string
           format: date
@@ -1131,36 +1221,36 @@ components:
         location:
           type: string
           description: Location
-          example: "Tokyo"
+          example: Tokyo
         school:
           type: string
           description: School
-          example: "University of Tokyo"
+          example: University of Tokyo
         image_url:
           type: string
           format: uri
           description: Image URL
-          example: "https://example.com/image.png"
+          example: https://example.com/image.png
         x:
           type: string
           format: uri
           description: X URL
-          example: "https://x.com/keitaito"
+          example: https://x.com/keitaito
         github:
           type: string
           format: uri
           description: GitHub URL
-          example: "https://github.com/keitaito"
+          example: https://github.com/keitaito
         zenn:
           type: string
           format: uri
           description: Zenn URL
-          example: "https://zenn.dev/keitaito"
+          example: https://zenn.dev/keitaito
         qiita:
           type: string
           format: uri
           description: Qiita URL
-          example: "https://qiita.com/keitaito"
+          example: https://qiita.com/keitaito
 
     Contact:
       type: object
@@ -1172,11 +1262,11 @@ components:
           type: string
           format: email
           description: Email address
-          example: "johndoe@example.com"
+          example: johndoe@example.com
         x:
           type: string
           description: X (Twitter) username
-          example: "johndoe"
+          example: johndoe
 
     Article:
       type: object
@@ -1189,12 +1279,12 @@ components:
         title:
           type: string
           description: Title of the article
-          example: "Building a portfolio with Next.js"
+          example: Building a portfolio with Next.js
         url:
           type: string
           format: uri
           description: URL of the article
-          example: "https://zenn.dev/kk79it/articles/example"
+          example: https://zenn.dev/kk79it/articles/example
         liked_count:
           type: integer
           description: Number of likes
@@ -1211,7 +1301,7 @@ components:
             - zenn
             - qiita
           description: Source platform
-          example: "zenn"
+          example: zenn
 
     PresignResponse:
       type: object
@@ -1222,11 +1312,11 @@ components:
         upload_url:
           type: string
           description: Presigned PUT URL for uploading the file
-          example: "https://s3.amazonaws.com/bucket/uuid/photo.png?..."
+          example: https://s3.amazonaws.com/bucket/uuid/photo.png?...
         key:
           type: string
           description: S3 object key for the uploaded file
-          example: "550e8400-e29b-41d4-a716-446655440000/photo.png"
+          example: 550e8400-e29b-41d4-a716-446655440000/photo.png
 
     ErrorResponse:
       type: object
