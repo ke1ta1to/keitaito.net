@@ -9,13 +9,9 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  useSkillsCreate,
-  useSkillsDelete,
-  useSkillsGet,
-  useSkillsList,
-  useSkillsUpdate,
-} from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { ApiPaths } from "@/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -71,17 +67,42 @@ export function SkillsTestPanel() {
   });
 
   // React Query hooks
-  const listQuery = useSkillsList({
-    query: { enabled: false },
+  const listQuery = useQuery({
+    queryKey: [ApiPaths.skills_list],
+    queryFn: () => apiClient.GET("/skills"),
+    enabled: false,
   });
 
-  const getQuery = useSkillsGet(getByIdTarget, {
-    query: { enabled: !!getByIdTarget },
+  const getQuery = useQuery({
+    queryKey: [ApiPaths.skills_get, getByIdTarget],
+    queryFn: () =>
+      apiClient.GET("/skills/{id}", {
+        params: { path: { id: getByIdTarget } },
+      }),
+    enabled: !!getByIdTarget,
   });
 
-  const createMutation = useSkillsCreate();
-  const updateMutation = useSkillsUpdate();
-  const deleteMutation = useSkillsDelete();
+  const createMutation = useMutation({
+    mutationFn: (data: CreateSkillFormData) =>
+      apiClient.POST("/skills", {
+        body: { name: data.name, icon_url: data.icon_url },
+      }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateSkillFormData) =>
+      apiClient.PUT("/skills/{id}", {
+        params: { path: { id: data.id } },
+        body: { name: data.name, icon_url: data.icon_url },
+      }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (data: DeleteSkillFormData) =>
+      apiClient.DELETE("/skills/{id}", {
+        params: { path: { id: data.id } },
+      }),
+  });
 
   const handleGetSkills = () => {
     listQuery.refetch();
@@ -92,47 +113,27 @@ export function SkillsTestPanel() {
   };
 
   const handleCreateSkill = (data: CreateSkillFormData) => {
-    createMutation.mutate(
-      {
-        data: {
-          name: data.name,
-          icon_url: data.icon_url,
-        },
+    createMutation.mutate(data, {
+      onSuccess: () => {
+        createForm.reset();
       },
-      {
-        onSuccess: () => {
-          createForm.reset();
-        },
-      },
-    );
+    });
   };
 
   const handleUpdateSkill = (data: UpdateSkillFormData) => {
-    updateMutation.mutate(
-      {
-        id: data.id,
-        data: {
-          name: data.name,
-          icon_url: data.icon_url,
-        },
+    updateMutation.mutate(data, {
+      onSuccess: () => {
+        updateForm.reset();
       },
-      {
-        onSuccess: () => {
-          updateForm.reset();
-        },
-      },
-    );
+    });
   };
 
   const handleDeleteSkill = (data: DeleteSkillFormData) => {
-    deleteMutation.mutate(
-      { id: data.id },
-      {
-        onSuccess: () => {
-          deleteForm.reset();
-        },
+    deleteMutation.mutate(data, {
+      onSuccess: () => {
+        deleteForm.reset();
       },
-    );
+    });
   };
 
   return (

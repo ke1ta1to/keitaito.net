@@ -9,7 +9,8 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useUploadsPresign } from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ResponseDisplay } from "./response-display";
@@ -27,22 +28,19 @@ export function UploadsTestPanel() {
     defaultValues: { filename: "", content_type: "" },
   });
 
-  const presignMutation = useUploadsPresign();
+  const presignMutation = useMutation({
+    mutationFn: (data: PresignFormData) =>
+      apiClient.POST("/uploads/presign", {
+        body: { filename: data.filename, content_type: data.content_type },
+      }),
+  });
 
   const handlePresign = (data: PresignFormData) => {
-    presignMutation.mutate(
-      {
-        data: {
-          filename: data.filename,
-          content_type: data.content_type,
-        },
+    presignMutation.mutate(data, {
+      onSuccess: () => {
+        presignForm.reset();
       },
-      {
-        onSuccess: () => {
-          presignForm.reset();
-        },
-      },
-    );
+    });
   };
 
   return (

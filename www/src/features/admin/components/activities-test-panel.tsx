@@ -4,14 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
-import {
-  useActivitiesCreate,
-  useActivitiesDelete,
-  useActivitiesUpdate,
-} from "@/orval/client";
 import { ApiPaths } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -84,9 +79,27 @@ export function ActivitiesTestPanel() {
     enabled: !!getByIdTarget,
   });
 
-  const createMutation = useActivitiesCreate();
-  const updateMutation = useActivitiesUpdate();
-  const deleteMutation = useActivitiesDelete();
+  const createMutation = useMutation({
+    mutationFn: (data: CreateActivityFormData) =>
+      apiClient.POST("/activities", {
+        body: { title: data.title, date: data.date, description: data.description },
+      }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateActivityFormData) =>
+      apiClient.PUT("/activities/{id}", {
+        params: { path: { id: data.id } },
+        body: { title: data.title, date: data.date, description: data.description },
+      }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (data: DeleteActivityFormData) =>
+      apiClient.DELETE("/activities/{id}", {
+        params: { path: { id: data.id } },
+      }),
+  });
 
   const handleGetActivities = () => {
     listQuery.refetch();
@@ -97,49 +110,27 @@ export function ActivitiesTestPanel() {
   };
 
   const handleCreateActivity = (data: CreateActivityFormData) => {
-    createMutation.mutate(
-      {
-        data: {
-          title: data.title,
-          date: data.date,
-          description: data.description,
-        },
+    createMutation.mutate(data, {
+      onSuccess: () => {
+        createForm.reset();
       },
-      {
-        onSuccess: () => {
-          createForm.reset();
-        },
-      },
-    );
+    });
   };
 
   const handleUpdateActivity = (data: UpdateActivityFormData) => {
-    updateMutation.mutate(
-      {
-        id: data.id,
-        data: {
-          title: data.title,
-          date: data.date,
-          description: data.description,
-        },
+    updateMutation.mutate(data, {
+      onSuccess: () => {
+        updateForm.reset();
       },
-      {
-        onSuccess: () => {
-          updateForm.reset();
-        },
-      },
-    );
+    });
   };
 
   const handleDeleteActivity = (data: DeleteActivityFormData) => {
-    deleteMutation.mutate(
-      { id: data.id },
-      {
-        onSuccess: () => {
-          deleteForm.reset();
-        },
+    deleteMutation.mutate(data, {
+      onSuccess: () => {
+        deleteForm.reset();
       },
-    );
+    });
   };
 
   return (

@@ -1,11 +1,11 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity } from "@/orval";
+import { components } from "@/schema";
 import { format, parse } from "date-fns";
 
 export interface ActivitiesListProps {
-  activities?: Activity[];
+  activities?: components["schemas"]["Activity"][];
 }
 
 export function ActivitiesList(props: ActivitiesListProps) {

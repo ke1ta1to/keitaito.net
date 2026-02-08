@@ -1,14 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Article } from "@/orval";
 import { format, parseISO } from "date-fns";
 import { Heart } from "lucide-react";
 import Image from "next/image";
 
 import zennIcon from "@/assets/zenn.svg";
 import qiitaIcon from "@/assets/qiita.svg";
+import { components } from "@/schema";
 
 export interface ArticlesListProps {
-  articles?: Article[];
+  articles?: components["schemas"]["Article"][];
 }
 
 export function ArticlesList(props: ArticlesListProps) {

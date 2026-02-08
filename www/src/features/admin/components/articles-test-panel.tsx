@@ -1,15 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useArticlesCollect, useArticlesList } from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { ApiPaths } from "@/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ResponseDisplay } from "./response-display";
 
 export function ArticlesTestPanel() {
-  const listQuery = useArticlesList({
-    query: { enabled: false },
+  const listQuery = useQuery({
+    queryKey: [ApiPaths.articles_list],
+    queryFn: () => apiClient.GET("/articles"),
+    enabled: false,
   });
 
-  const collectMutation = useArticlesCollect();
+  const collectMutation = useMutation({
+    mutationFn: () => apiClient.POST("/articles/collect"),
+  });
 
   const handleGetArticles = () => {
     listQuery.refetch();

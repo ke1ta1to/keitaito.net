@@ -10,16 +10,6 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   {
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: ["@/orval/server/models", "@/orval/client/models"],
-        },
-      ],
-    },
-  },
-  {
     files: ["src/schema.ts"],
     rules: {
       "@typescript-eslint/no-duplicate-enum-values": "off",
@@ -31,6 +21,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "storybook-static/**",
   ]),
   ...storybook.configs["flat/recommended"],
 ]);

@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skill } from "@/orval";
+import { components } from "@/schema";
 import Image from "next/image";
 
 export interface SkillsListProps {
-  skills?: Skill[];
+  skills?: components["schemas"]["Skill"][];
 }
 
 export function SkillsList(props: SkillsListProps) {

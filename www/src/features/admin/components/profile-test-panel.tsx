@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useProfileGet, useProfileUpdate } from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { ApiPaths } from "@/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ResponseDisplay } from "./response-display";
@@ -45,20 +47,16 @@ export function ProfileTestPanel() {
     },
   });
 
-  const getQuery = useProfileGet({
-    query: { enabled: false },
+  const getQuery = useQuery({
+    queryKey: [ApiPaths.profile_get],
+    queryFn: () => apiClient.GET("/profile"),
+    enabled: false,
   });
 
-  const updateMutation = useProfileUpdate();
-
-  const handleGetProfile = () => {
-    getQuery.refetch();
-  };
-
-  const handleUpdateProfile = (data: UpdateProfileFormData) => {
-    updateMutation.mutate(
-      {
-        data: {
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateProfileFormData) =>
+      apiClient.PUT("/profile", {
+        body: {
           name: data.name,
           birthday: data.birthday,
           location: data.location,
@@ -69,13 +67,19 @@ export function ProfileTestPanel() {
           zenn: data.zenn,
           qiita: data.qiita,
         },
+      }),
+  });
+
+  const handleGetProfile = () => {
+    getQuery.refetch();
+  };
+
+  const handleUpdateProfile = (data: UpdateProfileFormData) => {
+    updateMutation.mutate(data, {
+      onSuccess: () => {
+        updateForm.reset();
       },
-      {
-        onSuccess: () => {
-          updateForm.reset();
-        },
-      },
-    );
+    });
   };
 
   return (

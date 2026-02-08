@@ -5,12 +5,12 @@ import zennIcon from "@/assets/zenn.svg";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Profile as ProfileType } from "@/orval";
+import { components } from "@/schema";
 import { differenceInYears } from "date-fns";
 import Image from "next/image";
 
 export interface ProfileProps {
-  profile?: ProfileType;
+  profile?: components["schemas"]["Profile"];
 }
 
 const SOCIAL_LINKS = [

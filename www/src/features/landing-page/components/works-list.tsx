@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Work } from "@/orval";
+import { components } from "@/schema";
 import Image from "next/image";
 
 export interface WorksListProps {
-  works?: Work[];
+  works?: components["schemas"]["Work"][];
 }
 
 export function WorksList(props: WorksListProps) {

@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useContactGet, useContactUpdate } from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { ApiPaths } from "@/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ResponseDisplay } from "./response-display";
@@ -31,30 +33,29 @@ export function ContactTestPanel() {
     },
   });
 
-  const getQuery = useContactGet({
-    query: { enabled: false },
+  const getQuery = useQuery({
+    queryKey: [ApiPaths.contact_get],
+    queryFn: () => apiClient.GET("/contact"),
+    enabled: false,
   });
 
-  const updateMutation = useContactUpdate();
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateContactFormData) =>
+      apiClient.PUT("/contact", {
+        body: { email: data.email, x: data.x },
+      }),
+  });
 
   const handleGetContact = () => {
     getQuery.refetch();
   };
 
   const handleUpdateContact = (data: UpdateContactFormData) => {
-    updateMutation.mutate(
-      {
-        data: {
-          email: data.email,
-          x: data.x,
-        },
+    updateMutation.mutate(data, {
+      onSuccess: () => {
+        updateForm.reset();
       },
-      {
-        onSuccess: () => {
-          updateForm.reset();
-        },
-      },
-    );
+    });
   };
 
   return (

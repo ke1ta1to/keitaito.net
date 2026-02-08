@@ -5,21 +5,14 @@ import { Profile } from "@/features/landing-page/components/profile";
 import { SkillsList } from "@/features/landing-page/components/skills-list";
 import { WorksList } from "@/features/landing-page/components/works-list";
 import { apiClient } from "@/lib/api-server";
-import {
-  articlesList,
-  contactGet,
-  profileGet,
-  skillsList,
-  worksList,
-} from "@/orval/server";
 
 export default async function IndexPage() {
   const { data: activities } = await apiClient.GET("/activities");
-  const skills = await skillsList();
-  const profile = await profileGet();
-  const works = await worksList();
-  const contact = await contactGet();
-  const articles = await articlesList();
+  const { data: skills } = await apiClient.GET("/skills");
+  const { data: profile } = await apiClient.GET("/profile");
+  const { data: works } = await apiClient.GET("/works");
+  const { data: contact } = await apiClient.GET("/contact");
+  const { data: articles } = await apiClient.GET("/articles");
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUploadsPresign } from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 
 type UploadState =
@@ -15,7 +16,12 @@ type UploadState =
 export function UploadsS3TestPanel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<UploadState>({ status: "idle" });
-  const presignMutation = useUploadsPresign();
+  const presignMutation = useMutation({
+    mutationFn: (data: { filename: string; content_type: string }) =>
+      apiClient.POST("/uploads/presign", {
+        body: { filename: data.filename, content_type: data.content_type },
+      }),
+  });
 
   const handleUpload = async () => {
     const file = fileInputRef.current?.files?.[0];
@@ -25,13 +31,16 @@ export function UploadsS3TestPanel() {
 
     presignMutation.mutate(
       {
-        data: {
-          filename: file.name,
-          content_type: file.type || "application/octet-stream",
-        },
+        filename: file.name,
+        content_type: file.type || "application/octet-stream",
       },
       {
-        onSuccess: async (data) => {
+        onSuccess: async (result) => {
+          const data = result.data;
+          if (!data) {
+            setState({ status: "error", message: "No data in presign response" });
+            return;
+          }
           setState({ status: "uploading", key: data.key });
           try {
             const res = await fetch(data.upload_url, {

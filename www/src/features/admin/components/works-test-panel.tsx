@@ -9,13 +9,9 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  useWorksCreate,
-  useWorksDelete,
-  useWorksGet,
-  useWorksList,
-  useWorksUpdate,
-} from "@/orval/client";
+import { apiClient } from "@/lib/api-client";
+import { ApiPaths } from "@/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -75,17 +71,52 @@ export function WorksTestPanel() {
   });
 
   // React Query hooks
-  const listQuery = useWorksList({
-    query: { enabled: false },
+  const listQuery = useQuery({
+    queryKey: [ApiPaths.works_list],
+    queryFn: () => apiClient.GET("/works"),
+    enabled: false,
   });
 
-  const getQuery = useWorksGet(getByIdTarget, {
-    query: { enabled: !!getByIdTarget },
+  const getQuery = useQuery({
+    queryKey: [ApiPaths.works_get, getByIdTarget],
+    queryFn: () =>
+      apiClient.GET("/works/{id}", {
+        params: { path: { id: getByIdTarget } },
+      }),
+    enabled: !!getByIdTarget,
   });
 
-  const createMutation = useWorksCreate();
-  const updateMutation = useWorksUpdate();
-  const deleteMutation = useWorksDelete();
+  const createMutation = useMutation({
+    mutationFn: (data: CreateWorkFormData) =>
+      apiClient.POST("/works", {
+        body: {
+          title: data.title,
+          slug: data.slug,
+          content: data.content,
+          thumbnail: data.thumbnail,
+        },
+      }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateWorkFormData) =>
+      apiClient.PUT("/works/{id}", {
+        params: { path: { id: data.id } },
+        body: {
+          title: data.title,
+          slug: data.slug,
+          content: data.content,
+          thumbnail: data.thumbnail,
+        },
+      }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (data: DeleteWorkFormData) =>
+      apiClient.DELETE("/works/{id}", {
+        params: { path: { id: data.id } },
+      }),
+  });
 
   const handleGetWorks = () => {
     listQuery.refetch();
@@ -96,51 +127,27 @@ export function WorksTestPanel() {
   };
 
   const handleCreateWork = (data: CreateWorkFormData) => {
-    createMutation.mutate(
-      {
-        data: {
-          title: data.title,
-          slug: data.slug,
-          content: data.content,
-          thumbnail: data.thumbnail,
-        },
+    createMutation.mutate(data, {
+      onSuccess: () => {
+        createForm.reset();
       },
-      {
-        onSuccess: () => {
-          createForm.reset();
-        },
-      },
-    );
+    });
   };
 
   const handleUpdateWork = (data: UpdateWorkFormData) => {
-    updateMutation.mutate(
-      {
-        id: data.id,
-        data: {
-          title: data.title,
-          slug: data.slug,
-          content: data.content,
-          thumbnail: data.thumbnail,
-        },
+    updateMutation.mutate(data, {
+      onSuccess: () => {
+        updateForm.reset();
       },
-      {
-        onSuccess: () => {
-          updateForm.reset();
-        },
-      },
-    );
+    });
   };
 
   const handleDeleteWork = (data: DeleteWorkFormData) => {
-    deleteMutation.mutate(
-      { id: data.id },
-      {
-        onSuccess: () => {
-          deleteForm.reset();
-        },
+    deleteMutation.mutate(data, {
+      onSuccess: () => {
+        deleteForm.reset();
       },
-    );
+    });
   };
 
   return (

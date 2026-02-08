@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Contact as ContactType } from "@/orval";
+import { components } from "@/schema";
 import { IconBrandX, IconMail } from "@tabler/icons-react";
 
 export interface ContactProps {
-  contact?: ContactType;
+  contact?: components["schemas"]["Contact"];
 }
 
 export function Contact(props: ContactProps) {
