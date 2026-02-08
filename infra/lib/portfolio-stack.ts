@@ -179,8 +179,8 @@ export class PortfolioStack extends cdk.Stack {
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
-        callbackUrls: ["http://localhost:3000/admin"],
-        logoutUrls: ["http://localhost:3000/admin"],
+        callbackUrls: ["http://localhost:3000/admin-test"],
+        logoutUrls: ["http://localhost:3000/admin-test"],
         flows: {
           authorizationCodeGrant: true,
         },

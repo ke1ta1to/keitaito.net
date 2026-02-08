@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 
 const AdminShell = dynamic(
-  () => import("@/features/admin/components/pages/shell"),
+  () => import("@/features/admin-test/components/pages/shell"),
   { ssr: false }
 );
 
