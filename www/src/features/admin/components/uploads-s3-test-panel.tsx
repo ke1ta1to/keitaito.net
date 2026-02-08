@@ -11,7 +11,7 @@ type UploadState =
   | { status: "idle" }
   | { status: "presigning" }
   | { status: "uploading"; key: string }
-  | { status: "success"; key: string; uploadUrl: string }
+  | { status: "success"; key: string; uploadUrl: string; downloadUrl: string }
   | { status: "error"; message: string };
 
 export function UploadsS3TestPanel() {
@@ -53,7 +53,7 @@ export function UploadsS3TestPanel() {
               setState({ status: "error", message: `S3 PUT failed: ${res.status} ${res.statusText}` });
               return;
             }
-            setState({ status: "success", key: data.key, uploadUrl: data.upload_url });
+            setState({ status: "success", key: data.key, uploadUrl: data.upload_url, downloadUrl: data.download_url });
           } catch (e) {
             setState({ status: "error", message: e instanceof Error ? e.message : "Upload failed" });
           }
@@ -96,7 +96,7 @@ export function UploadsS3TestPanel() {
               )}
               {state.status === "success" && (
                 <span className="text-xs text-green-600 dark:text-green-400">
-                  Success
+                  Success — <a href={state.downloadUrl} target="_blank" rel="noopener noreferrer" className="underline">Preview</a>
                 </span>
               )}
               {state.status === "error" && (
@@ -109,7 +109,7 @@ export function UploadsS3TestPanel() {
               {state.status === "error"
                 ? state.message
                 : state.status === "success"
-                  ? JSON.stringify({ key: state.key, upload_url: state.uploadUrl }, null, 2)
+                  ? JSON.stringify({ key: state.key, upload_url: state.uploadUrl, download_url: state.downloadUrl }, null, 2)
                   : state.status === "uploading"
                     ? JSON.stringify({ key: state.key, step: "uploading" }, null, 2)
                     : "Requesting presigned URL..."}

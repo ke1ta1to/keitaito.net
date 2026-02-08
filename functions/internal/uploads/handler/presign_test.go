@@ -38,8 +38,9 @@ func TestPresignHandler_Handle(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockSvc := uploads.NewMockServiceInterface(ctrl)
 		mockSvc.EXPECT().GeneratePresignedURL(gomock.Any(), "test.png", "image/png").Return(&uploads.PresignResponse{
-			UploadURL: "https://s3.example.com/presigned-url",
-			Key:       "uuid/test.png",
+			UploadURL:   "https://s3.example.com/presigned-url",
+			DownloadURL: "https://s3.example.com/presigned-get-url",
+			Key:         "uuid/test.png",
 		}, nil)
 
 		h := NewPresignHandler(mockSvc, validator.New())
@@ -66,8 +67,9 @@ func TestPresignHandler_Handle(t *testing.T) {
 			t.Fatalf("Handle() failed to unmarshal response body: %v", err)
 		}
 		want := uploads.PresignResponse{
-			UploadURL: "https://s3.example.com/presigned-url",
-			Key:       "uuid/test.png",
+			UploadURL:   "https://s3.example.com/presigned-url",
+			DownloadURL: "https://s3.example.com/presigned-get-url",
+			Key:         "uuid/test.png",
 		}
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("Handle() body mismatch (-want +got):\n%s", diff)

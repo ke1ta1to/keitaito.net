@@ -1307,11 +1307,16 @@ components:
       type: object
       required:
         - upload_url
+        - download_url
         - key
       properties:
         upload_url:
           type: string
           description: Presigned PUT URL for uploading the file
+          example: https://s3.amazonaws.com/bucket/uuid/photo.png?...
+        download_url:
+          type: string
+          description: Presigned GET URL for previewing the uploaded file
           example: https://s3.amazonaws.com/bucket/uuid/photo.png?...
         key:
           type: string

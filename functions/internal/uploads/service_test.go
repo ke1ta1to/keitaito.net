@@ -45,9 +45,13 @@ func TestService_GeneratePresignedURL(t *testing.T) {
 					t.Error("Key is empty")
 				}
 				return &v4.PresignedHTTPRequest{
-					URL: "https://s3.example.com/presigned-url",
+					URL: "https://s3.example.com/presigned-put-url",
 				}, nil
 			})
+		mockClient.EXPECT().PresignGetObject(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(&v4.PresignedHTTPRequest{
+				URL: "https://s3.example.com/presigned-get-url",
+			}, nil)
 
 		svc := NewService(mockClient, "test-bucket")
 		resp, err := svc.GeneratePresignedURL(context.Background(), "test.png", "image/png")
@@ -58,8 +62,11 @@ func TestService_GeneratePresignedURL(t *testing.T) {
 		if resp == nil {
 			t.Fatal("GeneratePresignedURL() returned nil")
 		}
-		if resp.UploadURL != "https://s3.example.com/presigned-url" {
-			t.Errorf("UploadURL = %v, want https://s3.example.com/presigned-url", resp.UploadURL)
+		if resp.UploadURL != "https://s3.example.com/presigned-put-url" {
+			t.Errorf("UploadURL = %v, want https://s3.example.com/presigned-put-url", resp.UploadURL)
+		}
+		if resp.DownloadURL != "https://s3.example.com/presigned-get-url" {
+			t.Errorf("DownloadURL = %v, want https://s3.example.com/presigned-get-url", resp.DownloadURL)
 		}
 		if resp.Key == "" {
 			t.Error("Key is empty")
@@ -76,6 +83,8 @@ func TestService_GeneratePresignedURL(t *testing.T) {
 				capturedKey = *params.Key
 				return &v4.PresignedHTTPRequest{URL: "https://s3.example.com/url"}, nil
 			})
+		mockClient.EXPECT().PresignGetObject(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(&v4.PresignedHTTPRequest{URL: "https://s3.example.com/get-url"}, nil)
 
 		svc := NewService(mockClient, "test-bucket")
 		resp, err := svc.GeneratePresignedURL(context.Background(), "photo.jpg", "image/jpeg")
@@ -96,12 +105,32 @@ func TestService_GeneratePresignedURL(t *testing.T) {
 		}
 	})
 
-	t.Run("presign error", func(t *testing.T) {
+	t.Run("presign put error", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockClient := awss3.NewMockPresignClient(ctrl)
 
 		mockClient.EXPECT().PresignPutObject(gomock.Any(), gomock.Any(), gomock.Any()).
-			Return(nil, errors.New("presign failed"))
+			Return(nil, errors.New("presign put failed"))
+
+		svc := NewService(mockClient, "test-bucket")
+		resp, err := svc.GeneratePresignedURL(context.Background(), "test.png", "image/png")
+
+		if err == nil {
+			t.Error("GeneratePresignedURL() error = nil, want error")
+		}
+		if resp != nil {
+			t.Errorf("GeneratePresignedURL() response = %v, want nil", resp)
+		}
+	})
+
+	t.Run("presign get error", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mockClient := awss3.NewMockPresignClient(ctrl)
+
+		mockClient.EXPECT().PresignPutObject(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(&v4.PresignedHTTPRequest{URL: "https://s3.example.com/put-url"}, nil)
+		mockClient.EXPECT().PresignGetObject(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(nil, errors.New("presign get failed"))
 
 		svc := NewService(mockClient, "test-bucket")
 		resp, err := svc.GeneratePresignedURL(context.Background(), "test.png", "image/png")

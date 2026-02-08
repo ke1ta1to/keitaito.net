@@ -444,6 +444,11 @@ export interface components {
              */
             upload_url: string;
             /**
+             * @description Presigned GET URL for previewing the uploaded file
+             * @example https://s3.amazonaws.com/bucket/uuid/photo.png?...
+             */
+            download_url: string;
+            /**
              * @description S3 object key for the uploaded file
              * @example 550e8400-e29b-41d4-a716-446655440000/photo.png
              */

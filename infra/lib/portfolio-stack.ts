@@ -737,7 +737,7 @@ export class PortfolioStack extends cdk.Stack {
       autoDeleteObjects: true,
       cors: [
         {
-          allowedMethods: [s3.HttpMethods.PUT],
+          allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET],
           allowedOrigins: ["*"],
           allowedHeaders: ["*"],
         },
@@ -758,6 +758,7 @@ export class PortfolioStack extends cdk.Stack {
       },
     );
     uploadsBucket.grantPut(uploadsPresignFn);
+    uploadsBucket.grantRead(uploadsPresignFn);
     uploadsPresignFn.addEnvironment("BUCKET_NAME", uploadsBucket.bucketName);
 
     // Uploads API Gateway resources

@@ -28,7 +28,7 @@ func NewService(presignClient awss3.PresignClient, bucketName string) *Service {
 func (s *Service) GeneratePresignedURL(ctx context.Context, filename, contentType string) (*PresignResponse, error) {
 	key := fmt.Sprintf("%s/%s", uuid.New().String(), filename)
 
-	result, err := s.presignClient.PresignPutObject(ctx, &s3.PutObjectInput{
+	putResult, err := s.presignClient.PresignPutObject(ctx, &s3.PutObjectInput{
 		Bucket:      &s.bucketName,
 		Key:         &key,
 		ContentType: &contentType,
@@ -39,8 +39,19 @@ func (s *Service) GeneratePresignedURL(ctx context.Context, filename, contentTyp
 		return nil, err
 	}
 
+	getResult, err := s.presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
+		Bucket: &s.bucketName,
+		Key:    &key,
+	}, func(opts *s3.PresignOptions) {
+		opts.Expires = 15 * time.Minute
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &PresignResponse{
-		UploadURL: result.URL,
-		Key:       key,
+		UploadURL:   putResult.URL,
+		DownloadURL: getResult.URL,
+		Key:         key,
 	}, nil
 }
