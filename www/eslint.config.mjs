@@ -20,7 +20,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["src/schema.d.ts"],
+    files: ["src/schema.ts"],
     rules: {
       "@typescript-eslint/no-duplicate-enum-values": "off",
     },

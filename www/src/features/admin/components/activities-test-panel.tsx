@@ -9,6 +9,7 @@ import {
   useActivitiesDelete,
   useActivitiesUpdate,
 } from "@/orval/client";
+import { ApiPaths } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -69,13 +70,13 @@ export function ActivitiesTestPanel() {
 
   // React Query hooks
   const listQuery = useQuery({
-    queryKey: ["/activities"],
+    queryKey: [ApiPaths.activities_list],
     queryFn: () => apiClient.GET("/activities"),
     enabled: false,
   });
 
   const getQuery = useQuery({
-    queryKey: ["/activities", getByIdTarget],
+    queryKey: [ApiPaths.activities_get, getByIdTarget],
     queryFn: () =>
       apiClient.GET("/activities/{id}", {
         params: { path: { id: getByIdTarget } },

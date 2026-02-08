@@ -10,7 +10,7 @@
     "orval": "orval",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "openapi-ts": "openapi-typescript ./node_modules/@repo/functions/openapi/openapi.yaml -o ./src/schema.d.ts --make-paths-enum"
+    "build-schema": "openapi-typescript ./node_modules/@repo/functions/openapi/openapi.yaml -o ./src/schema.ts --make-paths-enum"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
