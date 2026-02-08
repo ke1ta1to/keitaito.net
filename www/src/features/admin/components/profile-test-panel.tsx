@@ -1,21 +1,15 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
 import { apiClient } from "@/lib/api-client";
 import { ApiPaths } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ResponseDisplay } from "./response-display";
+import { EndpointButton } from "./endpoint-button";
+import { EndpointForm } from "./endpoint-form";
+import { SimpleFormField } from "./simple-form-field";
+import { TestPanelLayout } from "./test-panel-layout";
 
 const updateProfileSchema = z.object({
   name: z.string().min(1),
@@ -70,207 +64,47 @@ export function ProfileTestPanel() {
       }),
   });
 
-  const handleGetProfile = () => {
-    getQuery.refetch();
-  };
-
   const handleUpdateProfile = (data: UpdateProfileFormData) => {
-    updateMutation.mutate(data, {
-      onSuccess: () => {
-        updateForm.reset();
-      },
-    });
+    updateMutation.mutate(data, { onSuccess: () => updateForm.reset() });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-xl font-semibold">Profile API Test Panel</h1>
+    <TestPanelLayout title="Profile API Test Panel">
+      {/* GET /profile */}
+      <EndpointButton
+        label="GET /profile"
+        onClick={() => getQuery.refetch()}
+        isLoading={getQuery.isFetching}
+        isError={getQuery.isError}
+        data={getQuery.data}
+        error={getQuery.error}
+      />
 
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
-
-        {/* GET /profile */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetProfile}>
-              GET /profile
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={getQuery.isFetching}
-            isError={getQuery.isError}
-            data={getQuery.data}
-            error={getQuery.error}
-          />
+      {/* PUT /profile */}
+      <EndpointForm
+        form={updateForm}
+        onSubmit={handleUpdateProfile}
+        label="PUT /profile"
+        isLoading={updateMutation.isPending}
+        isError={updateMutation.isError}
+        data={updateMutation.data}
+        error={updateMutation.error}
+        formClassName="space-y-2"
+      >
+        <div className="flex items-center gap-2 flex-wrap">
+          <SimpleFormField control={updateForm.control} name="name" placeholder="Name" />
+          <SimpleFormField control={updateForm.control} name="birthday" placeholder="Birthday" maxWidth="max-w-40" type="date" />
+          <SimpleFormField control={updateForm.control} name="location" placeholder="Location" maxWidth="max-w-40" />
+          <SimpleFormField control={updateForm.control} name="school" placeholder="School" />
+          <SimpleFormField control={updateForm.control} name="image_url" placeholder="Image URL" />
         </div>
-
-        {/* PUT /profile */}
-        <div>
-          <Form {...updateForm}>
-            <form
-              onSubmit={updateForm.handleSubmit(handleUpdateProfile)}
-              className="space-y-2"
-            >
-              <div className="flex items-center gap-2 flex-wrap">
-                <FormField
-                  control={updateForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Name"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="birthday"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="date"
-                          placeholder="Birthday"
-                          className="max-w-40"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Location"
-                          className="max-w-40"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="school"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="School"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Image URL"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <FormField
-                  control={updateForm.control}
-                  name="x"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="X URL"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="github"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="GitHub URL"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="zenn"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Zenn URL"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="qiita"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Qiita URL"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!updateForm.formState.isValid}
-              >
-                PUT /profile
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={updateMutation.isPending}
-            isError={updateMutation.isError}
-            data={updateMutation.data}
-            error={updateMutation.error}
-          />
+        <div className="flex items-center gap-2 flex-wrap">
+          <SimpleFormField control={updateForm.control} name="x" placeholder="X URL" />
+          <SimpleFormField control={updateForm.control} name="github" placeholder="GitHub URL" />
+          <SimpleFormField control={updateForm.control} name="zenn" placeholder="Zenn URL" />
+          <SimpleFormField control={updateForm.control} name="qiita" placeholder="Qiita URL" />
         </div>
-      </div>
-    </div>
+      </EndpointForm>
+    </TestPanelLayout>
   );
 }

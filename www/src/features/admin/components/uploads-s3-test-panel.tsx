@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
+import { TestPanelLayout } from "./test-panel-layout";
 
 type UploadState =
   | { status: "idle" }
@@ -67,63 +68,55 @@ export function UploadsS3TestPanel() {
   const isLoading = state.status === "presigning" || state.status === "uploading";
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-xl font-semibold">Uploads S3 Test Panel</h1>
-
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          File Upload (Presign + S3 PUT)
-        </h2>
-
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <Input
-              ref={fileInputRef}
-              type="file"
-              className="max-w-60"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleUpload}
-              disabled={isLoading}
-            >
-              Upload to S3
-            </Button>
-          </div>
-
-          {state.status !== "idle" && (
-            <div className="mt-2 space-y-1">
-              <div className="flex items-center gap-2">
-                {isLoading && (
-                  <span className="text-xs text-muted-foreground">
-                    {state.status === "presigning" ? "Getting presigned URL..." : "Uploading to S3..."}
-                  </span>
-                )}
-                {state.status === "success" && (
-                  <span className="text-xs text-green-600 dark:text-green-400">
-                    Success
-                  </span>
-                )}
-                {state.status === "error" && (
-                  <span className="text-xs text-red-600 dark:text-red-400">
-                    Error
-                  </span>
-                )}
-              </div>
-              <pre className="p-3 bg-muted rounded text-sm font-mono overflow-auto max-h-60">
-                {state.status === "error"
-                  ? state.message
-                  : state.status === "success"
-                    ? JSON.stringify({ key: state.key, upload_url: state.uploadUrl }, null, 2)
-                    : state.status === "uploading"
-                      ? JSON.stringify({ key: state.key, step: "uploading" }, null, 2)
-                      : "Requesting presigned URL..."}
-              </pre>
-            </div>
-          )}
+    <TestPanelLayout title="Uploads S3 Test Panel" sectionTitle="File Upload (Presign + S3 PUT)">
+      <div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Input
+            ref={fileInputRef}
+            type="file"
+            className="max-w-60"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleUpload}
+            disabled={isLoading}
+          >
+            Upload to S3
+          </Button>
         </div>
+
+        {state.status !== "idle" && (
+          <div className="mt-2 space-y-1">
+            <div className="flex items-center gap-2">
+              {isLoading && (
+                <span className="text-xs text-muted-foreground">
+                  {state.status === "presigning" ? "Getting presigned URL..." : "Uploading to S3..."}
+                </span>
+              )}
+              {state.status === "success" && (
+                <span className="text-xs text-green-600 dark:text-green-400">
+                  Success
+                </span>
+              )}
+              {state.status === "error" && (
+                <span className="text-xs text-red-600 dark:text-red-400">
+                  Error
+                </span>
+              )}
+            </div>
+            <pre className="p-3 bg-muted rounded text-sm font-mono overflow-auto max-h-60">
+              {state.status === "error"
+                ? state.message
+                : state.status === "success"
+                  ? JSON.stringify({ key: state.key, upload_url: state.uploadUrl }, null, 2)
+                  : state.status === "uploading"
+                    ? JSON.stringify({ key: state.key, step: "uploading" }, null, 2)
+                    : "Requesting presigned URL..."}
+            </pre>
+          </div>
+        )}
       </div>
-    </div>
+    </TestPanelLayout>
   );
 }

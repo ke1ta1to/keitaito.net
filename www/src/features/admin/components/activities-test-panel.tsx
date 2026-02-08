@@ -1,8 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
 import { ApiPaths } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +7,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ResponseDisplay } from "./response-display";
+import { EndpointButton } from "./endpoint-button";
+import { EndpointForm } from "./endpoint-form";
+import { SimpleFormField } from "./simple-form-field";
+import { TestPanelLayout } from "./test-panel-layout";
 
-// Zod Schemas
 const getByIdSchema = z.object({
   activityId: z.string().min(1),
 });
@@ -42,7 +41,6 @@ type DeleteActivityFormData = z.infer<typeof deleteActivitySchema>;
 export function ActivitiesTestPanel() {
   const [getByIdTarget, setGetByIdTarget] = useState("");
 
-  // React Hook Form instances
   const getByIdForm = useForm<GetByIdFormData>({
     resolver: zodResolver(getByIdSchema),
     defaultValues: { activityId: "" },
@@ -63,7 +61,6 @@ export function ActivitiesTestPanel() {
     defaultValues: { id: "" },
   });
 
-  // React Query hooks
   const listQuery = useQuery({
     queryKey: [ApiPaths.activities_list],
     queryFn: () => apiClient.GET("/activities"),
@@ -101,297 +98,97 @@ export function ActivitiesTestPanel() {
       }),
   });
 
-  const handleGetActivities = () => {
-    listQuery.refetch();
-  };
-
   const handleGetActivityById = (data: GetByIdFormData) => {
     setGetByIdTarget(data.activityId);
   };
 
   const handleCreateActivity = (data: CreateActivityFormData) => {
-    createMutation.mutate(data, {
-      onSuccess: () => {
-        createForm.reset();
-      },
-    });
+    createMutation.mutate(data, { onSuccess: () => createForm.reset() });
   };
 
   const handleUpdateActivity = (data: UpdateActivityFormData) => {
-    updateMutation.mutate(data, {
-      onSuccess: () => {
-        updateForm.reset();
-      },
-    });
+    updateMutation.mutate(data, { onSuccess: () => updateForm.reset() });
   };
 
   const handleDeleteActivity = (data: DeleteActivityFormData) => {
-    deleteMutation.mutate(data, {
-      onSuccess: () => {
-        deleteForm.reset();
-      },
-    });
+    deleteMutation.mutate(data, { onSuccess: () => deleteForm.reset() });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Header */}
-      <h1 className="text-xl font-semibold">Activities API Test Panel</h1>
+    <TestPanelLayout title="Activities API Test Panel">
+      {/* GET /activities */}
+      <EndpointButton
+        label="GET /activities"
+        onClick={() => listQuery.refetch()}
+        isLoading={listQuery.isFetching}
+        isError={listQuery.isError}
+        data={listQuery.data}
+        error={listQuery.error}
+      />
 
-      {/* API Test Section */}
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
+      {/* GET /activities/{id} */}
+      <EndpointForm
+        form={getByIdForm}
+        onSubmit={handleGetActivityById}
+        label="GET /activities/{id}"
+        isLoading={getQuery.isFetching}
+        isError={getQuery.isError}
+        data={getQuery.data}
+        error={getQuery.error}
+      >
+        <SimpleFormField control={getByIdForm.control} name="activityId" placeholder="Activity ID" />
+      </EndpointForm>
 
-        {/* GET /activities */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetActivities}>
-              GET /activities
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={listQuery.isFetching}
-            isError={listQuery.isError}
-            data={listQuery.data}
-            error={listQuery.error}
-          />
-        </div>
+      {/* POST /activities */}
+      <EndpointForm
+        form={createForm}
+        onSubmit={handleCreateActivity}
+        label="POST /activities"
+        isLoading={createMutation.isPending}
+        isError={createMutation.isError}
+        data={createMutation.data}
+        error={createMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={createForm.control} name="title" placeholder="Title" maxWidth="max-w-30" />
+        <SimpleFormField control={createForm.control} name="date" placeholder="YYYY-MM" maxWidth="max-w-35" type="month" />
+        <SimpleFormField control={createForm.control} name="description" placeholder="Description" maxWidth="max-w-40" />
+      </EndpointForm>
 
-        {/* GET /activities/{id} */}
-        <div>
-          <Form {...getByIdForm}>
-            <form
-              onSubmit={getByIdForm.handleSubmit(handleGetActivityById)}
-              className="flex items-center gap-2"
-            >
-              <FormField
-                control={getByIdForm.control}
-                name="activityId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Activity ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!getByIdForm.formState.isValid}
-              >
-                GET /activities/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={getQuery.isFetching}
-            isError={getQuery.isError}
-            data={getQuery.data}
-            error={getQuery.error}
-          />
-        </div>
+      {/* PUT /activities/{id} */}
+      <EndpointForm
+        form={updateForm}
+        onSubmit={handleUpdateActivity}
+        label="PUT /activities/{id}"
+        isLoading={updateMutation.isPending}
+        isError={updateMutation.isError}
+        data={updateMutation.data}
+        error={updateMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={updateForm.control} name="id" placeholder="ID" />
+        <SimpleFormField control={updateForm.control} name="title" placeholder="Title" maxWidth="max-w-30" />
+        <SimpleFormField control={updateForm.control} name="date" placeholder="YYYY-MM" maxWidth="max-w-35" type="month" />
+        <SimpleFormField control={updateForm.control} name="description" placeholder="Description" maxWidth="max-w-40" />
+      </EndpointForm>
 
-        {/* POST /activities */}
-        <div>
-          <Form {...createForm}>
-            <form
-              onSubmit={createForm.handleSubmit(handleCreateActivity)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={createForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Title"
-                        className="max-w-30"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="month"
-                        placeholder="YYYY-MM"
-                        className="max-w-35"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Description"
-                        className="max-w-40"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!createForm.formState.isValid}
-              >
-                POST /activities
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={createMutation.isPending}
-            isError={createMutation.isError}
-            data={createMutation.data}
-            error={createMutation.error}
-          />
-        </div>
-
-        {/* PUT /activities/{id} */}
-        <div>
-          <Form {...updateForm}>
-            <form
-              onSubmit={updateForm.handleSubmit(handleUpdateActivity)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={updateForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="ID" className="max-w-50" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Title"
-                        className="max-w-30"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="month"
-                        placeholder="YYYY-MM"
-                        className="max-w-35"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Description"
-                        className="max-w-40"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!updateForm.formState.isValid}
-              >
-                PUT /activities/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={updateMutation.isPending}
-            isError={updateMutation.isError}
-            data={updateMutation.data}
-            error={updateMutation.error}
-          />
-        </div>
-
-        {/* DELETE /activities/{id} */}
-        <div>
-          <Form {...deleteForm}>
-            <form
-              onSubmit={deleteForm.handleSubmit(handleDeleteActivity)}
-              className="flex items-center gap-2"
-            >
-              <FormField
-                control={deleteForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="ID" className="max-w-50" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!deleteForm.formState.isValid}
-              >
-                DELETE /activities/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={deleteMutation.isPending}
-            isError={deleteMutation.isError}
-            data={
-              deleteMutation.isSuccess
-                ? { message: "Deleted successfully" }
-                : null
-            }
-            error={deleteMutation.error}
-          />
-        </div>
-      </div>
-    </div>
+      {/* DELETE /activities/{id} */}
+      <EndpointForm
+        form={deleteForm}
+        onSubmit={handleDeleteActivity}
+        label="DELETE /activities/{id}"
+        isLoading={deleteMutation.isPending}
+        isError={deleteMutation.isError}
+        data={null}
+        error={deleteMutation.error}
+        successData={
+          deleteMutation.isSuccess
+            ? { message: "Deleted successfully" }
+            : null
+        }
+      >
+        <SimpleFormField control={deleteForm.control} name="id" placeholder="ID" />
+      </EndpointForm>
+    </TestPanelLayout>
   );
 }

@@ -1,19 +1,13 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ResponseDisplay } from "./response-display";
+import { EndpointForm } from "./endpoint-form";
+import { SimpleFormField } from "./simple-form-field";
+import { TestPanelLayout } from "./test-panel-layout";
 
 const presignSchema = z.object({
   filename: z.string().min(1),
@@ -36,79 +30,25 @@ export function UploadsTestPanel() {
   });
 
   const handlePresign = (data: PresignFormData) => {
-    presignMutation.mutate(data, {
-      onSuccess: () => {
-        presignForm.reset();
-      },
-    });
+    presignMutation.mutate(data, { onSuccess: () => presignForm.reset() });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-xl font-semibold">Uploads API Test Panel</h1>
-
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
-
-        {/* POST /uploads/presign */}
-        <div>
-          <Form {...presignForm}>
-            <form
-              onSubmit={presignForm.handleSubmit(handlePresign)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={presignForm.control}
-                name="filename"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Filename"
-                        className="max-w-40"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={presignForm.control}
-                name="content_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Content-Type"
-                        className="max-w-40"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={
-                  !presignForm.formState.isValid || presignMutation.isPending
-                }
-              >
-                POST /uploads/presign
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={presignMutation.isPending}
-            isError={presignMutation.isError}
-            data={presignMutation.data}
-            error={presignMutation.error}
-          />
-        </div>
-      </div>
-    </div>
+    <TestPanelLayout title="Uploads API Test Panel">
+      {/* POST /uploads/presign */}
+      <EndpointForm
+        form={presignForm}
+        onSubmit={handlePresign}
+        label="POST /uploads/presign"
+        isLoading={presignMutation.isPending}
+        isError={presignMutation.isError}
+        data={presignMutation.data}
+        error={presignMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={presignForm.control} name="filename" placeholder="Filename" maxWidth="max-w-40" />
+        <SimpleFormField control={presignForm.control} name="content_type" placeholder="Content-Type" maxWidth="max-w-40" />
+      </EndpointForm>
+    </TestPanelLayout>
   );
 }

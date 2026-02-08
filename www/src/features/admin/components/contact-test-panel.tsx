@@ -1,21 +1,15 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
 import { apiClient } from "@/lib/api-client";
 import { ApiPaths } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ResponseDisplay } from "./response-display";
+import { EndpointButton } from "./endpoint-button";
+import { EndpointForm } from "./endpoint-form";
+import { SimpleFormField } from "./simple-form-field";
+import { TestPanelLayout } from "./test-panel-layout";
 
 const updateContactSchema = z.object({
   email: z.string().email(),
@@ -46,99 +40,38 @@ export function ContactTestPanel() {
       }),
   });
 
-  const handleGetContact = () => {
-    getQuery.refetch();
-  };
-
   const handleUpdateContact = (data: UpdateContactFormData) => {
-    updateMutation.mutate(data, {
-      onSuccess: () => {
-        updateForm.reset();
-      },
-    });
+    updateMutation.mutate(data, { onSuccess: () => updateForm.reset() });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-xl font-semibold">Contact API Test Panel</h1>
+    <TestPanelLayout title="Contact API Test Panel">
+      {/* GET /contact */}
+      <EndpointButton
+        label="GET /contact"
+        onClick={() => getQuery.refetch()}
+        isLoading={getQuery.isFetching}
+        isError={getQuery.isError}
+        data={getQuery.data}
+        error={getQuery.error}
+      />
 
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
-
-        {/* GET /contact */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetContact}>
-              GET /contact
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={getQuery.isFetching}
-            isError={getQuery.isError}
-            data={getQuery.data}
-            error={getQuery.error}
-          />
+      {/* PUT /contact */}
+      <EndpointForm
+        form={updateForm}
+        onSubmit={handleUpdateContact}
+        label="PUT /contact"
+        isLoading={updateMutation.isPending}
+        isError={updateMutation.isError}
+        data={updateMutation.data}
+        error={updateMutation.error}
+        formClassName="space-y-2"
+      >
+        <div className="flex items-center gap-2 flex-wrap">
+          <SimpleFormField control={updateForm.control} name="email" placeholder="Email" />
+          <SimpleFormField control={updateForm.control} name="x" placeholder="X Username" />
         </div>
-
-        {/* PUT /contact */}
-        <div>
-          <Form {...updateForm}>
-            <form
-              onSubmit={updateForm.handleSubmit(handleUpdateContact)}
-              className="space-y-2"
-            >
-              <div className="flex items-center gap-2 flex-wrap">
-                <FormField
-                  control={updateForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Email"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={updateForm.control}
-                  name="x"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="X Username"
-                          className="max-w-50"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!updateForm.formState.isValid}
-              >
-                PUT /contact
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={updateMutation.isPending}
-            isError={updateMutation.isError}
-            data={updateMutation.data}
-            error={updateMutation.error}
-          />
-        </div>
-      </div>
-    </div>
+      </EndpointForm>
+    </TestPanelLayout>
   );
 }

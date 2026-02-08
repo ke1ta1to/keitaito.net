@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import { ApiPaths } from "@/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ResponseDisplay } from "./response-display";
+import { EndpointButton } from "./endpoint-button";
+import { TestPanelLayout } from "./test-panel-layout";
 
 export function ArticlesTestPanel() {
   const listQuery = useQuery({
@@ -17,62 +17,33 @@ export function ArticlesTestPanel() {
     mutationFn: () => apiClient.POST("/articles/collect"),
   });
 
-  const handleGetArticles = () => {
-    listQuery.refetch();
-  };
-
-  const handleCollectArticles = () => {
-    collectMutation.mutate();
-  };
-
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-xl font-semibold">Articles API Test Panel</h1>
+    <TestPanelLayout title="Articles API Test Panel">
+      {/* GET /articles */}
+      <EndpointButton
+        label="GET /articles"
+        onClick={() => listQuery.refetch()}
+        isLoading={listQuery.isFetching}
+        isError={listQuery.isError}
+        data={listQuery.data}
+        error={listQuery.error}
+      />
 
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
-
-        {/* GET /articles */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetArticles}>
-              GET /articles
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={listQuery.isFetching}
-            isError={listQuery.isError}
-            data={listQuery.data}
-            error={listQuery.error}
-          />
-        </div>
-
-        {/* POST /articles/collect */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCollectArticles}
-              disabled={collectMutation.isPending}
-            >
-              POST /articles/collect
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={collectMutation.isPending}
-            isError={collectMutation.isError}
-            data={
-              collectMutation.isSuccess
-                ? { message: "Articles collected successfully" }
-                : null
-            }
-            error={collectMutation.error}
-          />
-        </div>
-      </div>
-    </div>
+      {/* POST /articles/collect */}
+      <EndpointButton
+        label="POST /articles/collect"
+        onClick={() => collectMutation.mutate()}
+        isLoading={collectMutation.isPending}
+        isError={collectMutation.isError}
+        data={null}
+        error={collectMutation.error}
+        disabled={collectMutation.isPending}
+        successData={
+          collectMutation.isSuccess
+            ? { message: "Articles collected successfully" }
+            : null
+        }
+      />
+    </TestPanelLayout>
   );
 }

@@ -1,23 +1,17 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
 import { ApiPaths } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ResponseDisplay } from "./response-display";
+import { EndpointButton } from "./endpoint-button";
+import { EndpointForm } from "./endpoint-form";
+import { SimpleFormField } from "./simple-form-field";
+import { TestPanelLayout } from "./test-panel-layout";
 
-// Zod Schemas
 const getByIdSchema = z.object({
   skillId: z.string().min(1),
 });
@@ -45,7 +39,6 @@ type DeleteSkillFormData = z.infer<typeof deleteSkillSchema>;
 export function SkillsTestPanel() {
   const [getByIdTarget, setGetByIdTarget] = useState("");
 
-  // React Hook Form instances
   const getByIdForm = useForm<GetByIdFormData>({
     resolver: zodResolver(getByIdSchema),
     defaultValues: { skillId: "" },
@@ -66,7 +59,6 @@ export function SkillsTestPanel() {
     defaultValues: { id: "" },
   });
 
-  // React Query hooks
   const listQuery = useQuery({
     queryKey: [ApiPaths.skills_list],
     queryFn: () => apiClient.GET("/skills"),
@@ -104,273 +96,95 @@ export function SkillsTestPanel() {
       }),
   });
 
-  const handleGetSkills = () => {
-    listQuery.refetch();
-  };
-
   const handleGetSkillById = (data: GetByIdFormData) => {
     setGetByIdTarget(data.skillId);
   };
 
   const handleCreateSkill = (data: CreateSkillFormData) => {
-    createMutation.mutate(data, {
-      onSuccess: () => {
-        createForm.reset();
-      },
-    });
+    createMutation.mutate(data, { onSuccess: () => createForm.reset() });
   };
 
   const handleUpdateSkill = (data: UpdateSkillFormData) => {
-    updateMutation.mutate(data, {
-      onSuccess: () => {
-        updateForm.reset();
-      },
-    });
+    updateMutation.mutate(data, { onSuccess: () => updateForm.reset() });
   };
 
   const handleDeleteSkill = (data: DeleteSkillFormData) => {
-    deleteMutation.mutate(data, {
-      onSuccess: () => {
-        deleteForm.reset();
-      },
-    });
+    deleteMutation.mutate(data, { onSuccess: () => deleteForm.reset() });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Header */}
-      <h1 className="text-xl font-semibold">Skills API Test Panel</h1>
+    <TestPanelLayout title="Skills API Test Panel">
+      {/* GET /skills */}
+      <EndpointButton
+        label="GET /skills"
+        onClick={() => listQuery.refetch()}
+        isLoading={listQuery.isFetching}
+        isError={listQuery.isError}
+        data={listQuery.data}
+        error={listQuery.error}
+      />
 
-      {/* API Test Section */}
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
+      {/* GET /skills/{id} */}
+      <EndpointForm
+        form={getByIdForm}
+        onSubmit={handleGetSkillById}
+        label="GET /skills/{id}"
+        isLoading={getQuery.isFetching}
+        isError={getQuery.isError}
+        data={getQuery.data}
+        error={getQuery.error}
+      >
+        <SimpleFormField control={getByIdForm.control} name="skillId" placeholder="Skill ID" />
+      </EndpointForm>
 
-        {/* GET /skills */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetSkills}>
-              GET /skills
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={listQuery.isFetching}
-            isError={listQuery.isError}
-            data={listQuery.data}
-            error={listQuery.error}
-          />
-        </div>
+      {/* POST /skills */}
+      <EndpointForm
+        form={createForm}
+        onSubmit={handleCreateSkill}
+        label="POST /skills"
+        isLoading={createMutation.isPending}
+        isError={createMutation.isError}
+        data={createMutation.data}
+        error={createMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={createForm.control} name="name" placeholder="Name" maxWidth="max-w-30" />
+        <SimpleFormField control={createForm.control} name="icon_url" placeholder="Icon URL" />
+      </EndpointForm>
 
-        {/* GET /skills/{id} */}
-        <div>
-          <Form {...getByIdForm}>
-            <form
-              onSubmit={getByIdForm.handleSubmit(handleGetSkillById)}
-              className="flex items-center gap-2"
-            >
-              <FormField
-                control={getByIdForm.control}
-                name="skillId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Skill ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!getByIdForm.formState.isValid}
-              >
-                GET /skills/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={getQuery.isFetching}
-            isError={getQuery.isError}
-            data={getQuery.data}
-            error={getQuery.error}
-          />
-        </div>
+      {/* PUT /skills/{id} */}
+      <EndpointForm
+        form={updateForm}
+        onSubmit={handleUpdateSkill}
+        label="PUT /skills/{id}"
+        isLoading={updateMutation.isPending}
+        isError={updateMutation.isError}
+        data={updateMutation.data}
+        error={updateMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={updateForm.control} name="id" placeholder="ID" />
+        <SimpleFormField control={updateForm.control} name="name" placeholder="Name" maxWidth="max-w-30" />
+        <SimpleFormField control={updateForm.control} name="icon_url" placeholder="Icon URL" />
+      </EndpointForm>
 
-        {/* POST /skills */}
-        <div>
-          <Form {...createForm}>
-            <form
-              onSubmit={createForm.handleSubmit(handleCreateSkill)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={createForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Name"
-                        className="max-w-30"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="icon_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Icon URL"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!createForm.formState.isValid}
-              >
-                POST /skills
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={createMutation.isPending}
-            isError={createMutation.isError}
-            data={createMutation.data}
-            error={createMutation.error}
-          />
-        </div>
-
-        {/* PUT /skills/{id} */}
-        <div>
-          <Form {...updateForm}>
-            <form
-              onSubmit={updateForm.handleSubmit(handleUpdateSkill)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={updateForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Name"
-                        className="max-w-30"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="icon_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Icon URL"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!updateForm.formState.isValid}
-              >
-                PUT /skills/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={updateMutation.isPending}
-            isError={updateMutation.isError}
-            data={updateMutation.data}
-            error={updateMutation.error}
-          />
-        </div>
-
-        {/* DELETE /skills/{id} */}
-        <div>
-          <Form {...deleteForm}>
-            <form
-              onSubmit={deleteForm.handleSubmit(handleDeleteSkill)}
-              className="flex items-center gap-2"
-            >
-              <FormField
-                control={deleteForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!deleteForm.formState.isValid}
-              >
-                DELETE /skills/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={deleteMutation.isPending}
-            isError={deleteMutation.isError}
-            data={
-              deleteMutation.isSuccess
-                ? { message: "Deleted successfully" }
-                : null
-            }
-            error={deleteMutation.error}
-          />
-        </div>
-      </div>
-    </div>
+      {/* DELETE /skills/{id} */}
+      <EndpointForm
+        form={deleteForm}
+        onSubmit={handleDeleteSkill}
+        label="DELETE /skills/{id}"
+        isLoading={deleteMutation.isPending}
+        isError={deleteMutation.isError}
+        data={null}
+        error={deleteMutation.error}
+        successData={
+          deleteMutation.isSuccess
+            ? { message: "Deleted successfully" }
+            : null
+        }
+      >
+        <SimpleFormField control={deleteForm.control} name="id" placeholder="ID" />
+      </EndpointForm>
+    </TestPanelLayout>
   );
 }

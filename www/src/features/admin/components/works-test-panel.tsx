@@ -1,23 +1,17 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
 import { ApiPaths } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ResponseDisplay } from "./response-display";
+import { EndpointButton } from "./endpoint-button";
+import { EndpointForm } from "./endpoint-form";
+import { SimpleFormField } from "./simple-form-field";
+import { TestPanelLayout } from "./test-panel-layout";
 
-// Zod Schemas
 const getByIdSchema = z.object({
   workId: z.string().min(1),
 });
@@ -49,7 +43,6 @@ type DeleteWorkFormData = z.infer<typeof deleteWorkSchema>;
 export function WorksTestPanel() {
   const [getByIdTarget, setGetByIdTarget] = useState("");
 
-  // React Hook Form instances
   const getByIdForm = useForm<GetByIdFormData>({
     resolver: zodResolver(getByIdSchema),
     defaultValues: { workId: "" },
@@ -70,7 +63,6 @@ export function WorksTestPanel() {
     defaultValues: { id: "" },
   });
 
-  // React Query hooks
   const listQuery = useQuery({
     queryKey: [ApiPaths.works_list],
     queryFn: () => apiClient.GET("/works"),
@@ -118,333 +110,99 @@ export function WorksTestPanel() {
       }),
   });
 
-  const handleGetWorks = () => {
-    listQuery.refetch();
-  };
-
   const handleGetWorkById = (data: GetByIdFormData) => {
     setGetByIdTarget(data.workId);
   };
 
   const handleCreateWork = (data: CreateWorkFormData) => {
-    createMutation.mutate(data, {
-      onSuccess: () => {
-        createForm.reset();
-      },
-    });
+    createMutation.mutate(data, { onSuccess: () => createForm.reset() });
   };
 
   const handleUpdateWork = (data: UpdateWorkFormData) => {
-    updateMutation.mutate(data, {
-      onSuccess: () => {
-        updateForm.reset();
-      },
-    });
+    updateMutation.mutate(data, { onSuccess: () => updateForm.reset() });
   };
 
   const handleDeleteWork = (data: DeleteWorkFormData) => {
-    deleteMutation.mutate(data, {
-      onSuccess: () => {
-        deleteForm.reset();
-      },
-    });
+    deleteMutation.mutate(data, { onSuccess: () => deleteForm.reset() });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Header */}
-      <h1 className="text-xl font-semibold">Works API Test Panel</h1>
+    <TestPanelLayout title="Works API Test Panel">
+      {/* GET /works */}
+      <EndpointButton
+        label="GET /works"
+        onClick={() => listQuery.refetch()}
+        isLoading={listQuery.isFetching}
+        isError={listQuery.isError}
+        data={listQuery.data}
+        error={listQuery.error}
+      />
 
-      {/* API Test Section */}
-      <div className="p-4 border rounded-lg space-y-6">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          API Endpoints
-        </h2>
+      {/* GET /works/{id} */}
+      <EndpointForm
+        form={getByIdForm}
+        onSubmit={handleGetWorkById}
+        label="GET /works/{id}"
+        isLoading={getQuery.isFetching}
+        isError={getQuery.isError}
+        data={getQuery.data}
+        error={getQuery.error}
+      >
+        <SimpleFormField control={getByIdForm.control} name="workId" placeholder="Work ID" />
+      </EndpointForm>
 
-        {/* GET /works */}
-        <div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleGetWorks}>
-              GET /works
-            </Button>
-          </div>
-          <ResponseDisplay
-            isLoading={listQuery.isFetching}
-            isError={listQuery.isError}
-            data={listQuery.data}
-            error={listQuery.error}
-          />
-        </div>
+      {/* POST /works */}
+      <EndpointForm
+        form={createForm}
+        onSubmit={handleCreateWork}
+        label="POST /works"
+        isLoading={createMutation.isPending}
+        isError={createMutation.isError}
+        data={createMutation.data}
+        error={createMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={createForm.control} name="title" placeholder="Title" maxWidth="max-w-30" />
+        <SimpleFormField control={createForm.control} name="slug" placeholder="Slug" maxWidth="max-w-35" />
+        <SimpleFormField control={createForm.control} name="content" placeholder="Content" maxWidth="max-w-40" />
+        <SimpleFormField control={createForm.control} name="thumbnail" placeholder="Thumbnail URL" />
+      </EndpointForm>
 
-        {/* GET /works/{id} */}
-        <div>
-          <Form {...getByIdForm}>
-            <form
-              onSubmit={getByIdForm.handleSubmit(handleGetWorkById)}
-              className="flex items-center gap-2"
-            >
-              <FormField
-                control={getByIdForm.control}
-                name="workId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Work ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!getByIdForm.formState.isValid}
-              >
-                GET /works/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={getQuery.isFetching}
-            isError={getQuery.isError}
-            data={getQuery.data}
-            error={getQuery.error}
-          />
-        </div>
+      {/* PUT /works/{id} */}
+      <EndpointForm
+        form={updateForm}
+        onSubmit={handleUpdateWork}
+        label="PUT /works/{id}"
+        isLoading={updateMutation.isPending}
+        isError={updateMutation.isError}
+        data={updateMutation.data}
+        error={updateMutation.error}
+        formClassName="flex items-center gap-2 flex-wrap"
+      >
+        <SimpleFormField control={updateForm.control} name="id" placeholder="ID" />
+        <SimpleFormField control={updateForm.control} name="title" placeholder="Title" maxWidth="max-w-30" />
+        <SimpleFormField control={updateForm.control} name="slug" placeholder="Slug" maxWidth="max-w-35" />
+        <SimpleFormField control={updateForm.control} name="content" placeholder="Content" maxWidth="max-w-40" />
+        <SimpleFormField control={updateForm.control} name="thumbnail" placeholder="Thumbnail URL" />
+      </EndpointForm>
 
-        {/* POST /works */}
-        <div>
-          <Form {...createForm}>
-            <form
-              onSubmit={createForm.handleSubmit(handleCreateWork)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={createForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Title"
-                        className="max-w-30"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Slug"
-                        className="max-w-35"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Content"
-                        className="max-w-40"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="thumbnail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Thumbnail URL"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!createForm.formState.isValid}
-              >
-                POST /works
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={createMutation.isPending}
-            isError={createMutation.isError}
-            data={createMutation.data}
-            error={createMutation.error}
-          />
-        </div>
-
-        {/* PUT /works/{id} */}
-        <div>
-          <Form {...updateForm}>
-            <form
-              onSubmit={updateForm.handleSubmit(handleUpdateWork)}
-              className="flex items-center gap-2 flex-wrap"
-            >
-              <FormField
-                control={updateForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Title"
-                        className="max-w-30"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Slug"
-                        className="max-w-35"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Content"
-                        className="max-w-40"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={updateForm.control}
-                name="thumbnail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Thumbnail URL"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!updateForm.formState.isValid}
-              >
-                PUT /works/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={updateMutation.isPending}
-            isError={updateMutation.isError}
-            data={updateMutation.data}
-            error={updateMutation.error}
-          />
-        </div>
-
-        {/* DELETE /works/{id} */}
-        <div>
-          <Form {...deleteForm}>
-            <form
-              onSubmit={deleteForm.handleSubmit(handleDeleteWork)}
-              className="flex items-center gap-2"
-            >
-              <FormField
-                control={deleteForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="ID"
-                        className="max-w-50"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                disabled={!deleteForm.formState.isValid}
-              >
-                DELETE /works/&#123;id&#125;
-              </Button>
-            </form>
-          </Form>
-          <ResponseDisplay
-            isLoading={deleteMutation.isPending}
-            isError={deleteMutation.isError}
-            data={
-              deleteMutation.isSuccess
-                ? { message: "Deleted successfully" }
-                : null
-            }
-            error={deleteMutation.error}
-          />
-        </div>
-      </div>
-    </div>
+      {/* DELETE /works/{id} */}
+      <EndpointForm
+        form={deleteForm}
+        onSubmit={handleDeleteWork}
+        label="DELETE /works/{id}"
+        isLoading={deleteMutation.isPending}
+        isError={deleteMutation.isError}
+        data={null}
+        error={deleteMutation.error}
+        successData={
+          deleteMutation.isSuccess
+            ? { message: "Deleted successfully" }
+            : null
+        }
+      >
+        <SimpleFormField control={deleteForm.control} name="id" placeholder="ID" />
+      </EndpointForm>
+    </TestPanelLayout>
   );
 }
