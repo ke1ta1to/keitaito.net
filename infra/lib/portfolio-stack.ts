@@ -179,8 +179,8 @@ export class PortfolioStack extends cdk.Stack {
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
       oAuth: {
-        callbackUrls: ["http://localhost:3000/admin-test"],
-        logoutUrls: ["http://localhost:3000/admin-test"],
+        callbackUrls: ["http://localhost:3000/admin"],
+        logoutUrls: ["http://localhost:3000/admin"],
         flows: {
           authorizationCodeGrant: true,
         },
@@ -265,13 +265,9 @@ export class PortfolioStack extends cdk.Stack {
     const contactTable = new dynamodb.Table(this, "ContactTable", {
       ...tableProps,
     });
-    const articlesCacheTable = new dynamodb.Table(
-      this,
-      "ArticlesCacheTable",
-      {
-        ...tableProps,
-      },
-    );
+    const articlesCacheTable = new dynamodb.Table(this, "ArticlesCacheTable", {
+      ...tableProps,
+    });
 
     const distRoot = path.join(__dirname, "../../dist/functions");
 
@@ -454,15 +450,11 @@ export class PortfolioStack extends cdk.Stack {
     );
 
     const skillById = skillsResource.addResource("{id}");
-    skillById.addMethod(
-      "GET",
-      new apiGateway.LambdaIntegration(skillsGetFn),
-      {
-        authorizationType: apiGateway.AuthorizationType.COGNITO,
-        authorizer,
-        authorizationScopes: [oauthSkillsRead.scopeName],
-      },
-    );
+    skillById.addMethod("GET", new apiGateway.LambdaIntegration(skillsGetFn), {
+      authorizationType: apiGateway.AuthorizationType.COGNITO,
+      authorizer,
+      authorizationScopes: [oauthSkillsRead.scopeName],
+    });
     skillById.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(skillsUpdateFn),
@@ -550,24 +542,16 @@ export class PortfolioStack extends cdk.Stack {
     );
 
     const workById = worksResource.addResource("{id}");
-    workById.addMethod(
-      "GET",
-      new apiGateway.LambdaIntegration(worksGetFn),
-      {
-        authorizationType: apiGateway.AuthorizationType.COGNITO,
-        authorizer,
-        authorizationScopes: [oauthWorksRead.scopeName],
-      },
-    );
-    workById.addMethod(
-      "PUT",
-      new apiGateway.LambdaIntegration(worksUpdateFn),
-      {
-        authorizationType: apiGateway.AuthorizationType.COGNITO,
-        authorizer,
-        authorizationScopes: [oauthWorksWrite.scopeName],
-      },
-    );
+    workById.addMethod("GET", new apiGateway.LambdaIntegration(worksGetFn), {
+      authorizationType: apiGateway.AuthorizationType.COGNITO,
+      authorizer,
+      authorizationScopes: [oauthWorksRead.scopeName],
+    });
+    workById.addMethod("PUT", new apiGateway.LambdaIntegration(worksUpdateFn), {
+      authorizationType: apiGateway.AuthorizationType.COGNITO,
+      authorizer,
+      authorizationScopes: [oauthWorksWrite.scopeName],
+    });
     workById.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(worksDeleteFn),
@@ -588,16 +572,12 @@ export class PortfolioStack extends cdk.Stack {
     profileTable.grantReadData(profileGetFn);
     profileGetFn.addEnvironment("TABLE_NAME", profileTable.tableName);
 
-    const profileUpdateFn = new lambda.Function(
-      this,
-      "ProfileUpdateFunction",
-      {
-        runtime: lambda.Runtime.PROVIDED_AL2023,
-        handler: "bootstrap",
-        architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(path.join(distRoot, "profile_update")),
-      },
-    );
+    const profileUpdateFn = new lambda.Function(this, "ProfileUpdateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "profile_update")),
+    });
     profileTable.grantReadWriteData(profileUpdateFn);
     profileUpdateFn.addEnvironment("TABLE_NAME", profileTable.tableName);
 
@@ -632,16 +612,12 @@ export class PortfolioStack extends cdk.Stack {
     contactTable.grantReadData(contactGetFn);
     contactGetFn.addEnvironment("TABLE_NAME", contactTable.tableName);
 
-    const contactUpdateFn = new lambda.Function(
-      this,
-      "ContactUpdateFunction",
-      {
-        runtime: lambda.Runtime.PROVIDED_AL2023,
-        handler: "bootstrap",
-        architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(path.join(distRoot, "contact_update")),
-      },
-    );
+    const contactUpdateFn = new lambda.Function(this, "ContactUpdateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "contact_update")),
+    });
     contactTable.grantReadWriteData(contactUpdateFn);
     contactUpdateFn.addEnvironment("TABLE_NAME", contactTable.tableName);
 
@@ -667,21 +643,14 @@ export class PortfolioStack extends cdk.Stack {
     );
 
     // Articles Lambda functions
-    const articlesListFn = new lambda.Function(
-      this,
-      "ArticlesListFunction",
-      {
-        runtime: lambda.Runtime.PROVIDED_AL2023,
-        handler: "bootstrap",
-        architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(path.join(distRoot, "articles_list")),
-      },
-    );
+    const articlesListFn = new lambda.Function(this, "ArticlesListFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      handler: "bootstrap",
+      architecture: lambda.Architecture.ARM_64,
+      code: lambda.Code.fromAsset(path.join(distRoot, "articles_list")),
+    });
     articlesCacheTable.grantReadData(articlesListFn);
-    articlesListFn.addEnvironment(
-      "TABLE_NAME",
-      articlesCacheTable.tableName,
-    );
+    articlesListFn.addEnvironment("TABLE_NAME", articlesCacheTable.tableName);
 
     const articlesCollectorFn = new lambda.Function(
       this,
@@ -690,9 +659,7 @@ export class PortfolioStack extends cdk.Stack {
         runtime: lambda.Runtime.PROVIDED_AL2023,
         handler: "bootstrap",
         architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(
-          path.join(distRoot, "articles_collector"),
-        ),
+        code: lambda.Code.fromAsset(path.join(distRoot, "articles_collector")),
         timeout: cdk.Duration.seconds(30),
       },
     );
@@ -716,9 +683,7 @@ export class PortfolioStack extends cdk.Stack {
         runtime: lambda.Runtime.PROVIDED_AL2023,
         handler: "bootstrap",
         architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(
-          path.join(distRoot, "articles_collect"),
-        ),
+        code: lambda.Code.fromAsset(path.join(distRoot, "articles_collect")),
         timeout: cdk.Duration.seconds(30),
       },
     );
@@ -752,9 +717,7 @@ export class PortfolioStack extends cdk.Stack {
         runtime: lambda.Runtime.PROVIDED_AL2023,
         handler: "bootstrap",
         architecture: lambda.Architecture.ARM_64,
-        code: lambda.Code.fromAsset(
-          path.join(distRoot, "uploads_presign"),
-        ),
+        code: lambda.Code.fromAsset(path.join(distRoot, "uploads_presign")),
       },
     );
     uploadsBucket.grantPut(uploadsPresignFn);
