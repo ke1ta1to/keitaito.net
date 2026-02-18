@@ -1,3 +1,5 @@
+import "@/styles.css"
+
 export default async function RootLayout(props: LayoutProps<"/">) {
   const { children } = props;
 
