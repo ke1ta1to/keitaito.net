@@ -3,13 +3,13 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./base": "./base.mjs",
-    "./nextjs": "./nextjs.mjs",
-    "./react-internal": "./react-internal.mjs"
+    "./base": "./base.js",
+    "./nextjs": "./nextjs.js",
+    "./react-internal": "./react-internal.js"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.0.1",
+    "@eslint/js": "^9.39.3",
+    "eslint": "^9.39.3",
     "eslint-config-next": "^16.1.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
