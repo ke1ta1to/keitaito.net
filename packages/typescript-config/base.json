@@ -15,6 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "erasableSyntaxOnly": true,
     "noUncheckedSideEffectImports": true,
+    "isolatedModules": true,
     "noEmit": true
   }
 }

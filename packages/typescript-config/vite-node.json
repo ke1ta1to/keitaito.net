@@ -4,6 +4,7 @@
   "compilerOptions": {
     "lib": ["ES2023"],
     "types": ["node"],
+    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true
   }
 }
