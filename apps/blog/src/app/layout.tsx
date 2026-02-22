@@ -1,5 +1,4 @@
 import "./globals.css";
-import "@repo/ui/styles.css";
 
 export default async function RootLayout({
   children,
