@@ -1,5 +1,6 @@
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import baseConfig from "./base.js";
@@ -8,12 +9,13 @@ export default defineConfig([
   ...baseConfig,
   {
     files: ["**/*.{ts,tsx}"],
-    extends: [pluginReactHooks.configs.flat.recommended],
-    ...pluginReact.configs.flat.recommended,
+    extends: [
+      pluginReact.configs.flat.recommended,
+      pluginReactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
     languageOptions: {
-      ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {
-        ...globals.serviceworker,
         ...globals.browser,
       },
     },
