@@ -8,7 +8,7 @@ export default defineConfig([
   ...baseConfig,
   {
     files: ["**/*.{ts,tsx}"],
-    extends: [reactHooks.configs.flat.recommended],
+    extends: [pluginReactHooks.configs.flat.recommended],
     ...pluginReact.configs.flat.recommended,
     languageOptions: {
       ...pluginReact.configs.flat.recommended.languageOptions,
@@ -16,6 +16,12 @@ export default defineConfig([
         ...globals.serviceworker,
         ...globals.browser,
       },
+    },
+    settings: {
+      react: { version: "detect" },
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off",
     },
   },
 ]);

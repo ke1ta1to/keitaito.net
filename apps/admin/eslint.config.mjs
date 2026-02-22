@@ -1,4 +1,3 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import baseConfig from "@repo/eslint-config/base";
+import reactInternalConfig from "@repo/eslint-config/react-internal";
 
-export default defineConfig([...baseConfig, globalIgnores(["dist"])]);
+export default reactInternalConfig;
