@@ -6,6 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
 
     "allowJs": true,
+    "noUncheckedSideEffectImports": false,
 
     "plugins": [{ "name": "next" }]
   }
