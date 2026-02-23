@@ -1,4 +1,3 @@
-@import "@repo/tailwind-config/shared-styles";
 @import "shadcn/tailwind.css";
 
 @source "./components";
