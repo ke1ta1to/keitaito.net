@@ -1,13 +1,18 @@
+import { JetBrains_Mono } from "next/font/google";
+
 import "./globals.css";
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+export default async function RootLayout(props: LayoutProps<"/">) {
+  const { children } = props;
+
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body className={`${jetbrainsMono.variable}`}>{children}</body>
     </html>
   );
 }
