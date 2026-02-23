@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
+      run: pnpm lint
+    format:
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,css,md,yaml,yml,html}"
+      run: pnpm format:check
+    check-types:
+      glob: "*.{ts,tsx,mts,cts}"
+      run: pnpm check-types
