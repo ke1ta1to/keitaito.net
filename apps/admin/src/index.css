@@ -1,7 +1,0 @@
-@import "@repo/tailwind-config/shared-styles";
-@import "@repo/ui/styles.css";
-@import "@fontsource-variable/jetbrains-mono";
-
-@theme inline {
-  --font-sans: "JetBrains Mono Variable", monospace;
-}

@@ -1,9 +1,0 @@
-node_modules/
-.turbo/
-dist/
-.next/
-*.log
-.DS_Store
-.env*
-*.local
-*.tsbuildinfo
