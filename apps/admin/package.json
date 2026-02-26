@@ -1,5 +1,6 @@
 {
   "name": "admin",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^24.10.14",
     "@types/react": "^19.2.14",
