@@ -16,6 +16,11 @@ export const reactInternalConfig = defineConfig([
         ...globals.browser,
       },
     },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
   },
   eslintPluginReactHooks.configs.flat.recommended,
   eslintConfigPrettier,

@@ -1,6 +1,5 @@
 {
   "name": "@repo/typescript-config",
   "type": "module",
-  "private": true,
-  "scripts": {}
+  "private": true
 }

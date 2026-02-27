@@ -1,8 +1,6 @@
 {
+  "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
     "paths": {
       "@repo/ui/*": ["./src/*"]
     }
