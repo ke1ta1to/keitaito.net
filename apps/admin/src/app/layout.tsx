@@ -1,6 +1,7 @@
 import { JetBrains_Mono } from "next/font/google";
 
 import "@/styles.css";
+import { AppLayout } from "@/components/layouts/app-layout";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -12,7 +13,9 @@ export default async function RootLayout(prpos: LayoutProps<"/">) {
 
   return (
     <html lang="ja" className={jetbrainsMono.variable}>
-      <body>{children}</body>
+      <body>
+        <AppLayout>{children}</AppLayout>
+      </body>
     </html>
   );
 }
