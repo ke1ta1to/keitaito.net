@@ -11,6 +11,14 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "storybook": {
+      "persistent": true,
+      "cache": false
+    },
+    "build-storybook": {
+      "dependsOn": ["^build-storybook"],
+      "outputs": ["storybook-static/**"]
+    },
     "dev": {
       "persistent": true,
       "cache": false

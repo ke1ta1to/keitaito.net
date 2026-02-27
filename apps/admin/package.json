@@ -6,7 +6,9 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "lint": "eslint --max-warnings 0",
-    "check-types": "next typegen && tsc --noEmit"
+    "check-types": "next typegen && tsc --noEmit",
+    "storybook": "storybook dev -p 6008",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
@@ -17,10 +19,13 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@storybook/nextjs-vite": "^10.2.13",
     "@types/node": "^24.10.14",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.3",
-    "typescript": "^5.9.3"
+    "storybook": "^10.2.13",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   }
 }

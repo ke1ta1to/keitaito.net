@@ -6,6 +6,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
+    "storybook": "turbo run storybook",
+    "build-storybook": "turbo run build-storybook",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
