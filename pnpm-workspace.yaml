@@ -4,5 +4,6 @@ packages:
 
 onlyBuiltDependencies:
   - lefthook
+  - msw
   - sharp
   - unrs-resolver
