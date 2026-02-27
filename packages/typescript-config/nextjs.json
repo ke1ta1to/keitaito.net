@@ -4,11 +4,9 @@
   "compilerOptions": {
     "allowJs": true,
     "incremental": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "jsx": "react-jsx",
     "noUncheckedSideEffectImports": false,
-    "plugins": [{ "name": "next" }]
+    "plugins": [{ "name": "next" }],
+    "resolveJsonModule": true
   }
 }

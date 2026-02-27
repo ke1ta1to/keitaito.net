@@ -2,7 +2,9 @@
   "name": "@repo/eslint-config",
   "type": "module",
   "private": true,
-  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.3",
     "eslint": "^9.39.3",
