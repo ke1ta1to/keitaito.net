@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
+  - esbuild
   - lefthook
   - msw
   - sharp

@@ -1,0 +1,36 @@
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+
+import { Activities } from "./activities";
+
+const meta = {
+  title: "Components/Activities",
+  component: Activities,
+} satisfies Meta<typeof Activities>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    activities: [
+      {
+        id: "1",
+        title: "Created a new project",
+        description: "You created a new project called 'Project Alpha'.",
+        date: "2024-06-01",
+      },
+      {
+        id: "2",
+        title: "Updated project settings",
+        description: "You updated the settings for 'Project Alpha'.",
+        date: "2024-06-02",
+      },
+      {
+        id: "3",
+        title: "Added a new member",
+        description: "You added John Doe to 'Project Alpha'.",
+        date: "2024-06-03",
+      },
+    ],
+  },
+};
