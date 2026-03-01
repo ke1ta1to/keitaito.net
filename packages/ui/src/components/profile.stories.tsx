@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Profile } from "./profile";
 
 const meta = {
-  title: "Components/Profile",
+  title: "Profile",
   component: Profile,
   parameters: {
     layout: "centered",
