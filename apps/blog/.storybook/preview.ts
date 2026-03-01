@@ -1,4 +1,4 @@
-import type { Preview } from "@storybook/nextjs-vite";
+import type { Preview } from "@storybook/nextjs";
 import { JetBrains_Mono } from "next/font/google";
 import "../src/styles.css";
 

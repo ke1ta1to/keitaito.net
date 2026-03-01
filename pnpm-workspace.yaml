@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
+  - core-js-pure
   - esbuild
   - lefthook
   - msw
