@@ -4,6 +4,8 @@ import type { ArticlesProps } from "@repo/ui/components/articles";
 import { Articles } from "@repo/ui/components/articles";
 import type { ProfileProps } from "@repo/ui/components/profile";
 import { Profile } from "@repo/ui/components/profile";
+import { Works } from "@repo/ui/components/works";
+import type { WorksProps } from "@repo/ui/components/works";
 
 export async function Overview() {
   const activitiesProps = {
@@ -45,6 +47,32 @@ export async function Overview() {
     },
   } as const satisfies ProfileProps;
 
+  const worksProps = {
+    works: [
+      {
+        id: "1",
+        title: "Work 1",
+        slug: "work-1",
+        content: "This is the first work.",
+        thumbnail_url: "https://picsum.photos/600/400?random=1",
+      },
+      {
+        id: "2",
+        title: "Work 2",
+        slug: "work-2",
+        content: "This is the second work.",
+        thumbnail_url: "https://picsum.photos/600/400?random=2",
+      },
+      {
+        id: "3",
+        title: "Work 3",
+        slug: "work-3",
+        content: "This is the third work.",
+        thumbnail_url: "https://picsum.photos/600/400?random=3",
+      },
+    ],
+  } as const satisfies WorksProps;
+
   const articlesProps = {
     articles: [
       {
@@ -83,6 +111,9 @@ export async function Overview() {
       </div>
       <div className="contents space-y-0 md:block md:space-y-4">
         <div className="order-3 md:order-0">
+          <Works {...worksProps} />
+        </div>
+        <div className="order-4 md:order-0">
           <Articles {...articlesProps} />
         </div>
       </div>
