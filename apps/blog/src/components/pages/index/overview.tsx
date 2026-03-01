@@ -4,6 +4,8 @@ import type { ArticlesProps } from "@repo/ui/components/articles";
 import { Articles } from "@repo/ui/components/articles";
 import type { ProfileProps } from "@repo/ui/components/profile";
 import { Profile } from "@repo/ui/components/profile";
+import { Skills } from "@repo/ui/components/skills";
+import type { SkillsProps } from "@repo/ui/components/skills";
 import { Works } from "@repo/ui/components/works";
 import type { WorksProps } from "@repo/ui/components/works";
 
@@ -99,6 +101,41 @@ export async function Overview() {
     ],
   } as const satisfies ArticlesProps;
 
+  const skillsProps = {
+    skills: [
+      {
+        id: "1",
+        name: "JavaScript",
+        icon_url:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg",
+      },
+      {
+        id: "2",
+        name: "TypeScript",
+        icon_url:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg",
+      },
+      {
+        id: "3",
+        name: "React",
+        icon_url:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
+      },
+      {
+        id: "4",
+        name: "Next.js",
+        icon_url:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg",
+      },
+      {
+        id: "5",
+        name: "Node.js",
+        icon_url:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
+      },
+    ],
+  } as const satisfies SkillsProps;
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="contents space-y-0 md:block md:space-y-4">
@@ -115,6 +152,9 @@ export async function Overview() {
         </div>
         <div className="order-4 md:order-0">
           <Articles {...articlesProps} />
+        </div>
+        <div className="order-5 md:order-0">
+          <Skills {...skillsProps} />
         </div>
       </div>
     </div>
