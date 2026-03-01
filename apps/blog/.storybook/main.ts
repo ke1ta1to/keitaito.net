@@ -14,5 +14,8 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [],
   framework: getAbsolutePath("@storybook/nextjs-vite"),
+  features: {
+    experimentalRSC: true,
+  },
 };
 export default config;
