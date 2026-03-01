@@ -10,3 +10,8 @@ pre-commit:
     check-types:
       glob: "*.{ts,tsx}"
       run: pnpm check-types
+
+commit-msg:
+  commands:
+    "lint commit message":
+      run: pnpm exec commitlint --edit {1}
