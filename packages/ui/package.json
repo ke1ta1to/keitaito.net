@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/storybook-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@storybook/nextjs": "^10.2.13",
     "@types/node": "^24.10.14",
