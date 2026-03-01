@@ -2,6 +2,8 @@ import type { ActivitiesProps } from "@repo/ui/components/activities";
 import { Activities } from "@repo/ui/components/activities";
 import type { ArticlesProps } from "@repo/ui/components/articles";
 import { Articles } from "@repo/ui/components/articles";
+import { Contact } from "@repo/ui/components/contact";
+import type { ContactProps } from "@repo/ui/components/contact";
 import type { ProfileProps } from "@repo/ui/components/profile";
 import { Profile } from "@repo/ui/components/profile";
 import { Skills } from "@repo/ui/components/skills";
@@ -136,6 +138,13 @@ export async function Overview() {
     ],
   } as const satisfies SkillsProps;
 
+  const contactProps = {
+    contact: {
+      email: "example@example.com",
+      twitter: "https://x.com/example",
+    },
+  } as const satisfies ContactProps;
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="contents space-y-0 md:block md:space-y-4">
@@ -144,6 +153,9 @@ export async function Overview() {
         </div>
         <div className="order-2 md:order-0">
           <Activities {...activitiesProps} />
+        </div>
+        <div className="order-6 md:order-0">
+          <Contact {...contactProps} />
         </div>
       </div>
       <div className="contents space-y-0 md:block md:space-y-4">
