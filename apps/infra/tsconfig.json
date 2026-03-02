@@ -1,0 +1,17 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": ".",
+    "outDir": "dist",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
+    "types": ["node"],
+    "lib": ["ES2020"],
+
+    "sourceMap": true
+  },
+  "include": ["bin/**/*.ts", "lib/**/*.ts"],
+  "exclude": ["cdk.out"]
+}

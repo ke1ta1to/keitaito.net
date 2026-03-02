@@ -1,5 +1,7 @@
 node_modules/
 .turbo/
 .next/
+dist/
+cdk.out/
 *storybook.log
 storybook-static
