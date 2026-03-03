@@ -1,14 +1,28 @@
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
-import { defineConfig, globalIgnores } from "eslint/config";
+import storybook from "eslint-plugin-storybook";
+import { globalIgnores } from "eslint/config";
+import tseslint from "typescript-eslint";
 
-import { baseConfig } from "./base.js";
+import { customRules } from "./base.js";
 
-export const nextjsConfig = defineConfig([
-  ...baseConfig.filter((config) => !config.plugins?.import),
+// eslint-config-next provides eslint recommended, import plugin, and @typescript-eslint.
+// We add strict/stylistic typescript-eslint rules and our custom rules on top.
+export const nextjsConfig = [
   ...nextVitals,
   ...nextTs,
+  ...tseslint.configs.strict,
+  ...tseslint.configs.stylistic,
+  customRules,
+  ...storybook.configs["flat/recommended"],
   eslintConfigPrettier,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
-]);
+  globalIgnores([
+    ".next/**",
+    ".open-next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "storybook-static/**",
+  ]),
+];

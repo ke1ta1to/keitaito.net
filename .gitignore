@@ -1,6 +1,7 @@
 node_modules/
 .turbo/
 .next/
+.open-next/
 dist/
 cdk.out/
 *storybook.log
