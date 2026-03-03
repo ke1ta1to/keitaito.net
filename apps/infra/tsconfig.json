@@ -1,7 +1,6 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "noEmit": false,
     "rootDir": ".",
     "outDir": "dist",
     "module": "nodenext",
@@ -12,6 +11,6 @@
 
     "sourceMap": true
   },
-  "include": ["bin/**/*.ts", "lib/**/*.ts"],
+  "include": ["bin/**/*.ts", "lib/**/*.ts", "src/app-stack.ts", "src/index.ts"],
   "exclude": ["cdk.out"]
 }

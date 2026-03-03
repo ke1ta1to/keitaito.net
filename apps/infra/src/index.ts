@@ -2,7 +2,7 @@
 
 import * as cdk from "aws-cdk-lib/core";
 
-import { AppStack } from "../lib/app-stack.js";
+import { AppStack } from "./app-stack.js";
 
 const app = new cdk.App();
 
