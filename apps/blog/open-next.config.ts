@@ -5,6 +5,7 @@ const config = {
   buildCommand: "next build",
   dangerous: {
     disableIncrementalCache: true,
+    disableTagCache: true,
   },
 } satisfies OpenNextConfig;
 
