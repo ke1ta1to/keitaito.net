@@ -265,6 +265,11 @@ export class AppStack extends cdk.Stack {
       },
     );
 
+    const forwardedHostFunctionAssociation: cloudfront.FunctionAssociation = {
+      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      function: forwardedHostFunc,
+    };
+
     const imageCachePolicy = new cloudfront.CachePolicy(
       this,
       "ImageCachePolicy",
@@ -288,25 +293,18 @@ export class AppStack extends cdk.Stack {
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
-        functionAssociations: [
-          {
-            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-            function: forwardedHostFunc,
-          },
-        ],
+        functionAssociations: [forwardedHostFunctionAssociation],
       },
       additionalBehaviors: {
+        "/_next/*": {
+          origin: assetsOrigin,
+        },
         "/_next/data/*": {
           origin: serverOrigin,
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
           originRequestPolicy:
             cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-          functionAssociations: [
-            {
-              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-              function: forwardedHostFunc,
-            },
-          ],
+          functionAssociations: [forwardedHostFunctionAssociation],
         },
         "/_next/image*": {
           origin: cloudfront_origins.FunctionUrlOrigin.withOriginAccessControl(
@@ -315,9 +313,6 @@ export class AppStack extends cdk.Stack {
           cachePolicy: imageCachePolicy,
           originRequestPolicy:
             cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-        },
-        "/_next/*": {
-          origin: assetsOrigin,
         },
         "/BUILD_ID": {
           origin: assetsOrigin,
