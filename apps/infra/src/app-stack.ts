@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import * as cdk from "aws-cdk-lib";
 import * as apiGateway from "aws-cdk-lib/aws-apigateway";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
@@ -16,6 +18,34 @@ import type { Construct } from "constructs";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // API: REST API
+
+    const distRoot = path.join(
+      import.meta.dirname,
+      "../../functions/dist/functions",
+    );
+
+    const activitiesListFunc = new lambda.Function(
+      this,
+      "ActivitiesListFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_list")),
+      },
+    );
+
+    const restApi = new apiGateway.RestApi(this, "Api", {
+      restApiName: `${id}Api`,
+    });
+
+    const activitiesResource = restApi.root.addResource("activities");
+    activitiesResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(activitiesListFunc),
+    );
 
     // Storage: S3
 
@@ -114,6 +144,7 @@ export class AppStack extends cdk.Stack {
         REVALIDATION_QUEUE_REGION: this.region,
         REVALIDATION_QUEUE_URL: revalidationQueue.queueUrl,
         CACHE_DYNAMO_TABLE: tagTable.tableName,
+        API_URL: restApi.url,
       },
     });
 
@@ -204,22 +235,16 @@ export class AppStack extends cdk.Stack {
         originPath: "/_assets",
       });
 
-    const forwardedHostFunc = new cloudfront.Function(
-      this,
-      "ForwardedHostFunction",
-      {
+    const forwardedHostFunctionAssociation: cloudfront.FunctionAssociation = {
+      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      function: new cloudfront.Function(this, "ForwardedHostFunction", {
         code: cloudfront.FunctionCode.fromInline(`function handler(event) {
   var request = event.request;
   request.headers["x-forwarded-host"] = request.headers.host;
   return request;
 }
 `),
-      },
-    );
-
-    const forwardedHostFunctionAssociation: cloudfront.FunctionAssociation = {
-      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-      function: forwardedHostFunc,
+      }),
     };
 
     const imageCachePolicy = new cloudfront.CachePolicy(
@@ -238,6 +263,20 @@ export class AppStack extends cdk.Stack {
       },
     );
 
+    const apiPathRewriteFunctionAssociation: cloudfront.FunctionAssociation = {
+      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      function: new cloudfront.Function(this, "ApiPathRewriteFunction", {
+        code: cloudfront.FunctionCode.fromInline(`function handler(event) {
+  var request = event.request;
+  if (request.uri.startsWith("/api/")) {
+    request.uri = request.uri.slice(4);
+  }
+  return request;
+}
+`),
+      }),
+    };
+
     const distribution = new cloudfront.Distribution(this, "Distribution", {
       defaultBehavior: {
         origin: serverOrigin,
@@ -249,6 +288,16 @@ export class AppStack extends cdk.Stack {
         functionAssociations: [forwardedHostFunctionAssociation],
       },
       additionalBehaviors: {
+        "/api/*": {
+          origin: new cloudfront_origins.RestApiOrigin(restApi),
+          cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+          originRequestPolicy:
+            cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+          allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          functionAssociations: [apiPathRewriteFunctionAssociation],
+        },
         "/_next/data/*": {
           origin: serverOrigin,
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
@@ -285,41 +334,5 @@ export class AppStack extends cdk.Stack {
     new cdk.CfnOutput(this, "Url", {
       value: `https://${distribution.distributionDomainName}`,
     });
-
-    // API: REST API
-
-    const restApi = new apiGateway.RestApi(this, "Api", {
-      restApiName: `${id}Api`,
-    });
-
-    restApi.root.addMethod(
-      "GET",
-      new apiGateway.MockIntegration({
-        requestTemplates: {
-          "application/json": JSON.stringify({ statusCode: 200 }),
-        },
-        integrationResponses: [
-          {
-            statusCode: "200",
-            responseTemplates: {
-              "application/json": JSON.stringify({ ok: true }),
-            },
-            responseParameters: {
-              "method.response.header.Content-Type": "'application/json'",
-            },
-          },
-        ],
-      }),
-      {
-        methodResponses: [
-          {
-            statusCode: "200",
-            responseParameters: {
-              "method.response.header.Content-Type": true,
-            },
-          },
-        ],
-      },
-    );
   }
 }
