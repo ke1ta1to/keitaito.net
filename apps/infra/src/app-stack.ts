@@ -1,8 +1,5 @@
 import * as cdk from "aws-cdk-lib";
 import * as apiGateway from "aws-cdk-lib/aws-apigateway";
-import * as apiGatewayV2 from "aws-cdk-lib/aws-apigatewayv2";
-import * as apiGatewayV2Authorizers from "aws-cdk-lib/aws-apigatewayv2-authorizers";
-import * as apiGatewayV2Integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
@@ -12,7 +9,6 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as lambdaEventSources from "aws-cdk-lib/aws-lambda-event-sources";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
-import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
 import * as sqs from "aws-cdk-lib/aws-sqs";
 import * as cr from "aws-cdk-lib/custom-resources";
 import type { Construct } from "constructs";
@@ -26,6 +22,8 @@ export class AppStack extends cdk.Stack {
     const assetsBucket = new s3.Bucket(this, "AssetsBucket", {
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
     });
 
     new s3deploy.BucketDeployment(this, "DeployAssets", {
@@ -102,6 +100,7 @@ export class AppStack extends cdk.Stack {
       ),
       memorySize: 1024,
       timeout: cdk.Duration.seconds(10),
+      reservedConcurrentExecutions: 10,
       environment: {
         CACHE_BUCKET_REGION: this.region,
         CACHE_BUCKET_NAME: assetsBucket.bucketName,
@@ -115,6 +114,10 @@ export class AppStack extends cdk.Stack {
     assetsBucket.grantReadWrite(serverFunc);
     revalidationQueue.grantSendMessages(serverFunc);
     tagTable.grantReadWriteData(serverFunc);
+
+    const serverFuncUrl = serverFunc.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
 
     // Compute: Revalidation Function
 
@@ -182,66 +185,10 @@ export class AppStack extends cdk.Stack {
       targets: [new targets.LambdaFunction(warmerFunc)],
     });
 
-    // API: HTTP API Gateway + Authorizer
-
-    const originSecret = new secretsmanager.Secret(this, "OriginVerifySecret", {
-      generateSecretString: {
-        excludePunctuation: true,
-      },
-    });
-
-    const originVerifyHeaderValue = originSecret.secretValue.unsafeUnwrap();
-
-    const apiAuthorizerFunc = new lambda.Function(
-      this,
-      "ApiAuthorizerFunction",
-      {
-        runtime: lambda.Runtime.NODEJS_22_X,
-        architecture: lambda.Architecture.ARM_64,
-        handler: "index.handler",
-        code: lambda.Code.fromInline(`exports.handler = async (event) => {
-  const expected = process.env.ORIGIN_VERIFY_VALUE;
-  const headers = event.headers || {};
-  const actual = headers["x-origin-verify"];
-  return {
-    isAuthorized: actual === expected,
-    context: {},
-  };
-};
-`),
-        environment: {
-          ORIGIN_VERIFY_VALUE: originVerifyHeaderValue,
-        },
-      },
-    );
-
-    const httpApi = new apiGatewayV2.HttpApi(this, "HttpApi", {
-      apiName: `${id}HttpApi`,
-      defaultIntegration: new apiGatewayV2Integrations.HttpLambdaIntegration(
-        "ServerIntegration",
-        serverFunc,
-      ),
-      defaultAuthorizer: new apiGatewayV2Authorizers.HttpLambdaAuthorizer(
-        "ServerAuthorizer",
-        apiAuthorizerFunc,
-        {
-          identitySource: ["$request.header.x-origin-verify"],
-          responseTypes: [
-            apiGatewayV2Authorizers.HttpLambdaResponseType.SIMPLE,
-          ],
-        },
-      ),
-    });
-
     // CDN: CloudFront
 
     const serverOrigin = new cloudfront_origins.HttpOrigin(
-      cdk.Fn.parseDomainName(httpApi.apiEndpoint),
-      {
-        customHeaders: {
-          "x-origin-verify": originVerifyHeaderValue,
-        },
-      },
+      cdk.Fn.parseDomainName(serverFuncUrl.url),
     );
 
     const assetsOrigin =
@@ -255,10 +202,7 @@ export class AppStack extends cdk.Stack {
       {
         code: cloudfront.FunctionCode.fromInline(`function handler(event) {
   var request = event.request;
-  var hostHeader = request.headers.host;
-  if (hostHeader && hostHeader.value) {
-    request.headers["x-forwarded-host"] = { value: hostHeader.value };
-  }
+  request.headers["x-forwarded-host"] = request.headers.host;
   return request;
 }
 `),
@@ -293,17 +237,17 @@ export class AppStack extends cdk.Stack {
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         functionAssociations: [forwardedHostFunctionAssociation],
       },
       additionalBehaviors: {
-        "/_next/*": {
-          origin: assetsOrigin,
-        },
         "/_next/data/*": {
           origin: serverOrigin,
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
           originRequestPolicy:
             cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           functionAssociations: [forwardedHostFunctionAssociation],
         },
         "/_next/image*": {
@@ -313,16 +257,25 @@ export class AppStack extends cdk.Stack {
           cachePolicy: imageCachePolicy,
           originRequestPolicy:
             cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+        "/_next/*": {
+          origin: assetsOrigin,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
         "/BUILD_ID": {
           origin: assetsOrigin,
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
       },
     });
 
-    new cdk.CfnOutput(this, "CloudFrontDomain", {
-      value: distribution.distributionDomainName,
+    new cdk.CfnOutput(this, "Url", {
+      value: `https://${distribution.distributionDomainName}`,
     });
 
     // API: REST API
