@@ -12,6 +12,8 @@ import (
 
 var ErrNotFound = errors.New("item not found")
 
+//go:generate mockgen -typed -destination=repository_mock_test.go -package=activities . Repository
+
 type Repository interface {
 	List(ctx context.Context) ([]Activity, error)
 	Get(ctx context.Context, id string) (*Activity, error)

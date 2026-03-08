@@ -12,3 +12,7 @@ all: $(FUNCTIONS)
 $(FUNCTIONS):
 	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) \
 		go build -o $(DIST_DIR)/$@/bootstrap ./cmd/$@
+
+.PHONY: test
+test:
+	go test ./...

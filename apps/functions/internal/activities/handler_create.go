@@ -11,11 +11,12 @@ import (
 )
 
 type CreateHandler struct {
-	repo Repository
+	repo   Repository
+	idFunc func() string
 }
 
 func NewCreateHandler(repo Repository) *CreateHandler {
-	return &CreateHandler{repo: repo}
+	return &CreateHandler{repo: repo, idFunc: uuid.NewString}
 }
 
 func (h *CreateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -28,7 +29,7 @@ func (h *CreateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRe
 	}
 
 	activity := r.ToActivity()
-	activity.ID = uuid.NewString()
+	activity.ID = h.idFunc()
 
 	if err := h.repo.Create(ctx, &activity); err != nil {
 		return apiutil.ErrorResponse(http.StatusInternalServerError, "failed to create item")
