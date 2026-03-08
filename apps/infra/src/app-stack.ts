@@ -90,7 +90,7 @@ export class AppStack extends cdk.Stack {
         },
       },
     );
-    activitiesTable.grantWriteData(activitiesUpdateFunc);
+    activitiesTable.grantReadWriteData(activitiesUpdateFunc);
 
     const activitiesDeleteFunc = new lambda.Function(
       this,
