@@ -27,7 +27,7 @@ export class AppStack extends cdk.Stack {
     );
 
     const activitiesTable = new dynamodb.TableV2(this, "ActivitiesTable", {
-      partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
       billing: dynamodb.Billing.onDemand(),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -62,6 +62,51 @@ export class AppStack extends cdk.Stack {
     );
     activitiesTable.grantWriteData(activitiesCreateFunc);
 
+    const activitiesGetFunc = new lambda.Function(
+      this,
+      "ActivitiesGetFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_get")),
+        environment: {
+          ACTIVITIES_TABLE: activitiesTable.tableName,
+        },
+      },
+    );
+    activitiesTable.grantReadData(activitiesGetFunc);
+
+    const activitiesUpdateFunc = new lambda.Function(
+      this,
+      "ActivitiesUpdateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_update")),
+        environment: {
+          ACTIVITIES_TABLE: activitiesTable.tableName,
+        },
+      },
+    );
+    activitiesTable.grantWriteData(activitiesUpdateFunc);
+
+    const activitiesDeleteFunc = new lambda.Function(
+      this,
+      "ActivitiesDeleteFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_delete")),
+        environment: {
+          ACTIVITIES_TABLE: activitiesTable.tableName,
+        },
+      },
+    );
+    activitiesTable.grantWriteData(activitiesDeleteFunc);
+
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
     });
@@ -74,6 +119,20 @@ export class AppStack extends cdk.Stack {
     activitiesResource.addMethod(
       "POST",
       new apiGateway.LambdaIntegration(activitiesCreateFunc),
+    );
+
+    const activityResource = activitiesResource.addResource("{id}");
+    activityResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(activitiesGetFunc),
+    );
+    activityResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(activitiesUpdateFunc),
+    );
+    activityResource.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(activitiesDeleteFunc),
     );
 
     // Storage: S3

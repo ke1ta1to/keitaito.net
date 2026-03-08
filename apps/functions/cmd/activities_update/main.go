@@ -16,6 +16,6 @@ func main() {
 		log.Fatal(err)
 	}
 	repo := activities.NewDynamoDBRepository(client, os.Getenv("ACTIVITIES_TABLE"))
-	h := activities.NewCreateHandler(repo)
+	h := activities.NewUpdateHandler(repo)
 	lambda.Start(h.Handle)
 }

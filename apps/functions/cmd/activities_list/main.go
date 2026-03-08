@@ -2,63 +2,20 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
+	"log"
 	"os"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/ke1ta1to/keitaito.net/apps/functions/internal/activities"
 	"github.com/ke1ta1to/keitaito.net/apps/functions/internal/db"
 )
 
-var client *dynamodb.Client
-
-func init() {
-	var err error
-	client, err = db.NewClient(context.Background())
-	if err != nil {
-		panic(err)
-	}
-}
-
-func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	tableName := os.Getenv("ACTIVITIES_TABLE")
-	out, err := client.Scan(ctx, &dynamodb.ScanInput{
-		TableName: &tableName,
-	})
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       `{"error":"failed to scan table"}`,
-		}, nil
-	}
-
-	var items []activities.Activity
-	if err := attributevalue.UnmarshalListOfMaps(out.Items, &items); err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       `{"error":"failed to unmarshal items"}`,
-		}, nil
-	}
-
-	resp, err := json.Marshal(items)
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       `{"error":"failed to marshal response"}`,
-		}, nil
-	}
-
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Headers:    map[string]string{"Content-Type": "application/json"},
-		Body:       string(resp),
-	}, nil
-}
-
 func main() {
-	lambda.Start(Handler)
+	client, err := db.NewClient(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	repo := activities.NewDynamoDBRepository(client, os.Getenv("ACTIVITIES_TABLE"))
+	h := activities.NewListHandler(repo)
+	lambda.Start(h.Handle)
 }
