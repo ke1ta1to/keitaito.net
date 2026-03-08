@@ -1,8 +1,8 @@
 package activities
 
 type Activity struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Date        string `json:"date"`
-	Description string `json:"description"`
+	ID          string `json:"id" dynamodbav:"id"`
+	Title       string `json:"title" dynamodbav:"title"`
+	Date        string `json:"date" dynamodbav:"date"`
+	Description string `json:"description" dynamodbav:"description"`
 }

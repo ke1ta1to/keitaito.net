@@ -26,6 +26,12 @@ export class AppStack extends cdk.Stack {
       "../../functions/dist/functions",
     );
 
+    const activitiesTable = new dynamodb.TableV2(this, "ActivitiesTable", {
+      partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     const activitiesListFunc = new lambda.Function(
       this,
       "ActivitiesListFunction",
@@ -34,8 +40,27 @@ export class AppStack extends cdk.Stack {
         architecture: lambda.Architecture.ARM_64,
         handler: "bootstrap",
         code: lambda.Code.fromAsset(path.join(distRoot, "activities_list")),
+        environment: {
+          ACTIVITIES_TABLE: activitiesTable.tableName,
+        },
       },
     );
+    activitiesTable.grantReadData(activitiesListFunc);
+
+    const activitiesCreateFunc = new lambda.Function(
+      this,
+      "ActivitiesCreateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "activities_create")),
+        environment: {
+          ACTIVITIES_TABLE: activitiesTable.tableName,
+        },
+      },
+    );
+    activitiesTable.grantWriteData(activitiesCreateFunc);
 
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
@@ -45,6 +70,10 @@ export class AppStack extends cdk.Stack {
     activitiesResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(activitiesListFunc),
+    );
+    activitiesResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(activitiesCreateFunc),
     );
 
     // Storage: S3
