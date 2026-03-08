@@ -93,9 +93,9 @@ export function ActivityFormSheet({
               <Label htmlFor="date">Date</Label>
               <Input
                 id="date"
+                type="month"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                placeholder="e.g. Jan 2026"
                 required
               />
             </div>

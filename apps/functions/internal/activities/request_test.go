@@ -10,12 +10,12 @@ func TestCreateRequest_Validate(t *testing.T) {
 	}{
 		{
 			name:    "valid",
-			req:     CreateRequest{Title: "t", Date: "2024-01-01", Description: "d"},
+			req:     CreateRequest{Title: "t", Date: "2024-01", Description: "d"},
 			wantErr: false,
 		},
 		{
 			name:    "missing title",
-			req:     CreateRequest{Date: "2024-01-01", Description: "d"},
+			req:     CreateRequest{Date: "2024-01", Description: "d"},
 			wantErr: true,
 		},
 		{
@@ -25,7 +25,17 @@ func TestCreateRequest_Validate(t *testing.T) {
 		},
 		{
 			name:    "missing description",
-			req:     CreateRequest{Title: "t", Date: "2024-01-01"},
+			req:     CreateRequest{Title: "t", Date: "2024-01"},
+			wantErr: true,
+		},
+		{
+			name:    "invalid date format",
+			req:     CreateRequest{Title: "t", Date: "2024-01-01", Description: "d"},
+			wantErr: true,
+		},
+		{
+			name:    "invalid date format no dash",
+			req:     CreateRequest{Title: "t", Date: "202401", Description: "d"},
 			wantErr: true,
 		},
 	}
@@ -40,9 +50,9 @@ func TestCreateRequest_Validate(t *testing.T) {
 }
 
 func TestCreateRequest_ToActivity(t *testing.T) {
-	r := CreateRequest{Title: "t", Date: "2024-01-01", Description: "d"}
+	r := CreateRequest{Title: "t", Date: "2024-01", Description: "d"}
 	a := r.ToActivity()
-	if a.Title != "t" || a.Date != "2024-01-01" || a.Description != "d" {
+	if a.Title != "t" || a.Date != "2024-01" || a.Description != "d" {
 		t.Errorf("ToActivity() = %+v", a)
 	}
 }
@@ -55,12 +65,12 @@ func TestUpdateRequest_Validate(t *testing.T) {
 	}{
 		{
 			name:    "valid",
-			req:     UpdateRequest{Title: "t", Date: "2024-01-01", Description: "d"},
+			req:     UpdateRequest{Title: "t", Date: "2024-01", Description: "d"},
 			wantErr: false,
 		},
 		{
 			name:    "missing title",
-			req:     UpdateRequest{Date: "2024-01-01", Description: "d"},
+			req:     UpdateRequest{Date: "2024-01", Description: "d"},
 			wantErr: true,
 		},
 		{
@@ -70,7 +80,17 @@ func TestUpdateRequest_Validate(t *testing.T) {
 		},
 		{
 			name:    "missing description",
-			req:     UpdateRequest{Title: "t", Date: "2024-01-01"},
+			req:     UpdateRequest{Title: "t", Date: "2024-01"},
+			wantErr: true,
+		},
+		{
+			name:    "invalid date format",
+			req:     UpdateRequest{Title: "t", Date: "2024-01-01", Description: "d"},
+			wantErr: true,
+		},
+		{
+			name:    "invalid date format no dash",
+			req:     UpdateRequest{Title: "t", Date: "202401", Description: "d"},
 			wantErr: true,
 		},
 	}
@@ -85,9 +105,9 @@ func TestUpdateRequest_Validate(t *testing.T) {
 }
 
 func TestUpdateRequest_ToActivity(t *testing.T) {
-	r := UpdateRequest{Title: "t", Date: "2024-01-01", Description: "d"}
+	r := UpdateRequest{Title: "t", Date: "2024-01", Description: "d"}
 	a := r.ToActivity()
-	if a.Title != "t" || a.Date != "2024-01-01" || a.Description != "d" {
+	if a.Title != "t" || a.Date != "2024-01" || a.Description != "d" {
 		t.Errorf("ToActivity() = %+v", a)
 	}
 }
