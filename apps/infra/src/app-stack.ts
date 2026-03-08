@@ -42,17 +42,21 @@ export class AppStack extends cdk.Stack {
 
     // Storage: DynamoDB (tag cache)
 
-    const tagTable = new dynamodb.Table(this, "TagCacheTable", {
+    const tagTable = new dynamodb.TableV2(this, "TagCacheTable", {
       partitionKey: { name: "tag", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "path", type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      billing: dynamodb.Billing.onDemand(),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-
-    tagTable.addGlobalSecondaryIndex({
-      indexName: "revalidate",
-      partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
-      sortKey: { name: "revalidatedAt", type: dynamodb.AttributeType.NUMBER },
+      globalSecondaryIndexes: [
+        {
+          indexName: "revalidate",
+          partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
+          sortKey: {
+            name: "revalidatedAt",
+            type: dynamodb.AttributeType.NUMBER,
+          },
+        },
+      ],
     });
 
     const dynamodbProviderFunc = new lambda.Function(
@@ -78,15 +82,17 @@ export class AppStack extends cdk.Stack {
     new cdk.CustomResource(this, "InitializeTagCache", {
       serviceToken: provider.serviceToken,
       properties: {
-        version: "2026-03-07 13:14:22",
+        version: "2026-03-08 16:17:58",
       },
     });
 
     // Messaging: SQS
 
     const revalidationQueue = new sqs.Queue(this, "RevalidationQueue", {
+      fifo: true,
       contentBasedDeduplication: true,
       visibilityTimeout: cdk.Duration.seconds(60),
+      receiveMessageWaitTime: cdk.Duration.seconds(20),
     });
 
     // Compute: Server Function
@@ -135,7 +141,9 @@ export class AppStack extends cdk.Stack {
     });
 
     revalidationFunc.addEventSource(
-      new lambdaEventSources.SqsEventSource(revalidationQueue),
+      new lambdaEventSources.SqsEventSource(revalidationQueue, {
+        batchSize: 5,
+      }),
     );
 
     // Compute: Image Optimizer Function
