@@ -175,6 +175,170 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /articles:
+    get:
+      operationId: articles_list
+      summary: List articles
+      tags:
+        - Articles
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Article"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      operationId: articles_create
+      summary: Create an article
+      tags:
+        - Articles
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleCreateRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /articles/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: articles_get
+      summary: Get an article
+      tags:
+        - Articles
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      operationId: articles_update
+      summary: Update an article
+      tags:
+        - Articles
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleUpdateRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      operationId: articles_delete
+      summary: Delete an article
+      tags:
+        - Articles
+      security: []
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /skills:
     get:
       operationId: skills_list
@@ -671,6 +835,74 @@ components:
         date:
           type: string
         description:
+          type: string
+    Article:
+      type: object
+      required:
+        - id
+        - title
+        - url
+        - liked_count
+        - published_at
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        url:
+          type: string
+        liked_count:
+          type: integer
+        published_at:
+          type: string
+        source:
+          type: string
+          nullable: true
+          enum:
+            - zenn
+            - qiita
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ArticleCreateRequest:
+      type: object
+      required:
+        - title
+        - url
+        - published_at
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        liked_count:
+          type: integer
+        published_at:
+          type: string
+        source:
+          type: string
+    ArticleUpdateRequest:
+      type: object
+      required:
+        - title
+        - url
+        - published_at
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        liked_count:
+          type: integer
+        published_at:
+          type: string
+        source:
           type: string
     Skill:
       type: object

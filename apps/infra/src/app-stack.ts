@@ -168,6 +168,79 @@ export class AppStack extends cdk.Stack {
     });
     skillsTable.grantWriteData(skillsDeleteFunc);
 
+    const articlesTable = new dynamodb.TableV2(this, "ArticlesTable", {
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const articlesListFunc = new lambda.Function(this, "ArticlesListFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "articles_list")),
+      environment: {
+        ARTICLES_TABLE: articlesTable.tableName,
+      },
+    });
+    articlesTable.grantReadData(articlesListFunc);
+
+    const articlesCreateFunc = new lambda.Function(
+      this,
+      "ArticlesCreateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "articles_create")),
+        environment: {
+          ARTICLES_TABLE: articlesTable.tableName,
+        },
+      },
+    );
+    articlesTable.grantWriteData(articlesCreateFunc);
+
+    const articlesGetFunc = new lambda.Function(this, "ArticlesGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "articles_get")),
+      environment: {
+        ARTICLES_TABLE: articlesTable.tableName,
+      },
+    });
+    articlesTable.grantReadData(articlesGetFunc);
+
+    const articlesUpdateFunc = new lambda.Function(
+      this,
+      "ArticlesUpdateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "articles_update")),
+        environment: {
+          ARTICLES_TABLE: articlesTable.tableName,
+        },
+      },
+    );
+    articlesTable.grantReadWriteData(articlesUpdateFunc);
+
+    const articlesDeleteFunc = new lambda.Function(
+      this,
+      "ArticlesDeleteFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "articles_delete")),
+        environment: {
+          ARTICLES_TABLE: articlesTable.tableName,
+        },
+      },
+    );
+    articlesTable.grantWriteData(articlesDeleteFunc);
+
     const worksTable = new dynamodb.TableV2(this, "WorksTable", {
       partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
       billing: dynamodb.Billing.onDemand(),
@@ -343,6 +416,30 @@ export class AppStack extends cdk.Stack {
     skillResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(skillsDeleteFunc),
+    );
+
+    const articlesResource = restApi.root.addResource("articles");
+    articlesResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(articlesListFunc),
+    );
+    articlesResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(articlesCreateFunc),
+    );
+
+    const articleResource = articlesResource.addResource("{id}");
+    articleResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(articlesGetFunc),
+    );
+    articleResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(articlesUpdateFunc),
+    );
+    articleResource.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(articlesDeleteFunc),
     );
 
     const worksResource = restApi.root.addResource("works");
