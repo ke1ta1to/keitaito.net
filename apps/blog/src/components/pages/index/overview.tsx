@@ -1,40 +1,19 @@
-import type { ActivitiesProps } from "@repo/ui/components/activities";
-import { Activities } from "@repo/ui/components/activities";
+import { ActivitiesSkeleton } from "@repo/ui/components/activities";
 import type { ArticlesProps } from "@repo/ui/components/articles";
 import { Articles } from "@repo/ui/components/articles";
-import { Contact } from "@repo/ui/components/contact";
 import type { ContactProps } from "@repo/ui/components/contact";
+import { Contact } from "@repo/ui/components/contact";
 import type { ProfileProps } from "@repo/ui/components/profile";
 import { Profile } from "@repo/ui/components/profile";
-import { Skills } from "@repo/ui/components/skills";
 import type { SkillsProps } from "@repo/ui/components/skills";
-import { Works } from "@repo/ui/components/works";
+import { Skills } from "@repo/ui/components/skills";
 import type { WorksProps } from "@repo/ui/components/works";
+import { Works } from "@repo/ui/components/works";
+import { Suspense } from "react";
+
+import { ActivitiesFetcher } from "./activities-fetcher";
 
 export async function Overview() {
-  const activitiesProps = {
-    activities: [
-      {
-        id: "1",
-        title: "Blog Post 1",
-        description: "This is the first blog post.",
-        date: "Jan 2026",
-      },
-      {
-        id: "2",
-        title: "Blog Post 2",
-        description: "This is the second blog post.",
-        date: "Feb 2026",
-      },
-      {
-        id: "3",
-        title: "Blog Post 3",
-        description: "This is the third blog post.",
-        date: "Mar 2026",
-      },
-    ],
-  } as const satisfies ActivitiesProps;
-
   const profileProps = {
     profile: {
       name: "John Doe",
@@ -152,7 +131,9 @@ export async function Overview() {
           <Profile {...profileProps} />
         </div>
         <div className="order-2 md:order-0">
-          <Activities {...activitiesProps} />
+          <Suspense fallback={<ActivitiesSkeleton />}>
+            <ActivitiesFetcher />
+          </Suspense>
         </div>
         <div className="order-6 md:order-0">
           <Contact {...contactProps} />
