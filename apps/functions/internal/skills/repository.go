@@ -30,28 +30,6 @@ type skillItem struct {
 	UpdatedAt string `dynamodbav:"updatedAt"`
 }
 
-func toItem(s *Skill) *skillItem {
-	return &skillItem{
-		PK:        s.ID,
-		Name:      s.Name,
-		IconURL:   s.IconURL,
-		CreatedAt: s.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: s.UpdatedAt.Format(time.RFC3339),
-	}
-}
-
-func (i *skillItem) toSkill() *Skill {
-	createdAt, _ := time.Parse(time.RFC3339, i.CreatedAt)
-	updatedAt, _ := time.Parse(time.RFC3339, i.UpdatedAt)
-	return &Skill{
-		ID:        i.PK,
-		Name:      i.Name,
-		IconURL:   i.IconURL,
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
-	}
-}
-
 type DynamoDBRepository struct {
 	client    *dynamodb.Client
 	tableName string
@@ -79,7 +57,15 @@ func (r *DynamoDBRepository) List(ctx context.Context) ([]Skill, error) {
 
 	skills := make([]Skill, len(items))
 	for i := range items {
-		skills[i] = *items[i].toSkill()
+		createdAt, _ := time.Parse(time.RFC3339, items[i].CreatedAt)
+		updatedAt, _ := time.Parse(time.RFC3339, items[i].UpdatedAt)
+		skills[i] = Skill{
+			ID:        items[i].PK,
+			Name:      items[i].Name,
+			IconURL:   items[i].IconURL,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		}
 	}
 	return skills, nil
 }
@@ -102,7 +88,15 @@ func (r *DynamoDBRepository) Get(ctx context.Context, id string) (*Skill, error)
 	if err := attributevalue.UnmarshalMap(out.Item, &item); err != nil {
 		return nil, err
 	}
-	return item.toSkill(), nil
+	createdAt, _ := time.Parse(time.RFC3339, item.CreatedAt)
+	updatedAt, _ := time.Parse(time.RFC3339, item.UpdatedAt)
+	return &Skill{
+		ID:        item.PK,
+		Name:      item.Name,
+		IconURL:   item.IconURL,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+	}, nil
 }
 
 func (r *DynamoDBRepository) Create(ctx context.Context, skill *Skill) error {
@@ -110,7 +104,13 @@ func (r *DynamoDBRepository) Create(ctx context.Context, skill *Skill) error {
 	skill.CreatedAt = now
 	skill.UpdatedAt = now
 
-	item, err := attributevalue.MarshalMap(toItem(skill))
+	item, err := attributevalue.MarshalMap(&skillItem{
+		PK:        skill.ID,
+		Name:      skill.Name,
+		IconURL:   skill.IconURL,
+		CreatedAt: skill.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: skill.UpdatedAt.Format(time.RFC3339),
+	})
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,13 @@ func (r *DynamoDBRepository) Update(ctx context.Context, skill *Skill) error {
 	skill.CreatedAt = existing.CreatedAt
 	skill.UpdatedAt = time.Now().UTC()
 
-	item, err := attributevalue.MarshalMap(toItem(skill))
+	item, err := attributevalue.MarshalMap(&skillItem{
+		PK:        skill.ID,
+		Name:      skill.Name,
+		IconURL:   skill.IconURL,
+		CreatedAt: skill.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: skill.UpdatedAt.Format(time.RFC3339),
+	})
 	if err != nil {
 		return err
 	}

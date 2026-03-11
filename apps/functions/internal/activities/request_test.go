@@ -49,14 +49,6 @@ func TestCreateRequest_Validate(t *testing.T) {
 	}
 }
 
-func TestCreateRequest_ToActivity(t *testing.T) {
-	r := CreateRequest{Title: "t", Date: "2024-01", Description: "d"}
-	a := r.ToActivity()
-	if a.Title != "t" || a.Date != "2024-01" || a.Description != "d" {
-		t.Errorf("ToActivity() = %+v", a)
-	}
-}
-
 func TestUpdateRequest_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -104,10 +96,3 @@ func TestUpdateRequest_Validate(t *testing.T) {
 	}
 }
 
-func TestUpdateRequest_ToActivity(t *testing.T) {
-	r := UpdateRequest{Title: "t", Date: "2024-01", Description: "d"}
-	a := r.ToActivity()
-	if a.Title != "t" || a.Date != "2024-01" || a.Description != "d" {
-		t.Errorf("ToActivity() = %+v", a)
-	}
-}

@@ -31,30 +31,6 @@ type activityItem struct {
 	UpdatedAt   string `dynamodbav:"updatedAt"`
 }
 
-func toItem(a *Activity) *activityItem {
-	return &activityItem{
-		PK:          a.ID,
-		Title:       a.Title,
-		Date:        a.Date,
-		Description: a.Description,
-		CreatedAt:   a.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   a.UpdatedAt.Format(time.RFC3339),
-	}
-}
-
-func (i *activityItem) toActivity() *Activity {
-	createdAt, _ := time.Parse(time.RFC3339, i.CreatedAt)
-	updatedAt, _ := time.Parse(time.RFC3339, i.UpdatedAt)
-	return &Activity{
-		ID:          i.PK,
-		Title:       i.Title,
-		Date:        i.Date,
-		Description: i.Description,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
-	}
-}
-
 type DynamoDBRepository struct {
 	client    *dynamodb.Client
 	tableName string
@@ -82,7 +58,16 @@ func (r *DynamoDBRepository) List(ctx context.Context) ([]Activity, error) {
 
 	activities := make([]Activity, len(items))
 	for i := range items {
-		activities[i] = *items[i].toActivity()
+		createdAt, _ := time.Parse(time.RFC3339, items[i].CreatedAt)
+		updatedAt, _ := time.Parse(time.RFC3339, items[i].UpdatedAt)
+		activities[i] = Activity{
+			ID:          items[i].PK,
+			Title:       items[i].Title,
+			Date:        items[i].Date,
+			Description: items[i].Description,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
+		}
 	}
 	return activities, nil
 }
@@ -105,7 +90,16 @@ func (r *DynamoDBRepository) Get(ctx context.Context, id string) (*Activity, err
 	if err := attributevalue.UnmarshalMap(out.Item, &item); err != nil {
 		return nil, err
 	}
-	return item.toActivity(), nil
+	createdAt, _ := time.Parse(time.RFC3339, item.CreatedAt)
+	updatedAt, _ := time.Parse(time.RFC3339, item.UpdatedAt)
+	return &Activity{
+		ID:          item.PK,
+		Title:       item.Title,
+		Date:        item.Date,
+		Description: item.Description,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}, nil
 }
 
 func (r *DynamoDBRepository) Create(ctx context.Context, activity *Activity) error {
@@ -113,7 +107,14 @@ func (r *DynamoDBRepository) Create(ctx context.Context, activity *Activity) err
 	activity.CreatedAt = now
 	activity.UpdatedAt = now
 
-	item, err := attributevalue.MarshalMap(toItem(activity))
+	item, err := attributevalue.MarshalMap(&activityItem{
+		PK:          activity.ID,
+		Title:       activity.Title,
+		Date:        activity.Date,
+		Description: activity.Description,
+		CreatedAt:   activity.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   activity.UpdatedAt.Format(time.RFC3339),
+	})
 	if err != nil {
 		return err
 	}
@@ -134,7 +135,14 @@ func (r *DynamoDBRepository) Update(ctx context.Context, activity *Activity) err
 	activity.CreatedAt = existing.CreatedAt
 	activity.UpdatedAt = time.Now().UTC()
 
-	item, err := attributevalue.MarshalMap(toItem(activity))
+	item, err := attributevalue.MarshalMap(&activityItem{
+		PK:          activity.ID,
+		Title:       activity.Title,
+		Date:        activity.Date,
+		Description: activity.Description,
+		CreatedAt:   activity.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   activity.UpdatedAt.Format(time.RFC3339),
+	})
 	if err != nil {
 		return err
 	}

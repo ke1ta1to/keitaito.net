@@ -28,8 +28,11 @@ func (h *CreateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRe
 		return apiutil.ErrorResponse(http.StatusBadRequest, err.Error())
 	}
 
-	skill := r.ToSkill()
-	skill.ID = h.idFunc()
+	skill := Skill{
+		ID:      h.idFunc(),
+		Name:    r.Name,
+		IconURL: r.IconURL,
+	}
 
 	if err := h.repo.Create(ctx, &skill); err != nil {
 		return apiutil.ErrorResponse(http.StatusInternalServerError, "Failed to create item")

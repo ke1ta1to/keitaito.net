@@ -32,8 +32,11 @@ func (h *UpdateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRe
 		return apiutil.ErrorResponse(http.StatusBadRequest, err.Error())
 	}
 
-	skill := r.ToSkill()
-	skill.ID = id
+	skill := Skill{
+		ID:      id,
+		Name:    r.Name,
+		IconURL: r.IconURL,
+	}
 
 	if err := h.repo.Update(ctx, &skill); err != nil {
 		if errors.Is(err, ErrNotFound) {

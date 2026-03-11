@@ -28,8 +28,12 @@ func (h *CreateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRe
 		return apiutil.ErrorResponse(http.StatusBadRequest, err.Error())
 	}
 
-	activity := r.ToActivity()
-	activity.ID = h.idFunc()
+	activity := Activity{
+		ID:          h.idFunc(),
+		Title:       r.Title,
+		Date:        r.Date,
+		Description: r.Description,
+	}
 
 	if err := h.repo.Create(ctx, &activity); err != nil {
 		return apiutil.ErrorResponse(http.StatusInternalServerError, "Failed to create item")

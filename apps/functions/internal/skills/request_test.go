@@ -34,14 +34,6 @@ func TestCreateRequest_Validate(t *testing.T) {
 	}
 }
 
-func TestCreateRequest_ToSkill(t *testing.T) {
-	r := CreateRequest{Name: "Go", IconURL: "https://example.com/go.svg"}
-	s := r.ToSkill()
-	if s.Name != "Go" || s.IconURL != "https://example.com/go.svg" {
-		t.Errorf("ToSkill() = %+v", s)
-	}
-}
-
 func TestUpdateRequest_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -74,10 +66,3 @@ func TestUpdateRequest_Validate(t *testing.T) {
 	}
 }
 
-func TestUpdateRequest_ToSkill(t *testing.T) {
-	r := UpdateRequest{Name: "Go", IconURL: "https://example.com/go.svg"}
-	s := r.ToSkill()
-	if s.Name != "Go" || s.IconURL != "https://example.com/go.svg" {
-		t.Errorf("ToSkill() = %+v", s)
-	}
-}

@@ -32,8 +32,12 @@ func (h *UpdateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRe
 		return apiutil.ErrorResponse(http.StatusBadRequest, err.Error())
 	}
 
-	activity := r.ToActivity()
-	activity.ID = id
+	activity := Activity{
+		ID:          id,
+		Title:       r.Title,
+		Date:        r.Date,
+		Description: r.Description,
+	}
 
 	if err := h.repo.Update(ctx, &activity); err != nil {
 		if errors.Is(err, ErrNotFound) {
