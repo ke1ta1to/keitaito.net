@@ -1,17 +1,24 @@
 "use client";
 
+import { createApiClient } from "@repo/api-client/client";
+import type { components } from "@repo/api-client/schema";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 
+const apiClient = createApiClient({
+  baseUrl: "/api",
+});
+
 export default function TestClientApiPage() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<components["schemas"]["Activity"][] | null>(
+    null,
+  );
 
   const fetchData = async () => {
-    const res = await fetch(
-      `/api/activities?title=${new Date().toLocaleString()}`,
-    );
-    const data = await res.json();
-    setData(data);
+    const res = await apiClient.GET("/activities");
+    if (!res.error) {
+      setData(res.data);
+    }
   };
 
   return (

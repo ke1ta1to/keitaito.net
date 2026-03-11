@@ -1,15 +1,18 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
   "tasks": {
+    "generate": {
+      "outputs": ["src/schema.d.ts"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "outputs": [".next/**", "!.next/cache/**", ".open-next/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types", "generate"]
     },
     "storybook": {
       "persistent": true,

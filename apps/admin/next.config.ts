@@ -4,7 +4,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
-  transpilePackages: ["@repo/ui"],
+  transpilePackages: ["@repo/api-client", "@repo/ui"],
   outputFileTracingRoot: path.join(__dirname, "../../"),
   basePath: "/admin",
   trailingSlash: true,

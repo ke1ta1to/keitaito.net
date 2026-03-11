@@ -4,7 +4,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  transpilePackages: ["@repo/ui"],
+  transpilePackages: ["@repo/api-client", "@repo/ui"],
   outputFileTracingRoot: path.join(__dirname, "../../"),
   async rewrites() {
     if (process.env.NODE_ENV === "development") {
