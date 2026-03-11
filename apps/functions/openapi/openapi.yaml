@@ -503,6 +503,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /profile:
+    get:
+      operationId: profile_get
+      summary: Get profile
+      tags:
+        - Profile
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      operationId: profile_update
+      summary: Update profile
+      tags:
+        - Profile
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdateRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     Activity:
@@ -655,6 +713,72 @@ components:
         content:
           type: string
         thumbnail_url:
+          type: string
+    Profile:
+      type: object
+      required:
+        - name
+        - birthday
+        - location
+        - school
+        - image_url
+        - twitter
+        - github
+        - zenn
+        - qiita
+        - updated_at
+      properties:
+        name:
+          type: string
+        birthday:
+          type: string
+        location:
+          type: string
+        school:
+          type: string
+        image_url:
+          type: string
+        twitter:
+          type: string
+        github:
+          type: string
+        zenn:
+          type: string
+        qiita:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+    ProfileUpdateRequest:
+      type: object
+      required:
+        - name
+        - birthday
+        - location
+        - school
+        - image_url
+        - twitter
+        - github
+        - zenn
+        - qiita
+      properties:
+        name:
+          type: string
+        birthday:
+          type: string
+        location:
+          type: string
+        school:
+          type: string
+        image_url:
+          type: string
+        twitter:
+          type: string
+        github:
+          type: string
+        zenn:
+          type: string
+        qiita:
           type: string
     Error:
       type: object

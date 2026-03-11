@@ -229,6 +229,38 @@ export class AppStack extends cdk.Stack {
     });
     worksTable.grantWriteData(worksDeleteFunc);
 
+    const profileTable = new dynamodb.TableV2(this, "ProfileTable", {
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const profileGetFunc = new lambda.Function(this, "ProfileGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "profile_get")),
+      environment: {
+        PROFILE_TABLE: profileTable.tableName,
+      },
+    });
+    profileTable.grantReadData(profileGetFunc);
+
+    const profileUpdateFunc = new lambda.Function(
+      this,
+      "ProfileUpdateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "profile_update")),
+        environment: {
+          PROFILE_TABLE: profileTable.tableName,
+        },
+      },
+    );
+    profileTable.grantReadWriteData(profileUpdateFunc);
+
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
     });
@@ -303,6 +335,16 @@ export class AppStack extends cdk.Stack {
     workResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(worksDeleteFunc),
+    );
+
+    const profileResource = restApi.root.addResource("profile");
+    profileResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(profileGetFunc),
+    );
+    profileResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(profileUpdateFunc),
     );
 
     // Storage: S3
