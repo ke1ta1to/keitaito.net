@@ -7,6 +7,7 @@ import {
   TabsTrigger,
 } from "@repo/ui/components/ui/tabs";
 import { useQueryState } from "nuqs";
+import { Suspense } from "react";
 
 import { ActivitiesPanel } from "./_components/activities-panel";
 import { ArticlesPanel } from "./_components/articles-panel";
@@ -15,7 +16,7 @@ import { ProfilePanel } from "./_components/profile-panel";
 import { SkillsPanel } from "./_components/skills-panel";
 import { WorksPanel } from "./_components/works-panel";
 
-export default function DashboardPage() {
+function Dashboard() {
   const [tab, setTab] = useQueryState("tab", { defaultValue: "activities" });
 
   return (
@@ -50,5 +51,13 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense>
+      <Dashboard />
+    </Suspense>
   );
 }
