@@ -33,7 +33,7 @@ func TestDeleteHandler_Handle(t *testing.T) {
 			setupMock:  func(m *MockRepository) {},
 			wantStatus: http.StatusBadRequest,
 			checkBody: func(t *testing.T, body string) {
-				if !strings.Contains(body, "missing id") {
+				if !strings.Contains(body, "Missing id") {
 					t.Errorf("body = %q", body)
 				}
 			},

@@ -19,7 +19,7 @@ func NewListHandler(repo Repository) *ListHandler {
 func (h *ListHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	items, err := h.repo.List(ctx)
 	if err != nil {
-		return apiutil.ErrorResponse(http.StatusInternalServerError, "failed to scan table")
+		return apiutil.ErrorResponse(http.StatusInternalServerError, "Failed to scan table")
 	}
 	return apiutil.JSONResponse(http.StatusOK, items)
 }

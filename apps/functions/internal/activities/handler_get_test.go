@@ -43,8 +43,8 @@ func TestGetHandler_Handle(t *testing.T) {
 			setupMock:  func(m *MockRepository) {},
 			wantStatus: http.StatusBadRequest,
 			checkBody: func(t *testing.T, body string) {
-				if !strings.Contains(body, "missing id") {
-					t.Errorf("body = %q, want containing 'missing id'", body)
+				if !strings.Contains(body, "Missing id") {
+					t.Errorf("body = %q, want containing 'Missing id'", body)
 				}
 			},
 		},

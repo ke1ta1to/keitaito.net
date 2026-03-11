@@ -22,7 +22,7 @@ func NewCreateHandler(repo Repository) *CreateHandler {
 func (h *CreateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var r CreateRequest
 	if err := json.Unmarshal([]byte(req.Body), &r); err != nil {
-		return apiutil.ErrorResponse(http.StatusBadRequest, "invalid request body")
+		return apiutil.ErrorResponse(http.StatusBadRequest, "Invalid request body")
 	}
 	if err := r.Validate(); err != nil {
 		return apiutil.ErrorResponse(http.StatusBadRequest, err.Error())
@@ -32,7 +32,7 @@ func (h *CreateHandler) Handle(ctx context.Context, req events.APIGatewayProxyRe
 	skill.ID = h.idFunc()
 
 	if err := h.repo.Create(ctx, &skill); err != nil {
-		return apiutil.ErrorResponse(http.StatusInternalServerError, "failed to create item")
+		return apiutil.ErrorResponse(http.StatusInternalServerError, "Failed to create item")
 	}
 	return apiutil.JSONResponse(http.StatusCreated, skill)
 }

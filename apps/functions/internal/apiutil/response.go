@@ -10,7 +10,7 @@ import (
 func JSONResponse(status int, body any) (events.APIGatewayProxyResponse, error) {
 	b, err := json.Marshal(body)
 	if err != nil {
-		return ErrorResponse(http.StatusInternalServerError, "internal server error")
+		return ErrorResponse(http.StatusInternalServerError, "Internal server error")
 	}
 	return events.APIGatewayProxyResponse{
 		StatusCode: status,

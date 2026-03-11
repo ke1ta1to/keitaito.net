@@ -20,15 +20,15 @@ func NewGetHandler(repo Repository) *GetHandler {
 func (h *GetHandler) Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	id := req.PathParameters["id"]
 	if id == "" {
-		return apiutil.ErrorResponse(http.StatusBadRequest, "missing id")
+		return apiutil.ErrorResponse(http.StatusBadRequest, "Missing id")
 	}
 
 	activity, err := h.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
-			return apiutil.ErrorResponse(http.StatusNotFound, "not found")
+			return apiutil.ErrorResponse(http.StatusNotFound, "Not found")
 		}
-		return apiutil.ErrorResponse(http.StatusInternalServerError, "failed to get item")
+		return apiutil.ErrorResponse(http.StatusInternalServerError, "Failed to get item")
 	}
 	return apiutil.JSONResponse(http.StatusOK, activity)
 }
