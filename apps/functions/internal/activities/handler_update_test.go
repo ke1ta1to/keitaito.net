@@ -24,7 +24,7 @@ func TestUpdateHandler_Handle(t *testing.T) {
 		{
 			name:       "success",
 			pathParams: map[string]string{"id": "abc"},
-			body:       `{"title":"t","date":"2024-01-01","description":"d"}`,
+			body:       `{"title":"t","date":"2024-01","description":"d"}`,
 			setupMock: func(m *MockRepository) {
 				m.EXPECT().Update(gomock.Any(), gomock.Any()).Return(nil)
 			},
@@ -42,7 +42,7 @@ func TestUpdateHandler_Handle(t *testing.T) {
 		{
 			name:       "missing id",
 			pathParams: map[string]string{},
-			body:       `{"title":"t","date":"2024-01-01","description":"d"}`,
+			body:       `{"title":"t","date":"2024-01","description":"d"}`,
 			setupMock:  func(m *MockRepository) {},
 			wantStatus: http.StatusBadRequest,
 			checkBody: func(t *testing.T, body string) {
@@ -68,7 +68,7 @@ func TestUpdateHandler_Handle(t *testing.T) {
 		{
 			name:       "not found",
 			pathParams: map[string]string{"id": "abc"},
-			body:       `{"title":"t","date":"2024-01-01","description":"d"}`,
+			body:       `{"title":"t","date":"2024-01","description":"d"}`,
 			setupMock: func(m *MockRepository) {
 				m.EXPECT().Update(gomock.Any(), gomock.Any()).Return(ErrNotFound)
 			},
@@ -77,7 +77,7 @@ func TestUpdateHandler_Handle(t *testing.T) {
 		{
 			name:       "db error",
 			pathParams: map[string]string{"id": "abc"},
-			body:       `{"title":"t","date":"2024-01-01","description":"d"}`,
+			body:       `{"title":"t","date":"2024-01","description":"d"}`,
 			setupMock: func(m *MockRepository) {
 				m.EXPECT().Update(gomock.Any(), gomock.Any()).Return(errors.New("db error"))
 			},

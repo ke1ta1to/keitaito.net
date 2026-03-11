@@ -24,7 +24,7 @@ func TestCreateHandler_Handle(t *testing.T) {
 	}{
 		{
 			name: "success",
-			body: `{"title":"t","date":"2024-01-01","description":"d"}`,
+			body: `{"title":"t","date":"2024-01","description":"d"}`,
 			setupMock: func(m *MockRepository) {
 				m.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil)
 			},
@@ -61,7 +61,7 @@ func TestCreateHandler_Handle(t *testing.T) {
 		},
 		{
 			name: "db error",
-			body: `{"title":"t","date":"2024-01-01","description":"d"}`,
+			body: `{"title":"t","date":"2024-01","description":"d"}`,
 			setupMock: func(m *MockRepository) {
 				m.EXPECT().Create(gomock.Any(), gomock.Any()).Return(errors.New("db error"))
 			},
