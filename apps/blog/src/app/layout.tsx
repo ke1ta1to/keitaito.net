@@ -2,6 +2,7 @@ import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { JetBrains_Mono } from "next/font/google";
 
 import { AppLayout } from "@/components/layouts/app-layout";
+import { Providers } from "@/components/providers";
 
 import "@/styles.css";
 
@@ -16,9 +17,11 @@ export default async function RootLayout(prpos: LayoutProps<"/">) {
   return (
     <html lang="ja" className={jetbrainsMono.variable}>
       <body>
-        <TooltipProvider>
-          <AppLayout>{children}</AppLayout>
-        </TooltipProvider>
+        <Providers>
+          <TooltipProvider>
+            <AppLayout>{children}</AppLayout>
+          </TooltipProvider>
+        </Providers>
       </body>
     </html>
   );

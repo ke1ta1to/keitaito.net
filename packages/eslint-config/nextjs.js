@@ -4,6 +4,7 @@ import eslintConfigPrettier from "eslint-config-prettier/flat";
 import storybook from "eslint-plugin-storybook";
 import { globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
 import { customRules } from "./base.js";
 
@@ -16,6 +17,7 @@ export const nextjsConfig = [
   ...tseslint.configs.stylistic,
   customRules,
   ...storybook.configs["flat/recommended"],
+  ...pluginQuery.configs["flat/recommended"],
   eslintConfigPrettier,
   globalIgnores([
     ".next/**",
