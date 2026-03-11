@@ -1,5 +1,12 @@
 {
   "name": "functions",
   "type": "module",
-  "private": true
+  "private": true,
+  "scripts": {
+    "lint": "redocly lint ./openapi/openapi.yaml",
+    "preview": "redocly preview --project-dir=./openapi"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.21.0"
+  }
 }

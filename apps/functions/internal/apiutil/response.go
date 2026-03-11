@@ -20,7 +20,7 @@ func JSONResponse(status int, body any) (events.APIGatewayProxyResponse, error) 
 }
 
 func ErrorResponse(status int, msg string) (events.APIGatewayProxyResponse, error) {
-	body, _ := json.Marshal(map[string]string{"error": msg})
+	body, _ := json.Marshal(map[string]string{"message": msg})
 	return events.APIGatewayProxyResponse{
 		StatusCode: status,
 		Headers:    map[string]string{"Content-Type": "application/json"},
