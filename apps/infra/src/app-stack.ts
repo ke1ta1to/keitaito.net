@@ -365,6 +365,35 @@ export class AppStack extends cdk.Stack {
       }),
     };
 
+    // Admin: S3 + CloudFront
+
+    const adminBucket = new s3.Bucket(this, "AdminBucket", {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+    });
+
+    const adminRewriteFunctionAssociation: cloudfront.FunctionAssociation = {
+      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      function: new cloudfront.Function(this, "AdminRewriteFunction", {
+        runtime: cloudfront.FunctionRuntime.JS_2_0,
+        code: cloudfront.FunctionCode.fromInline(`function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+  if (uri.match(/\\.[a-zA-Z0-9]+$/)) {
+    return request;
+  }
+  if (!uri.endsWith("/")) {
+    uri += "/";
+  }
+  request.uri = uri + "index.html";
+  return request;
+}
+`),
+      }),
+    };
+
     const distribution = new cloudfront.Distribution(this, "Distribution", {
       defaultBehavior: {
         origin: serverOrigin,
@@ -410,6 +439,16 @@ export class AppStack extends cdk.Stack {
           viewerProtocolPolicy:
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
+        "/admin*": {
+          origin:
+            cloudfront_origins.S3BucketOrigin.withOriginAccessControl(
+              adminBucket,
+            ),
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          functionAssociations: [adminRewriteFunctionAssociation],
+        },
         "/BUILD_ID": {
           origin: assetsOrigin,
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
@@ -417,6 +456,14 @@ export class AppStack extends cdk.Stack {
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
       },
+    });
+
+    new s3deploy.BucketDeployment(this, "DeployAdmin", {
+      sources: [s3deploy.Source.asset("../admin/out")],
+      destinationBucket: adminBucket,
+      destinationKeyPrefix: "admin",
+      distribution,
+      distributionPaths: ["/admin/*"],
     });
 
     new cdk.CfnOutput(this, "Url", {
