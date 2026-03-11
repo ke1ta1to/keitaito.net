@@ -107,6 +107,67 @@ export class AppStack extends cdk.Stack {
     );
     activitiesTable.grantWriteData(activitiesDeleteFunc);
 
+    const skillsTable = new dynamodb.TableV2(this, "SkillsTable", {
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const skillsListFunc = new lambda.Function(this, "SkillsListFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_list")),
+      environment: {
+        SKILLS_TABLE: skillsTable.tableName,
+      },
+    });
+    skillsTable.grantReadData(skillsListFunc);
+
+    const skillsCreateFunc = new lambda.Function(this, "SkillsCreateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_create")),
+      environment: {
+        SKILLS_TABLE: skillsTable.tableName,
+      },
+    });
+    skillsTable.grantWriteData(skillsCreateFunc);
+
+    const skillsGetFunc = new lambda.Function(this, "SkillsGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_get")),
+      environment: {
+        SKILLS_TABLE: skillsTable.tableName,
+      },
+    });
+    skillsTable.grantReadData(skillsGetFunc);
+
+    const skillsUpdateFunc = new lambda.Function(this, "SkillsUpdateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_update")),
+      environment: {
+        SKILLS_TABLE: skillsTable.tableName,
+      },
+    });
+    skillsTable.grantReadWriteData(skillsUpdateFunc);
+
+    const skillsDeleteFunc = new lambda.Function(this, "SkillsDeleteFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "skills_delete")),
+      environment: {
+        SKILLS_TABLE: skillsTable.tableName,
+      },
+    });
+    skillsTable.grantWriteData(skillsDeleteFunc);
+
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
     });
@@ -133,6 +194,30 @@ export class AppStack extends cdk.Stack {
     activityResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(activitiesDeleteFunc),
+    );
+
+    const skillsResource = restApi.root.addResource("skills");
+    skillsResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(skillsListFunc),
+    );
+    skillsResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(skillsCreateFunc),
+    );
+
+    const skillResource = skillsResource.addResource("{id}");
+    skillResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(skillsGetFunc),
+    );
+    skillResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(skillsUpdateFunc),
+    );
+    skillResource.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(skillsDeleteFunc),
     );
 
     // Storage: S3
