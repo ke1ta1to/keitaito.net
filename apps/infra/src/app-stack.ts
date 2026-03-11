@@ -168,6 +168,67 @@ export class AppStack extends cdk.Stack {
     });
     skillsTable.grantWriteData(skillsDeleteFunc);
 
+    const worksTable = new dynamodb.TableV2(this, "WorksTable", {
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const worksListFunc = new lambda.Function(this, "WorksListFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_list")),
+      environment: {
+        WORKS_TABLE: worksTable.tableName,
+      },
+    });
+    worksTable.grantReadData(worksListFunc);
+
+    const worksCreateFunc = new lambda.Function(this, "WorksCreateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_create")),
+      environment: {
+        WORKS_TABLE: worksTable.tableName,
+      },
+    });
+    worksTable.grantWriteData(worksCreateFunc);
+
+    const worksGetFunc = new lambda.Function(this, "WorksGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_get")),
+      environment: {
+        WORKS_TABLE: worksTable.tableName,
+      },
+    });
+    worksTable.grantReadData(worksGetFunc);
+
+    const worksUpdateFunc = new lambda.Function(this, "WorksUpdateFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_update")),
+      environment: {
+        WORKS_TABLE: worksTable.tableName,
+      },
+    });
+    worksTable.grantReadWriteData(worksUpdateFunc);
+
+    const worksDeleteFunc = new lambda.Function(this, "WorksDeleteFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "works_delete")),
+      environment: {
+        WORKS_TABLE: worksTable.tableName,
+      },
+    });
+    worksTable.grantWriteData(worksDeleteFunc);
+
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
     });
@@ -218,6 +279,30 @@ export class AppStack extends cdk.Stack {
     skillResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(skillsDeleteFunc),
+    );
+
+    const worksResource = restApi.root.addResource("works");
+    worksResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(worksListFunc),
+    );
+    worksResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(worksCreateFunc),
+    );
+
+    const workResource = worksResource.addResource("{id}");
+    workResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(worksGetFunc),
+    );
+    workResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(worksUpdateFunc),
+    );
+    workResource.addMethod(
+      "DELETE",
+      new apiGateway.LambdaIntegration(worksDeleteFunc),
     );
 
     // Storage: S3
