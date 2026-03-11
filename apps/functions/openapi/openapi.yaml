@@ -503,6 +503,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /contact:
+    get:
+      operationId: contact_get
+      summary: Get contact
+      tags:
+        - Contact
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      operationId: contact_update
+      summary: Update contact
+      tags:
+        - Contact
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactUpdateRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /profile:
     get:
       operationId: profile_get
@@ -779,6 +837,30 @@ components:
         zenn:
           type: string
         qiita:
+          type: string
+    Contact:
+      type: object
+      required:
+        - email
+        - twitter
+        - updated_at
+      properties:
+        email:
+          type: string
+        twitter:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+    ContactUpdateRequest:
+      type: object
+      required:
+        - email
+        - twitter
+      properties:
+        email:
+          type: string
+        twitter:
           type: string
     Error:
       type: object

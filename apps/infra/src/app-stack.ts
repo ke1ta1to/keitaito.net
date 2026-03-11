@@ -261,6 +261,38 @@ export class AppStack extends cdk.Stack {
     );
     profileTable.grantReadWriteData(profileUpdateFunc);
 
+    const contactTable = new dynamodb.TableV2(this, "ContactTable", {
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const contactGetFunc = new lambda.Function(this, "ContactGetFunction", {
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      code: lambda.Code.fromAsset(path.join(distRoot, "contact_get")),
+      environment: {
+        CONTACT_TABLE: contactTable.tableName,
+      },
+    });
+    contactTable.grantReadData(contactGetFunc);
+
+    const contactUpdateFunc = new lambda.Function(
+      this,
+      "ContactUpdateFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "contact_update")),
+        environment: {
+          CONTACT_TABLE: contactTable.tableName,
+        },
+      },
+    );
+    contactTable.grantReadWriteData(contactUpdateFunc);
+
     const restApi = new apiGateway.RestApi(this, "Api", {
       restApiName: `${id}Api`,
     });
@@ -345,6 +377,16 @@ export class AppStack extends cdk.Stack {
     profileResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(profileUpdateFunc),
+    );
+
+    const contactResource = restApi.root.addResource("contact");
+    contactResource.addMethod(
+      "GET",
+      new apiGateway.LambdaIntegration(contactGetFunc),
+    );
+    contactResource.addMethod(
+      "PUT",
+      new apiGateway.LambdaIntegration(contactUpdateFunc),
     );
 
     // Storage: S3
