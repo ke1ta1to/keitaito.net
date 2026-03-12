@@ -25,7 +25,7 @@ export function Works(props: WorksProps) {
         <ul className="grid gap-4 md:grid-cols-2">
           {works.map((work) => (
             <li key={work.id}>
-              <Card>
+              <Card className="pt-0">
                 {work.thumbnail_url ? (
                   <Image
                     alt={work.title}
@@ -60,7 +60,7 @@ export function WorksSkeleton() {
         <ul className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 3 }, (_, i) => (
             <li key={i}>
-              <Card>
+              <Card className="pt-0">
                 <Skeleton className="aspect-video w-full" />
                 <CardHeader>
                   <Skeleton className="h-5 w-24" />
