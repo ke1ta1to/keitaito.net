@@ -7,4 +7,3 @@ out/
 cdk.out/
 *storybook.log
 storybook-static
-packages/api-client/src/schema.d.ts
