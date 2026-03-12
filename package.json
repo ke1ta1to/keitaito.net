@@ -8,6 +8,7 @@
     "check-types": "turbo run check-types",
     "storybook": "turbo run storybook",
     "build-storybook": "turbo run build-storybook",
+    "deploy": "turbo run deploy",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },

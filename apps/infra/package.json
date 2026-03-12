@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "cdk deploy"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.240.0",
@@ -15,8 +16,11 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^24.11.0",
+    "admin": "workspace:*",
     "aws-cdk": "^2.1108.0",
+    "blog": "workspace:*",
     "eslint": "^9.39.3",
+    "functions": "workspace:*",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
