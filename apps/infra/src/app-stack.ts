@@ -574,6 +574,7 @@ export class AppStack extends cdk.Stack {
         code: lambda.Code.fromAsset("../blog/.open-next/dynamodb-provider"),
         memorySize: 256,
         environment: {
+          TZ: "Asia/Tokyo",
           CACHE_DYNAMO_TABLE: tagTable.tableName,
         },
       },
@@ -613,6 +614,7 @@ export class AppStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(10),
       reservedConcurrentExecutions: 10,
       environment: {
+        TZ: "Asia/Tokyo",
         CACHE_BUCKET_REGION: this.region,
         CACHE_BUCKET_NAME: assetsBucket.bucketName,
         CACHE_BUCKET_KEY_PREFIX: "_cache",
@@ -641,6 +643,7 @@ export class AppStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       environment: {
+        TZ: "Asia/Tokyo",
         REVALIDATION_QUEUE_REGION: this.region,
         REVALIDATION_QUEUE_URL: revalidationQueue.queueUrl,
       },
@@ -667,6 +670,7 @@ export class AppStack extends cdk.Stack {
         memorySize: 512,
         timeout: cdk.Duration.seconds(10),
         environment: {
+          TZ: "Asia/Tokyo",
           BUCKET_NAME: assetsBucket.bucketName,
           BUCKET_KEY_PREFIX: "_assets",
         },
@@ -686,6 +690,7 @@ export class AppStack extends cdk.Stack {
       memorySize: 256,
       timeout: cdk.Duration.seconds(30),
       environment: {
+        TZ: "Asia/Tokyo",
         WARM_PARAMS: JSON.stringify([
           { function: serverFunc.functionName, concurrency: 2 },
         ]),
