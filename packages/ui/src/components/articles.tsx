@@ -2,6 +2,7 @@ import { IconHeart } from "@tabler/icons-react";
 import Image from "next/image";
 
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Skeleton } from "./ui/skeleton";
 
 import qiitaIcon from "@repo/ui/assets/qiita.svg";
 import zennIcon from "@repo/ui/assets/zenn.svg";
@@ -54,6 +55,35 @@ export function Articles(props: ArticlesProps) {
                   />
                 )}
               </a>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ArticlesSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Articles</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ul className="divide-y">
+          {Array.from({ length: 3 }, (_, i) => (
+            <li
+              key={i}
+              className="flex items-center justify-between gap-3 py-3"
+            >
+              <span>
+                <Skeleton className="h-4 w-48" />
+                <div className="mt-2 flex items-center gap-3">
+                  <Skeleton className="h-3 w-12" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </span>
+              <Skeleton className="size-6" />
             </li>
           ))}
         </ul>

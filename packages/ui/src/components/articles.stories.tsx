@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Articles } from "./articles";
+import { Articles, ArticlesSkeleton } from "./articles";
 
 const meta = {
   title: "Articles",
@@ -12,6 +12,10 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const Loading: StoryObj = {
+  render: () => <ArticlesSkeleton />,
+};
 
 export const Default: Story = {
   args: {

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Profile } from "./profile";
+import { Profile, ProfileSkeleton } from "./profile";
 
 const meta = {
   title: "Profile",
@@ -13,20 +13,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Loading: StoryObj = {
+  render: () => <ProfileSkeleton />,
+};
+
 export const Default: Story = {
   args: {
     profile: {
       name: "John Doe",
-      age: "30",
+      birthday: "1995-06-15",
       location: "New York",
       school: "University of Chicago",
       image_url: "https://randomuser.me/api/portraits/men/1.jpg",
-      social_links: {
-        github: "https://github.com/johndoe",
-        twitter: "https://twitter.com/johndoe",
-        zenn: "https://zenn.dev/johndoe",
-        qiita: "https://qiita.com/johndoe",
-      },
+      github: "https://github.com/johndoe",
+      twitter: "https://twitter.com/johndoe",
+      zenn: "https://zenn.dev/johndoe",
+      qiita: "https://qiita.com/johndoe",
     },
   },
 };

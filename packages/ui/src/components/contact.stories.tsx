@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Contact } from "./contact";
+import { Contact, ContactSkeleton } from "./contact";
 
 const meta = {
   title: "Contact",
@@ -12,6 +12,10 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const Loading: StoryObj = {
+  render: () => <ContactSkeleton />,
+};
 
 export const Default: Story = {
   args: {

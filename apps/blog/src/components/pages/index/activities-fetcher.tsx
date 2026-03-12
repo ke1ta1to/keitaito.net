@@ -1,7 +1,8 @@
 import { Activities } from "@repo/ui/components/activities";
 
+import { apiClient } from "@/lib/api-client";
+
 export async function ActivitiesFetcher() {
-  const res = await fetch(`${process.env.API_URL}activities`);
-  const data = await res.json();
+  const { data } = await apiClient.GET("/activities");
   return <Activities activities={data} />;
 }
