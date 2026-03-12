@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Works, WorksSkeleton } from "./works";
+import { WorkCard, Works, WorksSkeleton } from "./works";
 
 const meta = {
   title: "Works",
@@ -17,30 +17,16 @@ export const Loading: StoryObj = {
   render: () => <WorksSkeleton />,
 };
 
+const sampleWorks = [
+  { title: "Work 1", thumbnailUrl: "https://picsum.photos/600/400?random=1" },
+  { title: "Work 2", thumbnailUrl: null },
+  { title: "Work 3", thumbnailUrl: "https://picsum.photos/600/400?random=3" },
+];
+
 export const Default: Story = {
   args: {
-    works: [
-      {
-        id: "1",
-        title: "Work 1",
-        slug: "work-1",
-        content: "This is the first work.",
-        thumbnail_url: "https://picsum.photos/600/400?random=1",
-      },
-      {
-        id: "2",
-        title: "Work 2",
-        slug: "work-2",
-        content: "This is the second work.",
-        thumbnail_url: null,
-      },
-      {
-        id: "3",
-        title: "Work 3",
-        slug: "work-3",
-        content: "This is the third work.",
-        thumbnail_url: "https://picsum.photos/600/400?random=3",
-      },
-    ],
+    children: sampleWorks.map((work, i) => (
+      <WorkCard key={i} title={work.title} thumbnailUrl={work.thumbnailUrl} />
+    )),
   },
 };

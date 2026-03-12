@@ -6,7 +6,7 @@ import { Field, FieldError, FieldLabel } from "@repo/ui/components/ui/field";
 import { Input } from "@repo/ui/components/ui/input";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { Textarea } from "@repo/ui/components/ui/textarea";
-import { Works } from "@repo/ui/components/works";
+import { WorkCard, Works } from "@repo/ui/components/works";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -167,17 +167,12 @@ export function WorksForm({ id }: WorksFormProps) {
 
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Preview</h2>
-        <Works
-          works={[
-            {
-              id: id ?? "preview",
-              title: watched.title || "Title",
-              slug: watched.slug || "slug",
-              content: watched.content || "Content",
-              thumbnail_url: watched.thumbnail_url || null,
-            },
-          ]}
-        />
+        <Works>
+          <WorkCard
+            title={watched.title || "Title"}
+            thumbnailUrl={watched.thumbnail_url || null}
+          />
+        </Works>
       </div>
     </div>
   );

@@ -4,48 +4,44 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 
 export interface WorksProps {
-  works?: {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    thumbnail_url?: string | null;
-  }[];
+  children: React.ReactNode;
 }
 
-export function Works(props: WorksProps) {
-  const { works = [] } = props;
-
+export function Works({ children }: WorksProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Works</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="grid gap-4 md:grid-cols-2">
-          {works.map((work) => (
-            <li key={work.id}>
-              <Card className="pt-0">
-                {work.thumbnail_url ? (
-                  <Image
-                    alt={work.title}
-                    src={work.thumbnail_url}
-                    width={640}
-                    height={360}
-                    className="aspect-video w-full object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="bg-muted aspect-video w-full" />
-                )}
-                <CardHeader>
-                  <CardTitle>{work.title}</CardTitle>
-                </CardHeader>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <div className="grid gap-4 md:grid-cols-2">{children}</div>
       </CardContent>
+    </Card>
+  );
+}
+
+export interface WorkCardProps {
+  title: string;
+  thumbnailUrl?: string | null;
+}
+
+export function WorkCard({ title, thumbnailUrl }: WorkCardProps) {
+  return (
+    <Card className="pt-0">
+      {thumbnailUrl ? (
+        <Image
+          alt={title}
+          src={thumbnailUrl}
+          width={640}
+          height={360}
+          className="aspect-video w-full object-cover"
+        />
+      ) : (
+        <div className="bg-muted aspect-video w-full" />
+      )}
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
     </Card>
   );
 }
@@ -57,18 +53,16 @@ export function WorksSkeleton() {
         <CardTitle>Works</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 3 }, (_, i) => (
-            <li key={i}>
-              <Card className="pt-0">
-                <Skeleton className="aspect-video w-full" />
-                <CardHeader>
-                  <Skeleton className="h-5 w-24" />
-                </CardHeader>
-              </Card>
-            </li>
+            <Card key={i} className="pt-0">
+              <Skeleton className="aspect-video w-full" />
+              <CardHeader>
+                <Skeleton className="h-5 w-24" />
+              </CardHeader>
+            </Card>
           ))}
-        </ul>
+        </div>
       </CardContent>
     </Card>
   );

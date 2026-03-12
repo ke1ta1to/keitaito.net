@@ -13,11 +13,16 @@
   "dependencies": {
     "@repo/api-client": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@streamdown/cjk": "^1.0.2",
+    "@streamdown/code": "^1.1.0",
+    "@streamdown/math": "^1.0.2",
+    "@streamdown/mermaid": "^1.0.2",
     "@tanstack/react-query": "^5.90.21",
     "next": "^16.1.6",
     "nuqs": "^2.8.9",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "streamdown": "^2.4.0"
   },
   "devDependencies": {
     "@opennextjs/aws": "^3.9.16",
