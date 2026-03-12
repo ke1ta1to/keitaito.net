@@ -9,7 +9,11 @@ const nextConfig: NextConfig = {
   async rewrites() {
     if (process.env.NODE_ENV === "development") {
       const apiUrl = process.env.API_URL;
-      return [{ source: "/api/:path*", destination: `${apiUrl}:path*` }];
+      const uploadsUrl = process.env.UPLOADS_URL;
+      return [
+        { source: "/api/:path*", destination: `${apiUrl}:path*` },
+        { source: "/uploads/:path*", destination: `${uploadsUrl}:path*` },
+      ];
     }
     return [];
   },

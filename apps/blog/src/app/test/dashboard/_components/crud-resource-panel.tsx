@@ -40,10 +40,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type React from "react";
 
+import { ImageUploadField } from "./image-upload-field";
+
 interface FieldDef {
   key: string;
   label: string;
-  type: "text" | "textarea" | "number" | "select";
+  type: "text" | "textarea" | "number" | "select" | "image";
   options?: { label: string; value: string }[];
   required?: boolean;
 }
@@ -78,7 +80,7 @@ function buildFormBody(
     const value = form[field.key] ?? "";
     if (field.type === "number") {
       body[field.key] = value === "" ? undefined : Number(value);
-    } else if (field.type === "select") {
+    } else if (field.type === "select" || field.type === "image") {
       body[field.key] = value === "" ? undefined : value;
     } else {
       body[field.key] = value;
@@ -212,20 +214,28 @@ export function CrudResourcePanel<T extends { id: string }>({
                     <TableCell className="text-muted-foreground font-mono">
                       {item.id.slice(0, 8)}...
                     </TableCell>
-                    {fields.map((field) => (
-                      <TableCell key={field.key}>
-                        {renderCell
-                          ? (renderCell(item, field.key) ??
-                            String(
-                              (item as Record<string, unknown>)[field.key] ??
-                                "",
-                            ))
-                          : String(
-                              (item as Record<string, unknown>)[field.key] ??
-                                "",
-                            )}
-                      </TableCell>
-                    ))}
+                    {fields.map((field) => {
+                      const cellValue = (item as Record<string, unknown>)[
+                        field.key
+                      ];
+                      return (
+                        <TableCell key={field.key}>
+                          {renderCell ? (
+                            (renderCell(item, field.key) ??
+                            String(cellValue ?? ""))
+                          ) : field.type === "image" && cellValue ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img
+                              src={String(cellValue)}
+                              alt={field.label}
+                              className="h-8 w-8 rounded object-cover"
+                            />
+                          ) : (
+                            String(cellValue ?? "")
+                          )}
+                        </TableCell>
+                      );
+                    })}
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button
@@ -283,7 +293,17 @@ export function CrudResourcePanel<T extends { id: string }>({
             {fields.map((field) => (
               <div key={field.key} className="grid gap-1.5">
                 <Label htmlFor={field.key}>{field.label}</Label>
-                {field.type === "textarea" ? (
+                {field.type === "image" ? (
+                  <ImageUploadField
+                    value={form[field.key] ?? ""}
+                    onChange={(url) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field.key]: url,
+                      }))
+                    }
+                  />
+                ) : field.type === "textarea" ? (
                   <Textarea
                     id={field.key}
                     value={form[field.key] ?? ""}

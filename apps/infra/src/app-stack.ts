@@ -752,6 +752,21 @@ export class AppStack extends cdk.Stack {
       }),
     };
 
+    const uploadsPathRewriteFunctionAssociation: cloudfront.FunctionAssociation =
+      {
+        eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        function: new cloudfront.Function(this, "UploadsPathRewriteFunction", {
+          code: cloudfront.FunctionCode.fromInline(`function handler(event) {
+  var request = event.request;
+  if (request.uri.startsWith("/uploads/")) {
+    request.uri = request.uri.slice(8);
+  }
+  return request;
+}
+`),
+        }),
+      };
+
     // Admin: S3 + CloudFront
 
     const adminBucket = new s3.Bucket(this, "AdminBucket", {
@@ -844,6 +859,7 @@ export class AppStack extends cdk.Stack {
           viewerProtocolPolicy:
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          functionAssociations: [uploadsPathRewriteFunctionAssociation],
         },
         "/BUILD_ID": {
           origin: assetsOrigin,

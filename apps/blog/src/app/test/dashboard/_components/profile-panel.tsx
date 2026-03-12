@@ -17,20 +17,21 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { apiClient } from "./api-client";
+import { ImageUploadField } from "./image-upload-field";
 
 type Profile = components["schemas"]["Profile"];
 type ProfileUpdateRequest = components["schemas"]["ProfileUpdateRequest"];
 
 const profileFields = [
-  { key: "name", label: "Name" },
-  { key: "birthday", label: "Birthday" },
-  { key: "location", label: "Location" },
-  { key: "school", label: "School" },
-  { key: "image_url", label: "Image URL" },
-  { key: "twitter", label: "Twitter" },
-  { key: "github", label: "GitHub" },
-  { key: "zenn", label: "Zenn" },
-  { key: "qiita", label: "Qiita" },
+  { key: "name", label: "Name", type: "text" },
+  { key: "birthday", label: "Birthday", type: "text" },
+  { key: "location", label: "Location", type: "text" },
+  { key: "school", label: "School", type: "text" },
+  { key: "image_url", label: "Image", type: "image" },
+  { key: "twitter", label: "Twitter", type: "text" },
+  { key: "github", label: "GitHub", type: "text" },
+  { key: "zenn", label: "Zenn", type: "text" },
+  { key: "qiita", label: "Qiita", type: "text" },
 ] as const;
 
 function buildForm(profile: Profile): ProfileUpdateRequest {
@@ -114,16 +115,28 @@ export function ProfilePanel() {
             {profileFields.map((field) => (
               <div key={field.key} className="grid gap-1.5">
                 <Label htmlFor={`profile-${field.key}`}>{field.label}</Label>
-                <Input
-                  id={`profile-${field.key}`}
-                  value={form[field.key]}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      [field.key]: e.target.value,
-                    }))
-                  }
-                />
+                {field.type === "image" ? (
+                  <ImageUploadField
+                    value={form[field.key] ?? ""}
+                    onChange={(url) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field.key]: url,
+                      }))
+                    }
+                  />
+                ) : (
+                  <Input
+                    id={`profile-${field.key}`}
+                    value={form[field.key]}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field.key]: e.target.value,
+                      }))
+                    }
+                  />
+                )}
               </div>
             ))}
             <div className="flex gap-2">
@@ -144,7 +157,18 @@ export function ProfilePanel() {
             {profileFields.map((field) => (
               <div key={field.key}>
                 <dt className="text-muted-foreground">{field.label}</dt>
-                <dd>{data[field.key]}</dd>
+                <dd>
+                  {field.type === "image" && data[field.key] ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={data[field.key]}
+                      alt={field.label}
+                      className="h-16 w-16 rounded border object-cover"
+                    />
+                  ) : (
+                    data[field.key]
+                  )}
+                </dd>
               </div>
             ))}
             <div>

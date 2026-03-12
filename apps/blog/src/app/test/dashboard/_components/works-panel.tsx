@@ -16,7 +16,7 @@ const fields = [
     type: "textarea" as const,
     required: true,
   },
-  { key: "thumbnail_url", label: "Thumbnail URL", type: "text" as const },
+  { key: "thumbnail_url", label: "Thumbnail", type: "image" as const },
 ];
 
 export function WorksPanel() {
