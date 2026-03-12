@@ -486,6 +486,42 @@ export class AppStack extends cdk.Stack {
       new apiGateway.LambdaIntegration(contactUpdateFunc),
     );
 
+    const uploadsBucket = new s3.Bucket(this, "UploadsBucket", {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      cors: [
+        {
+          allowedMethods: [s3.HttpMethods.PUT],
+          allowedOrigins: ["*"],
+          allowedHeaders: ["*"],
+          maxAge: 3600,
+        },
+      ],
+    });
+
+    const uploadsPresignFunc = new lambda.Function(
+      this,
+      "UploadsPresignFunction",
+      {
+        runtime: lambda.Runtime.PROVIDED_AL2023,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "bootstrap",
+        code: lambda.Code.fromAsset(path.join(distRoot, "uploads_presign")),
+        environment: {
+          UPLOADS_BUCKET: uploadsBucket.bucketName,
+        },
+      },
+    );
+    uploadsBucket.grantPut(uploadsPresignFunc);
+
+    const uploadsResource = restApi.root.addResource("uploads");
+    uploadsResource.addMethod(
+      "POST",
+      new apiGateway.LambdaIntegration(uploadsPresignFunc),
+    );
+
     // Storage: S3
 
     const assetsBucket = new s3.Bucket(this, "AssetsBucket", {
@@ -799,6 +835,15 @@ export class AppStack extends cdk.Stack {
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
           functionAssociations: [adminRewriteFunctionAssociation],
+        },
+        "/uploads/*": {
+          origin:
+            cloudfront_origins.S3BucketOrigin.withOriginAccessControl(
+              uploadsBucket,
+            ),
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         },
         "/BUILD_ID": {
           origin: assetsOrigin,

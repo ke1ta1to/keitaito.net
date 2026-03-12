@@ -14,6 +14,7 @@ import { ArticlesPanel } from "./_components/articles-panel";
 import { ContactPanel } from "./_components/contact-panel";
 import { ProfilePanel } from "./_components/profile-panel";
 import { SkillsPanel } from "./_components/skills-panel";
+import { UploadsPanel } from "./_components/uploads-panel";
 import { WorksPanel } from "./_components/works-panel";
 
 function Dashboard() {
@@ -30,6 +31,7 @@ function Dashboard() {
           <TabsTrigger value="works">Works</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="uploads">Uploads</TabsTrigger>
         </TabsList>
         <TabsContent value="activities">
           <ActivitiesPanel />
@@ -48,6 +50,9 @@ function Dashboard() {
         </TabsContent>
         <TabsContent value="profile">
           <ProfilePanel />
+        </TabsContent>
+        <TabsContent value="uploads">
+          <UploadsPanel />
         </TabsContent>
       </Tabs>
     </div>

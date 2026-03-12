@@ -725,6 +725,39 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /uploads:
+    post:
+      operationId: uploads_presign
+      summary: Generate a presigned URL for file upload
+      tags:
+        - Uploads
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadPresignRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadPresignResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /profile:
     get:
       operationId: profile_get
@@ -1093,6 +1126,30 @@ components:
         email:
           type: string
         twitter:
+          type: string
+    UploadPresignRequest:
+      type: object
+      required:
+        - filename
+        - content_type
+        - content_length
+      properties:
+        filename:
+          type: string
+        content_type:
+          type: string
+        content_length:
+          type: integer
+          format: int64
+    UploadPresignResponse:
+      type: object
+      required:
+        - url
+        - key
+      properties:
+        url:
+          type: string
+        key:
           type: string
     Error:
       type: object
