@@ -24,8 +24,9 @@ export interface ProfileProps {
   };
 }
 
-function calculateAge(birthday: string): number {
+function calculateAge(birthday: string): number | null {
   const birth = new Date(birthday);
+  if (isNaN(birth.getTime())) return null;
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
   const monthDiff = today.getMonth() - birth.getMonth();
@@ -61,7 +62,7 @@ export function Profile(props: ProfileProps) {
           <div className="text-sm font-medium">{profile.name}</div>
           <dl className="text-muted-foreground grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
             <dt>age</dt>
-            <dd>{calculateAge(profile.birthday)}</dd>
+            <dd>{calculateAge(profile.birthday) ?? "—"}</dd>
             <dt>loc</dt>
             <dd>{profile.location}</dd>
             <dt>edu</dt>
