@@ -1,4 +1,5 @@
 import { WorkCard, Works } from "@repo/ui/components/works";
+import Link from "next/link";
 
 import { apiClient } from "@/lib/api-client";
 
@@ -8,9 +9,9 @@ export async function WorksFetcher() {
   return (
     <Works>
       {data.map((work) => (
-        <a key={work.id} href={`/works/${work.slug}`}>
+        <Link key={work.id} href={`/works/${work.slug}`}>
           <WorkCard title={work.title} thumbnailUrl={work.thumbnail_url} />
-        </a>
+        </Link>
       ))}
     </Works>
   );
