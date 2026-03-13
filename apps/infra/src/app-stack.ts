@@ -4,6 +4,7 @@ import * as cdk from "aws-cdk-lib";
 import * as apiGateway from "aws-cdk-lib/aws-apigateway";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
+import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as events from "aws-cdk-lib/aws-events";
 import * as targets from "aws-cdk-lib/aws-events-targets";
@@ -370,120 +371,378 @@ export class AppStack extends cdk.Stack {
       restApiName: `${id}Api`,
     });
 
+    // Cognito
+
+    const userPool = new cognito.UserPool(this, "UserPool", {
+      signInAliases: { email: true },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const activitiesReadScope: cognito.ResourceServerScope = {
+      scopeName: "activities.read",
+      scopeDescription: "Read access to activities",
+    };
+    const activitiesWriteScope: cognito.ResourceServerScope = {
+      scopeName: "activities.write",
+      scopeDescription: "Write access to activities",
+    };
+    const articlesReadScope: cognito.ResourceServerScope = {
+      scopeName: "articles.read",
+      scopeDescription: "Read access to articles",
+    };
+    const articlesWriteScope: cognito.ResourceServerScope = {
+      scopeName: "articles.write",
+      scopeDescription: "Write access to articles",
+    };
+    const skillsReadScope: cognito.ResourceServerScope = {
+      scopeName: "skills.read",
+      scopeDescription: "Read access to skills",
+    };
+    const skillsWriteScope: cognito.ResourceServerScope = {
+      scopeName: "skills.write",
+      scopeDescription: "Write access to skills",
+    };
+    const worksReadScope: cognito.ResourceServerScope = {
+      scopeName: "works.read",
+      scopeDescription: "Read access to works",
+    };
+    const worksWriteScope: cognito.ResourceServerScope = {
+      scopeName: "works.write",
+      scopeDescription: "Write access to works",
+    };
+    const profileReadScope: cognito.ResourceServerScope = {
+      scopeName: "profile.read",
+      scopeDescription: "Read access to profile",
+    };
+    const profileWriteScope: cognito.ResourceServerScope = {
+      scopeName: "profile.write",
+      scopeDescription: "Write access to profile",
+    };
+    const contactReadScope: cognito.ResourceServerScope = {
+      scopeName: "contact.read",
+      scopeDescription: "Read access to contact",
+    };
+    const contactWriteScope: cognito.ResourceServerScope = {
+      scopeName: "contact.write",
+      scopeDescription: "Write access to contact",
+    };
+    const uploadsWriteScope: cognito.ResourceServerScope = {
+      scopeName: "uploads.write",
+      scopeDescription: "Write access to uploads",
+    };
+
+    const resourceServer = userPool.addResourceServer("ResourceServer", {
+      identifier: "api",
+      scopes: [
+        activitiesReadScope,
+        activitiesWriteScope,
+        articlesReadScope,
+        articlesWriteScope,
+        skillsReadScope,
+        skillsWriteScope,
+        worksReadScope,
+        worksWriteScope,
+        profileReadScope,
+        profileWriteScope,
+        contactReadScope,
+        contactWriteScope,
+        uploadsWriteScope,
+      ],
+    });
+
+    const oauthActivitiesRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      activitiesReadScope,
+    );
+    const oauthActivitiesWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      activitiesWriteScope,
+    );
+    const oauthArticlesRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      articlesReadScope,
+    );
+    const oauthArticlesWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      articlesWriteScope,
+    );
+    const oauthSkillsRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      skillsReadScope,
+    );
+    const oauthSkillsWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      skillsWriteScope,
+    );
+    const oauthWorksRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      worksReadScope,
+    );
+    const oauthWorksWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      worksWriteScope,
+    );
+    const oauthProfileRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      profileReadScope,
+    );
+    const oauthProfileWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      profileWriteScope,
+    );
+    const oauthContactRead = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      contactReadScope,
+    );
+    const oauthContactWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      contactWriteScope,
+    );
+    const oauthUploadsWrite = cognito.OAuthScope.resourceServer(
+      resourceServer,
+      uploadsWriteScope,
+    );
+
+    const authorizer = new apiGateway.CognitoUserPoolsAuthorizer(
+      this,
+      "ApiAuthorizer",
+      { cognitoUserPools: [userPool] },
+    );
+
     const activitiesResource = restApi.root.addResource("activities");
     activitiesResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(activitiesListFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthActivitiesRead.scopeName],
+      },
     );
     activitiesResource.addMethod(
       "POST",
       new apiGateway.LambdaIntegration(activitiesCreateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthActivitiesWrite.scopeName],
+      },
     );
 
     const activityResource = activitiesResource.addResource("{id}");
     activityResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(activitiesGetFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthActivitiesRead.scopeName],
+      },
     );
     activityResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(activitiesUpdateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthActivitiesWrite.scopeName],
+      },
     );
     activityResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(activitiesDeleteFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthActivitiesWrite.scopeName],
+      },
     );
 
     const skillsResource = restApi.root.addResource("skills");
     skillsResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(skillsListFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsRead.scopeName],
+      },
     );
     skillsResource.addMethod(
       "POST",
       new apiGateway.LambdaIntegration(skillsCreateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
     );
 
     const skillResource = skillsResource.addResource("{id}");
     skillResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(skillsGetFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsRead.scopeName],
+      },
     );
     skillResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(skillsUpdateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
     );
     skillResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(skillsDeleteFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthSkillsWrite.scopeName],
+      },
     );
 
     const articlesResource = restApi.root.addResource("articles");
     articlesResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(articlesListFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesRead.scopeName],
+      },
     );
     articlesResource.addMethod(
       "POST",
       new apiGateway.LambdaIntegration(articlesCreateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesWrite.scopeName],
+      },
     );
 
     const articleResource = articlesResource.addResource("{id}");
     articleResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(articlesGetFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesRead.scopeName],
+      },
     );
     articleResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(articlesUpdateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesWrite.scopeName],
+      },
     );
     articleResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(articlesDeleteFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthArticlesWrite.scopeName],
+      },
     );
 
     const worksResource = restApi.root.addResource("works");
     worksResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(worksListFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksRead.scopeName],
+      },
     );
     worksResource.addMethod(
       "POST",
       new apiGateway.LambdaIntegration(worksCreateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksWrite.scopeName],
+      },
     );
 
     const workResource = worksResource.addResource("{id}");
     workResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(worksGetFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksRead.scopeName],
+      },
     );
     workResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(worksUpdateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksWrite.scopeName],
+      },
     );
     workResource.addMethod(
       "DELETE",
       new apiGateway.LambdaIntegration(worksDeleteFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthWorksWrite.scopeName],
+      },
     );
 
     const profileResource = restApi.root.addResource("profile");
     profileResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(profileGetFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthProfileRead.scopeName],
+      },
     );
     profileResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(profileUpdateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthProfileWrite.scopeName],
+      },
     );
 
     const contactResource = restApi.root.addResource("contact");
     contactResource.addMethod(
       "GET",
       new apiGateway.LambdaIntegration(contactGetFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthContactRead.scopeName],
+      },
     );
     contactResource.addMethod(
       "PUT",
       new apiGateway.LambdaIntegration(contactUpdateFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthContactWrite.scopeName],
+      },
     );
 
     const uploadsBucket = new s3.Bucket(this, "UploadsBucket", {
@@ -520,6 +779,11 @@ export class AppStack extends cdk.Stack {
     uploadsResource.addMethod(
       "POST",
       new apiGateway.LambdaIntegration(uploadsPresignFunc),
+      {
+        authorizationType: apiGateway.AuthorizationType.COGNITO,
+        authorizer,
+        authorizationScopes: [oauthUploadsWrite.scopeName],
+      },
     );
 
     // Storage: S3
@@ -883,8 +1147,101 @@ export class AppStack extends cdk.Stack {
       distributionPaths: ["/admin/*"],
     });
 
+    // Cognito Clients & Domain
+
+    const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
+      userPool,
+      oAuth: {
+        flows: { authorizationCodeGrant: true },
+        callbackUrls: [
+          `https://${distribution.distributionDomainName}/admin/auth/callback/`,
+          "http://localhost:3001/admin/auth/callback/",
+        ],
+        logoutUrls: [
+          `https://${distribution.distributionDomainName}/admin/`,
+          "http://localhost:3001/admin/",
+        ],
+        scopes: [
+          cognito.OAuthScope.OPENID,
+          cognito.OAuthScope.EMAIL,
+          cognito.OAuthScope.PROFILE,
+          oauthActivitiesRead,
+          oauthActivitiesWrite,
+          oauthArticlesRead,
+          oauthArticlesWrite,
+          oauthSkillsRead,
+          oauthSkillsWrite,
+          oauthWorksRead,
+          oauthWorksWrite,
+          oauthProfileRead,
+          oauthProfileWrite,
+          oauthContactRead,
+          oauthContactWrite,
+          oauthUploadsWrite,
+        ],
+      },
+    });
+
+    const internalClient = new cognito.UserPoolClient(
+      this,
+      "InternalUserPoolClient",
+      {
+        userPool,
+        generateSecret: true,
+        oAuth: {
+          flows: { clientCredentials: true },
+          scopes: [
+            oauthActivitiesRead,
+            oauthArticlesRead,
+            oauthSkillsRead,
+            oauthWorksRead,
+            oauthProfileRead,
+            oauthContactRead,
+          ],
+        },
+      },
+    );
+
+    new cognito.CfnManagedLoginBranding(this, "ManagedLoginBranding", {
+      userPoolId: userPool.userPoolId,
+      clientId: userPoolClient.userPoolClientId,
+      useCognitoProvidedValues: true,
+    });
+
+    const userPoolDomain = userPool.addDomain("UserPoolDomain", {
+      cognitoDomain: {
+        domainPrefix: `${id.toLowerCase()}-${cdk.Aws.ACCOUNT_ID}`,
+      },
+      managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
+    });
+
+    serverFunc.addEnvironment(
+      "COGNITO_CLIENT_ID",
+      internalClient.userPoolClientId,
+    );
+    serverFunc.addEnvironment(
+      "COGNITO_CLIENT_SECRET",
+      internalClient.userPoolClientSecret.unsafeUnwrap(),
+    );
+    serverFunc.addEnvironment("COGNITO_DOMAIN", userPoolDomain.domainName);
+
     new cdk.CfnOutput(this, "Url", {
       value: `https://${distribution.distributionDomainName}`,
+    });
+    new cdk.CfnOutput(this, "UserPoolId", {
+      value: userPool.userPoolId,
+    });
+    new cdk.CfnOutput(this, "UserPoolClientId", {
+      value: userPoolClient.userPoolClientId,
+    });
+    new cdk.CfnOutput(this, "InternalClientId", {
+      value: internalClient.userPoolClientId,
+    });
+    new cdk.CfnOutput(this, "InternalClientSecret", {
+      value: internalClient.userPoolClientSecret.unsafeUnwrap(),
+    });
+    new cdk.CfnOutput(this, "CognitoDomain", {
+      value: userPoolDomain.domainName,
     });
   }
 }

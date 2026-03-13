@@ -17,7 +17,8 @@ paths:
       summary: List activities
       tags:
         - Activities
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -33,6 +34,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -44,7 +51,8 @@ paths:
       summary: Create an activity
       tags:
         - Activities
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -60,6 +68,12 @@ paths:
                 $ref: "#/components/schemas/Activity"
         "400":
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -84,7 +98,8 @@ paths:
       summary: Get an activity
       tags:
         - Activities
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -104,6 +119,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -115,7 +136,8 @@ paths:
       summary: Update an activity
       tags:
         - Activities
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -141,6 +163,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -152,7 +180,8 @@ paths:
       summary: Delete an activity
       tags:
         - Activities
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "204":
           description: No Content
@@ -164,6 +193,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -181,7 +216,8 @@ paths:
       summary: List articles
       tags:
         - Articles
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -197,6 +233,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -208,7 +250,8 @@ paths:
       summary: Create an article
       tags:
         - Articles
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -224,6 +267,12 @@ paths:
                 $ref: "#/components/schemas/Article"
         "400":
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -248,7 +297,8 @@ paths:
       summary: Get an article
       tags:
         - Articles
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -268,6 +318,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -279,7 +335,8 @@ paths:
       summary: Update an article
       tags:
         - Articles
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -305,6 +362,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -316,7 +379,8 @@ paths:
       summary: Delete an article
       tags:
         - Articles
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "204":
           description: No Content
@@ -328,6 +392,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -345,7 +415,8 @@ paths:
       summary: List skills
       tags:
         - Skills
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -361,6 +432,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -372,7 +449,8 @@ paths:
       summary: Create a skill
       tags:
         - Skills
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -388,6 +466,12 @@ paths:
                 $ref: "#/components/schemas/Skill"
         "400":
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -412,7 +496,8 @@ paths:
       summary: Get a skill
       tags:
         - Skills
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -432,6 +517,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -443,7 +534,8 @@ paths:
       summary: Update a skill
       tags:
         - Skills
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -469,6 +561,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -480,7 +578,8 @@ paths:
       summary: Delete a skill
       tags:
         - Skills
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "204":
           description: No Content
@@ -492,6 +591,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -509,7 +614,8 @@ paths:
       summary: List works
       tags:
         - Works
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -525,6 +631,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -536,7 +648,8 @@ paths:
       summary: Create a work
       tags:
         - Works
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -552,6 +665,12 @@ paths:
                 $ref: "#/components/schemas/Work"
         "400":
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -576,7 +695,8 @@ paths:
       summary: Get a work
       tags:
         - Works
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -596,6 +716,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -607,7 +733,8 @@ paths:
       summary: Update a work
       tags:
         - Works
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -633,6 +760,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -644,7 +777,8 @@ paths:
       summary: Delete a work
       tags:
         - Works
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "204":
           description: No Content
@@ -656,6 +790,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -673,7 +813,8 @@ paths:
       summary: Get contact
       tags:
         - Contact
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -683,6 +824,12 @@ paths:
                 $ref: "#/components/schemas/Contact"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -698,7 +845,8 @@ paths:
       summary: Update contact
       tags:
         - Contact
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -718,6 +866,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -731,7 +885,8 @@ paths:
       summary: Generate a presigned URL for file upload
       tags:
         - Uploads
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -751,6 +906,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -764,7 +925,8 @@ paths:
       summary: Get profile
       tags:
         - Profile
-      security: []
+      security:
+        - CognitoAuth: []
       responses:
         "200":
           description: Success
@@ -774,6 +936,12 @@ paths:
                 $ref: "#/components/schemas/Profile"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -789,7 +957,8 @@ paths:
       summary: Update profile
       tags:
         - Profile
-      security: []
+      security:
+        - CognitoAuth: []
       requestBody:
         required: true
         content:
@@ -809,6 +978,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -817,6 +992,11 @@ paths:
                 $ref: "#/components/schemas/Error"
 
 components:
+  securitySchemes:
+    CognitoAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Activity:
       type: object

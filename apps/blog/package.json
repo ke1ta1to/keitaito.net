@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "portless blog next dev",
+    "dev": "next dev --port 3000",
     "build": "open-next build",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",

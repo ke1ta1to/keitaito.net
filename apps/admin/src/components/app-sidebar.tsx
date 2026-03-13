@@ -3,6 +3,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -16,12 +17,15 @@ import {
   IconArticle,
   IconBriefcase,
   IconCode,
+  IconLogout,
   IconMail,
   IconUpload,
   IconUser,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { useAuth } from "@/components/auth-provider";
 
 const resourceItems = [
   { title: "Activities", href: "/activities", icon: IconActivity },
@@ -39,6 +43,7 @@ const toolsItems = [{ title: "Uploads", href: "/uploads", icon: IconUpload }];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { signOut } = useAuth();
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(`${href}/`);
@@ -62,6 +67,16 @@ export function AppSidebar() {
         <NavGroup label="Settings" items={settingsItems} isActive={isActive} />
         <NavGroup label="Tools" items={toolsItems} isActive={isActive} />
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={() => signOut()}>
+              <IconLogout className="size-4" />
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

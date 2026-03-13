@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "portless admin next dev",
+    "dev": "next dev --port 3001",
     "build": "next build",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
@@ -15,6 +15,7 @@
     "@repo/api-client": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.21",
+    "aws-amplify": "^6.16.3",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
