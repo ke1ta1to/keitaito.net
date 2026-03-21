@@ -1,3 +1,10 @@
+import { Activities } from "./_components/activities";
+
 export default async function IndexPage() {
-  return <h1 className="text-3xl font-bold underline">Hello</h1>;
+  return (
+    <div>
+      <h1 className="text-3xl font-bold underline">Hello</h1>
+      <Activities />
+    </div>
+  );
 }
