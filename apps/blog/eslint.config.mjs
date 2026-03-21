@@ -10,6 +10,25 @@ const eslintConfig = defineConfig([
   // Override default ignores of eslint-config-next.
   eslintConfigPrettier,
   ...storybook.configs["flat/recommended"],
+  {
+    rules: {
+      "import/order": [
+        "error",
+        {
+          "newlines-between": "always",
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
+        },
+      ],
+      "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports" },
+      ],
+    },
+  },
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
