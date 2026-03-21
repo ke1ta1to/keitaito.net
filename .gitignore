@@ -1,9 +1,0 @@
-node_modules/
-.turbo/
-.next/
-.open-next/
-dist/
-out/
-cdk.out/
-*storybook.log
-storybook-static
