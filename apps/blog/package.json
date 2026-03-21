@@ -1,0 +1,40 @@
+{
+  "name": "blog",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "open-next build",
+    "lint": "eslint --max-warnings 0",
+    "check-types": "next typegen && tsc --noEmit",
+    "storybook": "storybook dev -p 6007",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@repo/api-client": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@streamdown/cjk": "^1.0.2",
+    "@streamdown/code": "^1.1.0",
+    "@streamdown/math": "^1.0.2",
+    "@streamdown/mermaid": "^1.0.2",
+    "@tanstack/react-query": "^5.90.21",
+    "next": "^16.1.6",
+    "nuqs": "^2.8.9",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "streamdown": "^2.4.0"
+  },
+  "devDependencies": {
+    "@opennextjs/aws": "^3.9.16",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/storybook-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@storybook/nextjs": "^10.2.13",
+    "@types/node": "^24.10.14",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.3",
+    "storybook": "^10.2.13",
+    "typescript": "^5.9.3"
+  }
+}
