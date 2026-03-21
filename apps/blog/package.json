@@ -6,7 +6,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check-types": "next typegen && tsc --noEmit"
+    "check-types": "next typegen && tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.2",
@@ -17,12 +19,15 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
+    "@storybook/nextjs": "^10.3.1",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-storybook": "^10.3.1",
+    "storybook": "^10.3.1",
     "typescript": "^5.9.3"
   }
 }
