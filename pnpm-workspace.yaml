@@ -1,11 +1,12 @@
 packages:
-  - functions
-  - infra
-  - www
+  - apps/*
+  - packages/*
 
 onlyBuiltDependencies:
   - core-js
+  - core-js-pure
   - esbuild
+  - lefthook
   - msw
   - protobufjs
   - sharp

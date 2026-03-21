@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": ["cmd/**", "internal/**", "go.mod", "go.sum", "Makefile"],
+      "outputs": ["dist/functions/**"]
+    }
+  }
+}
