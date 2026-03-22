@@ -1,6 +1,7 @@
 import "../styles.css";
 import { Noto_Sans_JP } from "next/font/google";
 
+import { AppLayout } from "@/components/layouts/app-layouts";
 import { cn } from "@/lib/utils";
 
 const notoSans = Noto_Sans_JP({ subsets: ["latin"], variable: "--font-sans" });
@@ -10,7 +11,9 @@ export default async function RootLayout(props: LayoutProps<"/">) {
 
   return (
     <html lang="ja" className={cn("font-sans", notoSans.variable)}>
-      <body>{children}</body>
+      <body>
+        <AppLayout>{children}</AppLayout>
+      </body>
     </html>
   );
 }
