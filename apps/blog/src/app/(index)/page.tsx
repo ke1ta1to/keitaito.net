@@ -2,6 +2,8 @@ import type { ActivitiesProps } from "./_components/activities";
 import { Activities } from "./_components/activities";
 import type { ArticlesProps } from "./_components/articles";
 import { Articles } from "./_components/articles";
+import type { ContactProps } from "./_components/contact";
+import { Contact } from "./_components/contact";
 import { Profile } from "./_components/profile";
 import type { ProfileProps } from "./_components/profile";
 import type { SkillsProps } from "./_components/skills";
@@ -282,6 +284,13 @@ const skillsProps = {
   ],
 } satisfies SkillsProps;
 
+const contactProps = {
+  contact: {
+    email: "contact@keitaito.net",
+    twitter: "https://x.com/ke1ta1to",
+  },
+} satisfies ContactProps;
+
 export default async function IndexPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -299,6 +308,9 @@ export default async function IndexPage() {
         </div>
         <div className="order-4 md:order-0">
           <Skills {...skillsProps} />
+        </div>
+        <div className="order-4 md:order-0">
+          <Contact {...contactProps} />
         </div>
       </div>
     </div>
