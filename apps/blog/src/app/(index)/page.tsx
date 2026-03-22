@@ -1,5 +1,7 @@
 import type { ActivitiesProps } from "./_components/activities";
 import { Activities } from "./_components/activities";
+import type { ArticlesProps } from "./_components/articles";
+import { Articles } from "./_components/articles";
 import { Profile } from "./_components/profile";
 import type { ProfileProps } from "./_components/profile";
 
@@ -103,6 +105,46 @@ const profileProps = {
   },
 } satisfies ProfileProps;
 
+const articlesProps = {
+  articles: [
+    {
+      title: "ウェブサービスで手軽な通知を提供する",
+      url: "https://zenn.dev/team411/articles/webservice-notify",
+      liked_count: 2,
+      published_at: "2025/12/19",
+      source: "zenn",
+    },
+    {
+      title: "Proxmoxの運用Tips【自宅鯖】",
+      url: "https://zenn.dev/kk79it/articles/proxmox-tutorial",
+      liked_count: 9,
+      published_at: "2024/12/11",
+      source: "zenn",
+    },
+    {
+      title: "TeXファイル内に直接gnuplotを書く",
+      url: "https://qiita.com/ke1ta1to/items/6d54a28ef2a48fb15b9f",
+      liked_count: 2,
+      published_at: "2024/06/17",
+      source: "qiita",
+    },
+    {
+      title: "少し頑張る理数系LaTeX環境構築 (Dev Container)",
+      url: "https://zenn.dev/team411/articles/latex-install-advanced",
+      liked_count: 18,
+      published_at: "2024/03/29",
+      source: "zenn",
+    },
+    {
+      title: "調布祭にモバイルオーダーを導入した話",
+      url: "https://zenn.dev/team411/articles/team411-mobile-order",
+      liked_count: 7,
+      published_at: "2023/12/16",
+      source: "zenn",
+    },
+  ],
+} satisfies ArticlesProps;
+
 export default async function IndexPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -114,6 +156,9 @@ export default async function IndexPage() {
       <div className="contents space-y-0 md:block md:space-y-4">
         <div className="order-1 md:order-0">
           <Profile {...profileProps} />
+        </div>
+        <div className="order-3 md:order-0">
+          <Articles {...articlesProps} />
         </div>
       </div>
     </div>
