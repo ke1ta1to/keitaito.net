@@ -61,6 +61,7 @@ jobs:
         with:
           node-version-file: ./package.json
       - run: pnpm install --frozen-lockfile
+      - run: pnpm -r test
 
   build:
     runs-on: ubuntu-latest
