@@ -4,6 +4,8 @@ import type { ArticlesProps } from "./_components/articles";
 import { Articles } from "./_components/articles";
 import { Profile } from "./_components/profile";
 import type { ProfileProps } from "./_components/profile";
+import type { SkillsProps } from "./_components/skills";
+import { Skills } from "./_components/skills";
 
 const activitiesProps = {
   activities: [
@@ -145,6 +147,141 @@ const articlesProps = {
   ],
 } satisfies ArticlesProps;
 
+const skillsProps = {
+  skills: [
+    {
+      name: "Amazon Web Services",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg",
+    },
+    {
+      name: "Cloudflare",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cloudflare/cloudflare-original.svg",
+    },
+    {
+      name: "Docker",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
+    },
+    {
+      name: "Firebase",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg",
+    },
+    {
+      name: "Supabase",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg",
+    },
+    {
+      name: "MySQL",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg",
+    },
+    {
+      name: "PostgreSQL",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
+    },
+    {
+      name: "Next.js",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg",
+    },
+    {
+      name: "Storybook",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/storybook/storybook-original.svg",
+    },
+    {
+      name: "Terraform",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/terraform/terraform-original.svg",
+    },
+    {
+      name: "React",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
+    },
+    {
+      name: "Vue.js",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vuejs/vuejs-original.svg",
+    },
+    {
+      name: "NestJS",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nestjs/nestjs-original.svg",
+    },
+    {
+      name: "jQuery",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jquery/jquery-original.svg",
+    },
+    {
+      name: "Apache",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/apache/apache-original.svg",
+    },
+    {
+      name: "Electron",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/electron/electron-original.svg",
+    },
+    {
+      name: "GitHub Actions",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/githubactions/githubactions-original.svg",
+    },
+    {
+      name: "Unity",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/unity/unity-original.svg",
+    },
+    {
+      name: "TypeScript",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg",
+    },
+    {
+      name: "Node.js",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
+    },
+    {
+      name: "Python",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
+    },
+    {
+      name: "Java",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg",
+    },
+    {
+      name: "HTML",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg",
+    },
+    {
+      name: "Ruby",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ruby/ruby-original.svg",
+    },
+    {
+      name: "C",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg",
+    },
+    {
+      name: "C#",
+      icon_url:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg",
+    },
+  ],
+} satisfies SkillsProps;
+
 export default async function IndexPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -159,6 +296,9 @@ export default async function IndexPage() {
         </div>
         <div className="order-3 md:order-0">
           <Articles {...articlesProps} />
+        </div>
+        <div className="order-4 md:order-0">
+          <Skills {...skillsProps} />
         </div>
       </div>
     </div>
