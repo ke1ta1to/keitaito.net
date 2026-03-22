@@ -295,21 +295,21 @@ export default async function IndexPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="contents space-y-0 md:block md:space-y-4">
+        <div className="order-1 md:order-0">
+          <Profile {...profileProps} />
+        </div>
         <div className="order-2 md:order-0">
           <Activities {...activitiesProps} />
         </div>
       </div>
       <div className="contents space-y-0 md:block md:space-y-4">
-        <div className="order-1 md:order-0">
-          <Profile {...profileProps} />
-        </div>
         <div className="order-3 md:order-0">
           <Articles {...articlesProps} />
         </div>
         <div className="order-4 md:order-0">
           <Skills {...skillsProps} />
         </div>
-        <div className="order-4 md:order-0">
+        <div className="order-5 md:order-0">
           <Contact {...contactProps} />
         </div>
       </div>
