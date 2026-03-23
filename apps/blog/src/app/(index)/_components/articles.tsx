@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react";
+import { IconHeart } from "@tabler/icons-react";
 import Image from "next/image";
 
 import qiitaIcon from "../_assets/qiita.svg";
@@ -40,7 +40,7 @@ export function Articles(props: ArticlesProps) {
                   </h3>
                   <div className="text-muted-foreground mt-2 flex items-center gap-3 text-xs">
                     <span className="flex items-center gap-1">
-                      <Heart className="size-3" />
+                      <IconHeart className="size-3" />
                       {article.liked_count}
                     </span>
                     <span>{article.published_at}</span>

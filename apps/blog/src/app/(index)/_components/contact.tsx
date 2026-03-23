@@ -1,4 +1,4 @@
-import { CircleUser, Mail } from "lucide-react";
+import { IconBrandX, IconMail } from "@tabler/icons-react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -18,11 +18,11 @@ export function Contact(props: ContactProps) {
       <CardContent>
         <ul className="space-y-4">
           <li className="flex items-center gap-2">
-            <Mail />
+            <IconMail />
             <span>{contact.email.replaceAll("@", " (at) ")}</span>
           </li>
           <li className="flex items-center gap-2">
-            <CircleUser />
+            <IconBrandX />
             <a href={contact.twitter} target="_blank" rel="noopener noreferrer">
               {`@ ${contact.twitter.replaceAll("https://x.com/", "")}`}
             </a>
