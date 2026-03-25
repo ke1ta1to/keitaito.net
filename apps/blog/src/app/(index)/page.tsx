@@ -8,6 +8,9 @@ import { Profile } from "./_components/profile";
 import type { ProfileProps } from "./_components/profile";
 import type { SkillsProps } from "./_components/skills";
 import { Skills } from "./_components/skills";
+import { Works } from "./_components/works";
+
+import { getAllWorks } from "@/lib/works";
 
 const activitiesProps = {
   activities: [
@@ -292,6 +295,10 @@ const contactProps = {
 } satisfies ContactProps;
 
 export default async function IndexPage() {
+  const worksProps = {
+    works: await getAllWorks(),
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="contents space-y-0 md:block md:space-y-4">
@@ -307,9 +314,12 @@ export default async function IndexPage() {
           <Articles {...articlesProps} />
         </div>
         <div className="order-4 md:order-0">
-          <Skills {...skillsProps} />
+          <Works {...worksProps} />
         </div>
         <div className="order-5 md:order-0">
+          <Skills {...skillsProps} />
+        </div>
+        <div className="order-6 md:order-0">
           <Contact {...contactProps} />
         </div>
       </div>

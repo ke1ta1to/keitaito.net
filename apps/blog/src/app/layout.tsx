@@ -11,6 +11,14 @@ export default async function RootLayout(props: LayoutProps<"/">) {
 
   return (
     <html lang="ja" className={cn("font-sans", notoSans.variable)}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.42/dist/katex.min.css"
+          integrity="sha384-DVShYR21zvUU4zL2VjLlIbYSeiS43grntDO/Sm1DwmGGXKxGmvBlXWZ9lnyKhota"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <AppLayout>{children}</AppLayout>
       </body>

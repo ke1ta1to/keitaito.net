@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   output: "standalone",
 };
 
-const withMDX = createMDX({});
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: ["remark-gfm", "remark-math"],
+    rehypePlugins: ["rehype-katex", "rehype-slug"],
+  },
+});
 
 export default withMDX(nextConfig);
