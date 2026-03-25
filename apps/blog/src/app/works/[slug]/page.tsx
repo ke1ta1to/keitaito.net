@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { formatDate } from "@/lib/utils";
 import { getWork } from "@/lib/works";
 
 export async function generateMetadata(
@@ -26,7 +27,13 @@ export default async function WorkPage(props: PageProps<"/works/[slug]">) {
   const { Post, metadata } = work;
   return (
     <div className="space-y-4">
-      <h1 className="my-16 text-center text-3xl font-bold">{metadata.title}</h1>
+      <div className="my-16 text-center">
+        <h1 className="text-3xl font-bold">{metadata.title}</h1>
+        <div className="text-muted-foreground mt-4 text-sm">
+          {formatDate(metadata.createdAt)} 投稿 /{" "}
+          {formatDate(metadata.updatedAt)} 最終更新
+        </div>
+      </div>
       <Image
         alt={`${metadata.title} thumbnail`}
         src={metadata.thumbnail}

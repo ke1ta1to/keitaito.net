@@ -7,6 +7,8 @@ const metadataSchema = z.object({
   title: z.string(),
   description: z.string(),
   keywords: z.array(z.string()),
+  createdAt: z.iso.date(),
+  updatedAt: z.iso.date(),
   // node_modules/next/dist/shared/lib/get-img-props.d.ts
   thumbnail: z.object({
     src: z.string(),
