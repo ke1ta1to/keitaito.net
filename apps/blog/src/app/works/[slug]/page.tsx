@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { formatDate } from "@/lib/utils";
-import { getWork } from "@/lib/works";
+import { getAllWorks, getWork } from "@/lib/works";
 
 export async function generateMetadata(
   props: PageProps<"/works/[slug]">,
@@ -46,6 +46,7 @@ export default async function WorkPage(props: PageProps<"/works/[slug]">) {
   );
 }
 
-export function generateStaticParams() {
-  return [{ slug: "mo" }, { slug: "uec-3d-map" }];
+export async function generateStaticParams() {
+  const works = await getAllWorks();
+  return works.map(({ slug }) => ({ slug }));
 }
