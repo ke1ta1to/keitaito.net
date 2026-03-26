@@ -1,15 +1,19 @@
+import type { Metadata } from "next";
+import type { Person, WithContext } from "schema-dts";
+
 import type { ActivitiesProps } from "./_components/activities";
 import { Activities } from "./_components/activities";
 import type { ArticlesProps } from "./_components/articles";
 import { Articles } from "./_components/articles";
 import type { ContactProps } from "./_components/contact";
 import { Contact } from "./_components/contact";
-import { Profile } from "./_components/profile";
 import type { ProfileProps } from "./_components/profile";
+import { Profile } from "./_components/profile";
 import type { SkillsProps } from "./_components/skills";
 import { Skills } from "./_components/skills";
 import { Works } from "./_components/works";
 
+import { SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
 import { getAllWorks } from "@/lib/works";
 
 const activitiesProps = {
@@ -287,6 +291,13 @@ const skillsProps = {
   ],
 } satisfies SkillsProps;
 
+export const metadata: Metadata = {
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+};
+
 const contactProps = {
   contact: {
     email: "contact@keitaito.net",
@@ -299,30 +310,49 @@ export default async function IndexPage() {
     works: await getAllWorks(),
   };
 
+  const jsonLd: WithContext<Person> = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Keita Ito",
+    url: SITE_URL,
+    image: "https://avatars.githubusercontent.com/u/65676193?v=4",
+    jobTitle: "Student",
+    affiliation: {
+      "@type": "CollegeOrUniversity",
+      name: "The University of Electro-Communications",
+    },
+  };
+
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <div className="contents space-y-0 md:block md:space-y-4">
-        <div className="order-1 md:order-0">
-          <Profile {...profileProps} />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="contents space-y-0 md:block md:space-y-4">
+          <div className="order-1 md:order-0">
+            <Profile {...profileProps} />
+          </div>
+          <div className="order-2 md:order-0">
+            <Activities {...activitiesProps} />
+          </div>
         </div>
-        <div className="order-2 md:order-0">
-          <Activities {...activitiesProps} />
+        <div className="contents space-y-0 md:block md:space-y-4">
+          <div className="order-3 md:order-0">
+            <Articles {...articlesProps} />
+          </div>
+          <div className="order-4 md:order-0">
+            <Works {...worksProps} />
+          </div>
+          <div className="order-5 md:order-0">
+            <Skills {...skillsProps} />
+          </div>
+          <div className="order-6 md:order-0">
+            <Contact {...contactProps} />
+          </div>
         </div>
       </div>
-      <div className="contents space-y-0 md:block md:space-y-4">
-        <div className="order-3 md:order-0">
-          <Articles {...articlesProps} />
-        </div>
-        <div className="order-4 md:order-0">
-          <Works {...worksProps} />
-        </div>
-        <div className="order-5 md:order-0">
-          <Skills {...skillsProps} />
-        </div>
-        <div className="order-6 md:order-0">
-          <Contact {...contactProps} />
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

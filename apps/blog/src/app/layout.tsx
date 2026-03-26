@@ -1,8 +1,23 @@
-import "../styles.css";
+import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 
 import { AppLayout } from "@/components/layouts/app-layouts";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+
+import "../styles.css";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s - ${SITE_NAME}`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const notoSans = Noto_Sans_JP({ subsets: ["latin"], variable: "--font-sans" });
 
