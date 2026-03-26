@@ -104,7 +104,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vitest/coverage-v8':
         specifier: ^4.1.0
-        version: 4.1.0(vitest@4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)))
+        version: 4.1.0(vitest@4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)))
       eslint:
         specifier: ^9.39.4
         version: 9.39.4(jiti@2.6.1)
@@ -128,7 +128,29 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1))
+        version: 4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0))
+
+  apps/infrastructure:
+    dependencies:
+      aws-cdk-lib:
+        specifier: ^2.244.0
+        version: 2.244.0(constructs@10.6.0)
+      constructs:
+        specifier: ^10.6.0
+        version: 10.6.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.0
+        version: 24.12.0
+      aws-cdk:
+        specifier: ^2.1114.1
+        version: 2.1114.1
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 
@@ -138,6 +160,19 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@aws-cdk/asset-awscli-v1@2.2.263':
+    resolution: {integrity: sha512-X9JvcJhYcb7PHs8R7m4zMablO5C9PGb/hYfLnxds9h/rKJu6l7MiXE/SabCibuehxPnuO/vk+sVVJiUWrccarQ==}
+
+  '@aws-cdk/asset-node-proxy-agent-v6@2.1.1':
+    resolution: {integrity: sha512-We4bmHaowOPHr+IQR4/FyTGjRfjgBj4ICMjtqmJeBDWad3Q/6St12NT07leNtyuukv2qMhtSZJQorD8KpKTwRA==}
+
+  '@aws-cdk/cloud-assembly-schema@52.2.0':
+    resolution: {integrity: sha512-ourZjixQ/UfsZc7gdk3vt1eHBODMUjQTYYYCY3ZX8fiXyHtWNDAYZPrXUK96jpCC2fLP+tfHTJrBjZ563pmcEw==}
+    engines: {node: '>= 18.0.0'}
+    bundledDependencies:
+      - jsonschema
+      - semver
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -2865,6 +2900,30 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
+  aws-cdk-lib@2.244.0:
+    resolution: {integrity: sha512-j5FVeZv5W+v6j6OnW8RjoN04T+8pYvDJJV7yXhhj4IiGDKPgMH3fflQLQXJousd2QQk+nSAjghDVJcrZ4GFyGA==}
+    engines: {node: '>= 20.0.0'}
+    peerDependencies:
+      constructs: ^10.5.0
+    bundledDependencies:
+      - '@balena/dockerignore'
+      - '@aws-cdk/cloud-assembly-api'
+      - case
+      - fs-extra
+      - ignore
+      - jsonschema
+      - minimatch
+      - punycode
+      - semver
+      - table
+      - yaml
+      - mime-types
+
+  aws-cdk@2.1114.1:
+    resolution: {integrity: sha512-jMaKPWQQs1G6AbhfCQG2zGrgAhTxzP0jn4T2CuwONuvcV374dMPhfC/LBAv48ruSOgpCK9x6V1xeO/aH3EchAA==}
+    engines: {node: '>= 18.0.0'}
+    hasBin: true
+
   axe-core@4.11.1:
     resolution: {integrity: sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==}
     engines: {node: '>=4'}
@@ -3147,6 +3206,9 @@ packages:
 
   constants-browserify@1.0.0:
     resolution: {integrity: sha512-xFxOwqIzR/e1k1gLiWEophSCMqXcwVHIH7akf7b/vxcUeGunlj3hvZaaqxwHsTgn+IndtkQJgSztIDWeumWJDQ==}
+
+  constructs@10.6.0:
+    resolution: {integrity: sha512-TxHOnBO5zMo/G76ykzGF/wMpEHu257TbWiIxP9K0Yv/+t70UzgBQiTqjkAsWOPC6jW91DzJI0+ehQV6xDRNBuQ==}
 
   content-disposition@1.0.1:
     resolution: {integrity: sha512-oIXISMynqSqm241k6kcQ5UwttDILMK4BiurCfGEREw6+X9jkkpEe5T9FZaApyLGGOnFuyMWZpdolTXMtvEJ08Q==}
@@ -6080,6 +6142,11 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  tsx@4.21.0:
+    resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   tty-browserify@0.0.1:
     resolution: {integrity: sha512-C3TaO7K81YvjCgQH9Q1S3R3P3BtN3RIM8n+OvX4il1K1zgE8ZhI0op7kClgkxtutIE8hQrcrHBXvIheqKUUCxw==}
 
@@ -6509,6 +6576,12 @@ snapshots:
   '@adobe/css-tools@4.4.4': {}
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@aws-cdk/asset-awscli-v1@2.2.263': {}
+
+  '@aws-cdk/asset-node-proxy-agent-v6@2.1.1': {}
+
+  '@aws-cdk/cloud-assembly-schema@52.2.0': {}
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -9101,7 +9174,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vitest/coverage-v8@4.1.0(vitest@4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)))':
+  '@vitest/coverage-v8@4.1.0(vitest@4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.1.0
@@ -9113,7 +9186,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1))
+      vitest: 4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0))
 
   '@vitest/expect@3.2.4':
     dependencies:
@@ -9132,14 +9205,14 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.0(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1))':
+  '@vitest/mocker@4.1.0(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0))':
     dependencies:
       '@vitest/spy': 4.1.0
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
       msw: 2.12.14(@types/node@24.12.0)(typescript@5.9.3)
-      vite: 8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)
+      vite: 8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
@@ -9445,6 +9518,15 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
+  aws-cdk-lib@2.244.0(constructs@10.6.0):
+    dependencies:
+      '@aws-cdk/asset-awscli-v1': 2.2.263
+      '@aws-cdk/asset-node-proxy-agent-v6': 2.1.1
+      '@aws-cdk/cloud-assembly-schema': 52.2.0
+      constructs: 10.6.0
+
+  aws-cdk@2.1114.1: {}
+
   axe-core@4.11.1: {}
 
   axobject-query@4.1.0: {}
@@ -9732,6 +9814,8 @@ snapshots:
   console-browserify@1.2.0: {}
 
   constants-browserify@1.0.0: {}
+
+  constructs@10.6.0: {}
 
   content-disposition@1.0.1: {}
 
@@ -13457,6 +13541,13 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  tsx@4.21.0:
+    dependencies:
+      esbuild: 0.27.4
+      get-tsconfig: 4.13.6
+    optionalDependencies:
+      fsevents: 2.3.3
+
   tty-browserify@0.0.1: {}
 
   tw-animate-css@1.4.0: {}
@@ -13687,7 +13778,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1):
+  vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.3
@@ -13700,11 +13791,12 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.6.1
       terser: 5.46.1
+      tsx: 4.21.0
 
-  vitest@4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)):
+  vitest@4.1.0(@types/node@24.12.0)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)):
     dependencies:
       '@vitest/expect': 4.1.0
-      '@vitest/mocker': 4.1.0(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1))
+      '@vitest/mocker': 4.1.0(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0))
       '@vitest/pretty-format': 4.1.0
       '@vitest/runner': 4.1.0
       '@vitest/snapshot': 4.1.0
@@ -13721,7 +13813,7 @@ snapshots:
       tinyexec: 1.0.4
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vite: 8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)
+      vite: 8.0.1(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.12.0

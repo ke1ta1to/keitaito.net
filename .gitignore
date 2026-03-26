@@ -4,3 +4,4 @@ pnpm-workspace.yaml
 .next/
 *storybook.log
 storybook-static
+cdk.out/
