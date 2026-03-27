@@ -5,3 +5,4 @@ pnpm-workspace.yaml
 *storybook.log
 storybook-static
 cdk.out/
+.open-next/
