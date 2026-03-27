@@ -1,22 +1,19 @@
-import * as path from "path";
+import * as path from "node:path";
 
+import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  pageExtensions: ["js", "jsx", "ts", "tsx", "mdx"],
   output: "standalone",
-  transpilePackages: ["@repo/api-client", "@repo/ui"],
   outputFileTracingRoot: path.join(__dirname, "../../"),
-  async rewrites() {
-    if (process.env.NODE_ENV === "development") {
-      const apiUrl = process.env.API_URL;
-      const uploadsUrl = process.env.UPLOADS_URL;
-      return [
-        { source: "/api/:path*", destination: `${apiUrl}:path*` },
-        { source: "/uploads/:path*", destination: `${uploadsUrl}:path*` },
-      ];
-    }
-    return [];
-  },
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: ["remark-gfm", "remark-math"],
+    rehypePlugins: ["rehype-katex", "rehype-slug"],
+  },
+});
+
+export default withMDX(nextConfig);

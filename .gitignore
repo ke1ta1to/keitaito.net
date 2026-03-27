@@ -1,9 +1,8 @@
 node_modules/
-.turbo/
+pnpm-lock.yaml
+pnpm-workspace.yaml
 .next/
-.open-next/
-dist/
-out/
-cdk.out/
 *storybook.log
 storybook-static
+cdk.out/
+.open-next/
