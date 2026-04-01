@@ -74,8 +74,10 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/blog-ecr-push-role
           aws-region: ${{ vars.AWS_REGION }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
       - id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
       - uses: docker/build-push-action@v7
         with:
           context: .
