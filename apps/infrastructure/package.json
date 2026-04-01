@@ -2,7 +2,8 @@
   "name": "infrastructure",
   "private": true,
   "scripts": {
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "eslint": "eslint --max-warnings 0"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.244.0",

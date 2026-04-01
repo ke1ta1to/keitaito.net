@@ -5,4 +5,6 @@ import { AppStack } from "./app-stack";
 
 const app = new cdk.App();
 
-new AppStack(app, "Blog", {});
+new AppStack(app, "Blog", {
+  githubRepository: "ke1ta1to/keitaito.net",
+});
