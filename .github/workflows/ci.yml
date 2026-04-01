@@ -84,7 +84,7 @@ jobs:
           file: ./apps/blog/Dockerfile
           push: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/blog:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry || 'local' }}/blog:${{ github.sha }}
           build-args: |
             SITE_URL=http://localhost:3000
           cache-from: type=gha,scope=blog-cache
