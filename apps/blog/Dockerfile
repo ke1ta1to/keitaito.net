@@ -42,7 +42,7 @@ COPY --from=builder --chown=node:node /repo/apps/blog/.next/standalone ./
 COPY --from=builder --chown=node:node /repo/apps/blog/.next/static ./apps/blog/.next/static
 COPY --from=builder --chown=node:node /repo/apps/blog/public ./apps/blog/public
 
-RUN mkdir -p ./apps/blog/.next/cache && chown node:node -R node:node ./apps/blog/.next
+RUN mkdir -p ./apps/blog/.next/cache && chown -R node:node ./apps/blog/.next
 
 USER node
 EXPOSE 3000
