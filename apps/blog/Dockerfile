@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.7
 
-FROM node:24-slim AS base
+FROM node:24.14.1-slim AS base
 
 WORKDIR /repo
 
@@ -14,8 +14,7 @@ FROM base AS builder
 
 WORKDIR /repo
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
   pnpm fetch --frozen-lockfile
@@ -29,7 +28,7 @@ ENV NODE_ENV=production
 
 RUN pnpm -F blog build
 
-FROM node:24-slim AS runner
+FROM node:24.14.1-slim AS runner
 
 WORKDIR /app
 
@@ -39,9 +38,11 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # https://nextjs.org/docs/app/api-reference/config/next-config-js/output
-COPY --from=builder --chown=node:node /repo/apps/blog/public ./public
 COPY --from=builder --chown=node:node /repo/apps/blog/.next/standalone ./
-COPY --from=builder --chown=node:node /repo/apps/blog/.next/static ./.next/static
+COPY --from=builder --chown=node:node /repo/apps/blog/.next/static ./apps/blog/.next/static
+COPY --from=builder --chown=node:node /repo/apps/blog/public ./apps/blog/public
+
+RUN mkdir -p ./apps/blog/.next/cache && chown node:node -R node:node ./apps/blog/.next
 
 USER node
 EXPOSE 3000
