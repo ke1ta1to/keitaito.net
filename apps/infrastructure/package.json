@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "cdk": "cdk",
-    "eslint": "eslint --max-warnings 0"
+    "lint": "eslint --max-warnings 0",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.244.0",
